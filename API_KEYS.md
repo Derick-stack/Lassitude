@@ -3,7 +3,7 @@
 ## Your API Keys
 
 ### 1. GROQ API Key (for NADIR AI) ✅ DONE
-**Key:** `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`
+**Key:** `secret_key`
 
 **Where to add in code:** Replace `YOUR_GROQ_API_KEY` in `index.html` line ~420
 
