@@ -7,7 +7,7 @@ async function nadirAI() {
   panda.style.transform = "scale(1.2)";
   
   try {
-    const GROQ_API_KEY = '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';
+    const GROQ_API_KEY = 'secret';
     
     if (GROQ_API_KEY === 'YOUR_GROQ_API_KEY') {
       provideFallbackResponse(input);
