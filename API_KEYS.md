@@ -15,7 +15,7 @@
 - Dashboard → My Apps → Copy API Key
 - **Where to add:** Replace `YOUR_RAPIDAPI_KEY` in `index.html` line ~277
 
-**Key:** `bda442be77msh23e456c7f227f5dp183a17jsn78316dada659`
+**Key:** `secret key`
 
 ---
 
@@ -35,7 +35,7 @@
 - Copy the URL and extract the ID part after `/catch/`
 - **Where to add:** Replace `YOUR_ZAPIER_WEBHOOK_ID` in `index.html` line ~374
 
-**Webhook ID:** `[https://hooks.zapier.com/hooks/catch/27279658/uj5jfgx/]`
+**Webhook ID:** `[secret webhook]`
 
 ---
 
