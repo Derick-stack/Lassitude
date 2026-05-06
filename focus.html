@@ -16,9 +16,11 @@
       </div>
       <nav>
         <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
         <a href="start.html">Start</a>
         <a href="progress.html">Progress</a>
         <a href="future.html">Future</a>
+        <a href="settings.html">Settings</a>
       </nav>
     </div>
   </header>
@@ -37,7 +39,12 @@
             <h3>Set Timer</h3>
           </div>
           <div class="card-content">
-            <div class="timer-display"><span id="timer">25:00</span></div>
+            <div class="timer-display-large">
+              <span id="timer">25:00</span>
+              <div class="timer-progress-bar">
+                <div id="timerProgress" class="timer-progress-fill"></div>
+              </div>
+            </div>
             <div class="timer-controls">
               <input id="timerInput" type="number" min="1" max="120" placeholder="Minutes">
               <button onclick="startCustomTimer()" class="card-btn">Start</button>
@@ -71,7 +78,7 @@
           </div>
         </div>
 
-        <div class="card soundscape-card" onclick="toggleExpand(this, event)">
+        <div class="card soundscape-card">
           <div class="card-header">
             <span class="icon">🌊</span>
             <h3>Ambient Sounds</h3>
@@ -83,9 +90,6 @@
             <button onclick="loadSoundscape('forest'); event.stopPropagation()" class="card-btn">Forest</button>
             <div id="soundscapePlayer" class="soundscape-player"></div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
         </div>
       </section>
     </div>
@@ -95,6 +99,14 @@
     window.addEventListener('DOMContentLoaded', () => {
       updateStatsDisplay();
       renderPageStats();
+      
+      // Initialize plant growth
+      const plant = document.getElementById('plantGrow');
+      if (plant) {
+        const growthStages = ['🌱', '🌿', '🌳', '🌲', '🌴'];
+        const currentStage = localStorage.getItem('plantStage') || 0;
+        plant.textContent = growthStages[parseInt(currentStage)];
+      }
     });
   </script>
 </body>

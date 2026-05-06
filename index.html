@@ -35,18 +35,16 @@
         <div class="brand">Lassitude</div>
         <div class="brand-subtitle">Level Up with Faith, Fit, Focus</div>
       </div>
-      <div class="search-bar">
-        <input id="globalSearch" placeholder="Search content, quotes, workouts..." type="text">
-        <button onclick="performSearch()">🔍</button>
-      </div>
       <nav>
+        <a href="login.html">Login</a>
         <a href="start.html">Start</a>
         <a href="progress.html">Progress</a>
         <a href="focus.html">Focus</a>
         <a href="future.html">Future</a>
+        <a href="settings.html">Settings</a>
       </nav>
       <div class="theme-toggle">
-        <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <button id="nadirToggle" onclick="toggleNadir()" title="NADIR AI Assistant">🤖</button>
       </div>
     </div>
   </header>
@@ -58,6 +56,10 @@
       <section class="hero">
         <h2>Faith • Discipline • Growth</h2>
         <p>Your premium companion for faith-driven personal development and peak performance</p>
+        <div class="search-bar hero-search">
+          <input id="globalSearch" placeholder="Search content, quotes, workouts..." type="text">
+          <button onclick="performSearch()">🔍</button>
+        </div>
         <div class="stats-bar">
           <div class="stat">
             <div style="font-size: 1.5rem;">✨</div>
@@ -76,7 +78,7 @@
 
       <!-- DASHBOARD GRID -->
       <section class="dashboard">
-        <div class="card motivation-card" onclick="toggleExpand(this, event)">
+        <div class="card motivation-card">
           <div class="card-header">
             <span class="icon">💪</span>
             <h3>Motivation</h3>
@@ -87,11 +89,10 @@
           </div>
           <div class="card-actions">
             <button onclick="newQuote()" class="card-btn">New Quote</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card scripture-card" onclick="toggleExpand(this, event)">
+        <div class="card scripture-card">
           <div class="card-header">
             <span class="icon">📖</span>
             <h3>Daily Scripture</h3>
@@ -102,244 +103,101 @@
           </div>
           <div class="card-actions">
             <button onclick="getBibleVerse()" class="card-btn">Get Verse</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card workout-card" onclick="toggleExpand(this, event)">
+        <div class="card workout-card">
           <div class="card-header">
             <span class="icon">🏋️</span>
             <h3>Workout</h3>
           </div>
           <div class="card-content">
-            <img src="https://images.unsplash.com/photo-1517832606294-9b6e03a2b6c1?auto=format&fit=crop&w=900&q=80" alt="Strength training" class="card-img">
             <h4 id="workoutName">Loading...</h4>
             <p id="workoutDetails"></p>
-            <div id="workoutVideos" class="video-grid"></div>
           </div>
           <div class="card-actions">
             <button onclick="getWorkout()" class="card-btn">Get Workout</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card challenge-card" onclick="toggleExpand(this, event)">
+        <div class="card focus-card">
+          <div class="card-header">
+            <span class="icon">⏰</span>
+            <h3>Focus Timer</h3>
+          </div>
+          <div class="card-content">
+            <div id="timer">25:00</div>
+            <div id="plantGrow" class="plant-grow">🌱</div>
+            <p>Set a custom session length in minutes.</p>
+            <div class="timer-controls">
+              <input id="timerInput" type="number" min="1" max="120" placeholder="Minutes">
+              <button onclick="startCustomTimer()" class="card-btn">Start</button>
+            </div>
+            <p id="timerNote">Use the input above to choose how long the timer runs. Grow your plant by staying focused!</p>
+          </div>
+          <div class="card-actions">
+            <button onclick="startTimer()" class="card-btn">Start 25min</button>
+          </div>
+        </div>
+
+        <div class="card music-card">
+          <div class="card-header">
+            <span class="icon">🎵</span>
+            <h3>Music</h3>
+          </div>
+          <div class="card-content">
+            <div class="music-buttons">
+              <button onclick="loadMusic('focus')" class="music-btn">Focus</button>
+              <button onclick="loadMusic('hype')" class="music-btn">Workout</button>
+              <button onclick="loadMusic('worship')" class="music-btn">Worship</button>
+              <button onclick="loadMusic('lofi')" class="music-btn">Lofi</button>
+            </div>
+            <div id="musicMeta" class="music-meta">Choose a playlist for your session.</div>
+            <div id="musicPlayer" class="music-player"></div>
+          </div>
+        </div>
+
+        <div class="card challenge-card">
           <div class="card-header">
             <span class="icon">🎯</span>
             <h3>Daily Challenge</h3>
           </div>
           <div class="card-content">
             <p id="challengeText">Loading challenge...</p>
+            <div id="challengeStatus" style="margin: 1rem 0; font-size: 0.9rem; color: var(--text-muted);">
+              Click "Commit" to take on this challenge today
+            </div>
           </div>
           <div class="card-actions">
+            <button onclick="commitToChallenge()" id="commitBtn" class="card-btn">Commit to Challenge</button>
             <button onclick="newChallenge()" class="card-btn">New Challenge</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card library-card" onclick="toggleExpand(this, event)">
+        <div class="card library-card">
           <div class="card-header">
             <span class="icon">📚</span>
             <h3>Training Library</h3>
           </div>
           <div class="card-content">
-            <p>Choose a program and get real guidance, sample routines, and guided video help.</p>
+            <p>Access guided workouts and training programs.</p>
             <div class="grid-buttons">
               <button onclick="loadLibrary('strength')" class="card-btn">Strength</button>
-              <button onclick="loadLibrary('mobility')" class="card-btn">Mobility</button>
               <button onclick="loadLibrary('HIIT')" class="card-btn">HIIT</button>
               <button onclick="loadLibrary('recovery')" class="card-btn">Recovery</button>
             </div>
-            <div id="libraryDetails" class="library-details">Pick one of the categories to see workouts, recovery routines, and video examples.</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="card-btn">Open Library</button>
+            <div id="libraryDetails" class="library-details">Choose a program to get started.</div>
           </div>
         </div>
 
-        <div class="card recovery-card" onclick="toggleExpand(this, event)">
+        <div class="card recommendations-card">
           <div class="card-header">
-            <span class="icon">🛌</span>
-            <h3>Recovery Zone</h3>
+            <span class="icon">💡</span>
+            <h3>Getting Started</h3>
           </div>
           <div class="card-content">
-            <div class="recovery-tracker">
-              <label>Sleep Hours: <input id="sleepInput" type="number" min="0" max="24" placeholder="8"></label>
-              <label>Hydration (glasses): <input id="waterInput" type="number" min="0" max="20" placeholder="10"></label>
-              <label>Soreness Level: <input id="sorenessInput" type="range" min="1" max="10" value="5"></label>
-              <button onclick="logRecovery(); event.stopPropagation()" class="card-btn">Log Recovery</button>
-            </div>
-            <div id="recoveryLog" class="recovery-log">Track your recovery to optimize performance.</div>
-            <div class="breathing-guide">
-              <button onclick="startBreathing(); event.stopPropagation()" class="card-btn">Guided Breathing</button>
-              <div id="breathingPrompt" class="breathing-prompt">Breathe in... Hold... Breathe out...</div>
-            </div>
-            <p id="recoveryOverview">Recovery is the engine that turns hard work into long-term gains. Your muscles rebuild, your nervous system resets, and your heart repairs after intense sessions.</p>
-            <ul class="recovery-list">
-              <li><strong>Sleep:</strong> Deep rest supports hormone balance, muscle repair, and energy restoration.</li>
-              <li><strong>Nutrition:</strong> Protein, electrolytes, and healthy carbs refill fuel and support recovery.</li>
-              <li><strong>Active recovery:</strong> Light movement, stretching, and walking improve blood flow.</li>
-              <li><strong>Mindset:</strong> Recovery days are not lazy days—they are growth days.</li>
-            </ul>
-            <div id="recoveryTips" class="music-meta">Tip: aim for 7–9 hours of sleep, hydrate consistently, and include low-impact mobility on rest days.</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Learn More</button>
-          </div>
-        </div>
-
-        <div class="card music-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🎵</span>
-            <h3>Music Library</h3>
-          </div>
-          <div class="card-content">
-            <div class="music-buttons grid-buttons">
-              <button onclick="loadMusic('lofi')" class="music-btn">Lofi</button>
-              <button onclick="loadMusic('focus')" class="music-btn">Deep Focus</button>
-              <button onclick="loadMusic('hype')" class="music-btn">Hype</button>
-              <button onclick="loadMusic('energy')" class="music-btn">Energy</button>
-              <button onclick="loadMusic('rock')" class="music-btn">Rock</button>
-              <button onclick="loadMusic('rnb')" class="music-btn">R&B</button>
-              <button onclick="loadMusic('worship')" class="music-btn">Worship</button>
-              <button onclick="loadMusic('motivational')" class="music-btn">Motivational</button>
-              <button onclick="loadMusic('nature')" class="music-btn">Nature</button>
-            </div>
-            <div class="music-search">
-              <input id="musicSearchInput" placeholder="Search hip hop, R&B, rock, worship, motivational..." type="text" onclick="event.stopPropagation()">
-              <button onclick="searchSongs(); event.stopPropagation()" class="card-btn">Search</button>
-            </div>
-            <div id="songOfDay" class="song-of-day">Song of the Day: <span id="dailySong">Loading...</span></div>
-            <div id="musicMeta" class="music-meta">Search for songs or choose a playlist for your next session.</div>
-            <div id="musicResults" class="music-results"></div>
-            <div id="musicPlayer" class="music-player"></div>
-            <button onclick="showLyrics()" class="card-btn">Show Lyrics</button>
-            <div id="lyrics" class="lyrics"></div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-        <div class="card github-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">💻</span>
-            <h3>GitHub Stats</h3>
-          </div>
-          <div class="card-content">
-            <input id="githubUser" placeholder="Enter username" type="text">
-            <p id="githubStats"></p>
-          </div>
-          <div class="card-actions">
-            <button onclick="getGitHubStats()" class="card-btn">Load Stats</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-        <div class="card email-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">📧</span>
-            <h3>Email Reminders</h3>
-          </div>
-          <div class="card-content">
-            <input id="emailInput" placeholder="your@email.com" type="email">
-            <p id="emailStatus"></p>
-          </div>
-          <div class="card-actions">
-            <button onclick="subscribeEmail()" class="card-btn">Subscribe</button>
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-div id="plantGrow" class="plant-grow">🌱</div>
-            <p>Set a custom session length in minutes.</p>
-            <div class="timer-controls">
-              <input id="timerInput" type="number" min="1" max="120" placeholder="Minutes" onclick="event.stopPropagation()">
-              <button onclick="startCustomTimer(); event.stopPropagation()" class="card-btn">Start</button>
-            </div>
-            <p id="timerNote">Use the input above to choose how long the timer runs. Grow your plant by staying focused!</p>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-
-
-
-
-
-
-
-
-        <div class="card recommendations-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🛒</span>
-            <h3>Recommendations</h3>
-          </div>
-          <div class="card-content">
-            <div id="productRecs" class="product-recs">Based on your habits: Top recovery supplements, faith books, and workout gear.</div>
-            <button onclick="loadRecommendations(); event.stopPropagation()" class="card-btn">Get Suggestions</button>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-        <div class="card challenges-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🎥</span>
-            <h3>Video Challenges</h3>
-          </div>
-          <div class="card-content">
-            <div class="challenge-options">
-              <button onclick="loadChallenge('stretch'); event.stopPropagation()" class="card-btn">15s Stretch</button>
-              <button onclick="loadChallenge('prayer'); event.stopPropagation()" class="card-btn">Quick Prayer</button>
-              <button onclick="loadChallenge('breathe'); event.stopPropagation()" class="card-btn">Breath Work</button>
-            </div>
-            <div id="challengeVideo" class="challenge-video"></div>
-            <div class="comments">
-              <input id="commentInput" placeholder="Add a comment..." type="text" onclick="event.stopPropagation()">
-              <button onclick="addComment(); event.stopPropagation()" class="card-btn">Comment</button>
-              <div id="commentsList" class="comments-list"></div>
-            </div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-        <div class="card feed-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">📱</span>
-            <h3>Community Feed</h3>
-          </div>
-          <div class="card-content">
-            <div class="feed-input">
-              <input id="feedPost" placeholder="Share a win or thought..." type="text" onclick="event.stopPropagation()">
-              <button onclick="postToFeed(); event.stopPropagation()" class="card-btn">Post</button>
-            </div>
-            <div id="feedPosts" class="feed-posts">Recent posts from the community.</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
-        </div>
-
-        <div class="card profile-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">👤</span>
-            <h3>User Profile</h3>
-          </div>
-          <div class="card-content">
-            <div id="userProfile" class="user-profile">
-              <p>Name: <input id="userName" placeholder="Your Name" type="text" onclick="event.stopPropagation()"></p>
-              <p>Bio: <textarea id="userBio" placeholder="Tell us about your journey..." onclick="event.stopPropagation()"></textarea></p>
-              <button onclick="saveProfile(); event.stopPropagation()" class="card-btn">Save Profile</button>
-            </div>
-            <div id="profileStats" class="profile-stats">Total XP: 0 | Workouts: 0 | Streaks: 0</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+            <div id="productRecs" class="product-recs">Welcome! Start with daily habits, track your progress, and build consistency. Check out our comprehensive guide on the Start page.</div>
+            <a href="start.html" class="card-btn" style="display: inline-block; text-decoration: none;">View Guide</a>
           </div>
         </div>
       </section>
@@ -462,13 +320,46 @@ div id="plantGrow" class="plant-grow">🌱</div>
   <!-- SIDEBAR CHAT -->
   <aside id="nadir-sidebar">
     <div class="sidebar-header">
-
       <h3>NADIR AI</h3>
+      <p class="sidebar-subtitle">Your faith-friendly workout coach and daily encouragement guide.</p>
     </div>
+    <div class="sidebar-content">
+      <div class="nadir-settings">
+        <label for="faithTone">Faith tone</label>
+        <select id="faithTone" onchange="setNadirTone(this.value)">
+          <option value="Christian">Christian</option>
+          <option value="Faith-Based">Faith-Based</option>
+          <option value="Inspirational">Inspirational</option>
+        </select>
+      </div>      <div class=\"nadir-logging\">
+        <h4>Quick Log</h4>
+        <div class=\"log-item\">
+          <label>Energy (1-10):</label>
+          <input id=\"energyInput\" type=\"number\" min=\"1\" max=\"10\" placeholder=\"7\">
+          <button onclick=\"logEnergyLevel(parseInt(document.getElementById('energyInput').value))\">Log</button>
+        </div>
+        <div class=\"log-item\">
+          <label>Sleep hours:</label>
+          <input id=\"sleepInput\" type=\"number\" min=\"0\" max=\"24\" step=\"0.5\" placeholder=\"8\">
+          <button onclick=\"logSleep(parseFloat(document.getElementById('sleepInput').value))\">Log</button>
+        </div>
+        <div class=\"log-item\">
+          <label>Workout done:</label>
+          <select id=\"workoutType\">
+            <option value=\"strength\">Strength</option>
+            <option value=\"cardio\">Cardio</option>
+            <option value=\"flexibility\">Flexibility</option>
+            <option value=\"recovery\">Recovery</option>
+          </select>
+          <input id=\"workoutDuration\" type=\"number\" min=\"1\" placeholder=\"30\" style=\"width: 50px;\"> min
+          <button onclick=\"logWorkout(true, document.getElementById('workoutType').value, parseInt(document.getElementById('workoutDuration').value))\">✓</button>
+          <button onclick=\"logWorkout(false, document.getElementById('workoutType').value, 0)\">✗</button>
+        </div>
+      </div>    </div>
     <div class="chat-container">
       <div id="chat-messages"></div>
       <div class="chat-input">
-        <input id="userInput" placeholder="Ask NADIR..." type="text">
+        <input id="userInput" placeholder="Ask NADIR about workouts, recovery, or reflection..." type="text">
         <button onclick="nadirAI()" class="send-btn">Send</button>
       </div>
     </div>
@@ -486,6 +377,7 @@ div id="plantGrow" class="plant-grow">🌱</div>
       loadLibrary('strength');
       renderWorkoutVideos();
       loadSongOfDay();
+      updateChallengeStatus();
     });
 
     // Remove intro after animation
@@ -518,8 +410,33 @@ async function newQuote() {
       document.getElementById("quoteAuthor").innerText = `— ${data.author}`;
     }
   } catch (error) {
-    let quotes = ["The only competition you have is yourself.", "Discipline beats motivation.",
-      "Consistency creates greatness.", "Faith over fear.", "No excuses. Just results."];
+    let quotes = [
+      "The only competition you have is yourself.",
+      "Discipline beats motivation.",
+      "Consistency creates greatness.",
+      "Faith over fear.",
+      "No excuses. Just results.",
+      "Your body can do it. It's your mind you have to convince.",
+      "The pain you feel today will be the strength you feel tomorrow.",
+      "Success is the sum of small efforts repeated day in and day out.",
+      "Don't stop when you're tired. Stop when you're done.",
+      "The harder you work, the luckier you get.",
+      "Champions keep playing until they get it right.",
+      "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't.",
+      "The only way to do great work is to love what you do.",
+      "Believe you can and you're halfway there.",
+      "The future belongs to those who believe in the beauty of their dreams.",
+      "You miss 100% of the shots you don't take.",
+      "The best way to predict the future is to create it.",
+      "Don't watch the clock; do what it does. Keep going.",
+      "The only limit to our realization of tomorrow will be our doubts of today.",
+      "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+      "The journey of a thousand miles begins with one step.",
+      "Quality is not an act, it is a habit.",
+      "The difference between ordinary and extraordinary is that little extra.",
+      "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+      "The way to get started is to quit talking and begin doing."
+    ];
     let q = quotes[Math.floor(Math.random() * quotes.length)];
     document.getElementById("quoteText").innerText = q;
   }
@@ -540,9 +457,27 @@ async function getBibleVerse() {
       document.getElementById("verseRef").innerText = data.reference;
     }
   } catch (error) {
+    const fallbackVerses = [
+      { text: "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.", reference: "Proverbs 3:5-6" },
+      { text: "I can do all things through Christ who strengthens me.", reference: "Philippians 4:13" },
+      { text: "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.", reference: "Joshua 1:9" },
+      { text: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.", reference: "Jeremiah 29:11" },
+      { text: "The Lord is my strength and my shield; my heart trusts in him, and he helps me. My heart leaps for joy, and with my song I praise him.", reference: "Psalm 28:7" },
+      { text: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.", reference: "Isaiah 40:31" },
+      { text: "Therefore, since we are surrounded by such a great cloud of witnesses, let us throw off everything that hinders and the sin that so easily entangles. And let us run with perseverance the race marked out for us.", reference: "Hebrews 12:1" },
+      { text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", reference: "Galatians 6:9" },
+      { text: "Commit to the Lord whatever you do, and he will establish your plans.", reference: "Proverbs 16:3" },
+      { text: "The righteous person may have many troubles, but the Lord delivers him from them all.", reference: "Psalm 34:19" },
+      { text: "When I am afraid, I put my trust in you.", reference: "Psalm 56:3" },
+      { text: "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.", reference: "John 14:27" },
+      { text: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.", reference: "Romans 8:28" },
+      { text: "Cast all your anxiety on him because he cares for you.", reference: "1 Peter 5:7" },
+      { text: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.", reference: "Psalm 34:18" }
+    ];
+    const randomVerse = fallbackVerses[Math.floor(Math.random() * fallbackVerses.length)];
     if(document.getElementById("verseText")) {
-      document.getElementById("verseText").innerText = "Trust in the Lord with all your heart.";
-      document.getElementById("verseRef").innerText = "Proverbs 3:5";
+      document.getElementById("verseText").innerText = randomVerse.text;
+      document.getElementById("verseRef").innerText = randomVerse.reference;
     }
   }
 }

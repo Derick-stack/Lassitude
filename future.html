@@ -16,9 +16,11 @@
       </div>
       <nav>
         <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
         <a href="start.html">Start</a>
         <a href="progress.html">Progress</a>
         <a href="focus.html">Focus</a>
+        <a href="settings.html">Settings</a>
       </nav>
     </div>
   </header>
@@ -67,7 +69,7 @@
           </div>
         </div>
 
-        <div class="card goal-card" onclick="toggleExpand(this, event)">
+        <div class="card goal-card">
           <div class="card-header">
             <span class="icon">🎯</span>
             <h3>Goal Planning</h3>
@@ -77,14 +79,12 @@
               <input id="goalInput" placeholder="Set a goal (e.g., Run 5k)" type="text" onclick="event.stopPropagation()">
               <button onclick="addGoal(); event.stopPropagation()" class="card-btn">Add Goal</button>
             </div>
+            <button onclick="generateGoals(); event.stopPropagation()" class="card-btn" style="margin: 0.5rem 0;">Generate Goals</button>
             <div id="goalList" class="goal-list">Your goals will appear here. Track progress and stay motivated.</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card vision-card" onclick="toggleExpand(this, event)">
+        <div class="card vision-card">
           <div class="card-header">
             <span class="icon">🎨</span>
             <h3>Vision Board</h3>
@@ -94,12 +94,9 @@
             <button onclick="addVisionItem(); event.stopPropagation()" class="card-btn">Add</button>
             <div id="visionBoard" class="vision-board"></div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
         </div>
 
-        <div class="card milestone-card" onclick="toggleExpand(this, event)">
+        <div class="card milestone-card">
           <div class="card-header">
             <span class="icon">🏁</span>
             <h3>Milestone Tracker</h3>
@@ -108,9 +105,6 @@
             <input id="milestoneInput" placeholder="Log a milestone..." type="text" onclick="event.stopPropagation()">
             <button onclick="trackMilestone(); event.stopPropagation()" class="card-btn">Log</button>
             <ul id="milestoneList" class="milestone-list"></ul>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
       </section>

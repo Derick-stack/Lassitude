@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Login</title>
+  <link rel="stylesheet" href="style-luxury.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+  <script src="script.js"></script>
+
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Welcome to Lassitude</h1>
+      <p>Enter your details to access your stats and progress</p>
+      
+      <div class="tab-buttons">
+        <button id="signinTab" class="tab-btn active">Sign In</button>
+        <button id="signupTab" class="tab-btn">Sign Up</button>
+      </div>
+
+      <div id="signinForm" class="form-section">
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="signinUsername">Username</label>
+            <input type="text" id="signinUsername" name="username" required placeholder="Enter your username">
+          </div>
+          <div class="form-group">
+            <label for="signinPassword">Password</label>
+            <input type="password" id="signinPassword" name="password" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="login-btn">Sign In</button>
+          <div class="forgot-password">
+            <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+          </div>
+        </form>
+        
+        <!-- Password Reset Section -->
+        <div id="resetSection" class="form-section hidden">
+          <h3>Reset Your Password</h3>
+          
+          <!-- Reset Method Selection -->
+          <div id="resetMethodStep" class="form-section">
+            <p id="resetInstructions">Choose how you'd like to receive your reset code:</p>
+            <div class="form-group">
+              <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button type="button" id="resetViaEmailBtn" class="method-btn active" style="flex: 1;">📧 Email</button>
+                <button type="button" id="resetViaSmsBtn" class="method-btn" style="flex: 1;">📱 SMS</button>
+              </div>
+            </div>
+            
+            <!-- Email Input -->
+            <div id="emailResetGroup" class="form-group">
+              <label for="resetEmail">Email Address</label>
+              <input type="email" id="resetEmail" name="resetEmail" placeholder="Enter your email">
+            </div>
+            
+            <!-- SMS Input -->
+            <div id="smsResetGroup" class="form-group hidden">
+              <label for="resetPhone">Phone Number</label>
+              <input type="tel" id="resetPhone" name="resetPhone" placeholder="Enter your phone number">
+            </div>
+            
+            <button type="button" id="sendResetCodeBtn" class="login-btn" style="width: 100%; margin-top: 10px;">Send Reset Code</button>
+          </div>
+          
+          <!-- Enter Reset Code and New Password -->
+          <div id="resetCodeStep" class="form-section hidden">
+            <p>Enter the reset code we sent you and choose a new password.</p>
+            <div class="form-group">
+              <label for="resetCode">Reset Code</label>
+              <input type="text" id="resetCode" name="resetCode" placeholder="Enter reset code">
+            </div>
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+              <label for="confirmNewPassword">Confirm New Password</label>
+              <input type="password" id="confirmNewPassword" name="confirmNewPassword" placeholder="Confirm new password">
+            </div>
+            <button type="button" id="resetPasswordBtn" class="login-btn" style="width: 100%;">Reset Password</button>
+          </div>
+          
+          <div class="forgot-password" style="margin-top: 20px;">
+            <a href="#" id="backToLoginLink">Back to Sign In</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="signupForm" class="form-section hidden">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <input type="text" id="signupUsername" name="username" required placeholder="Choose a username">
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email (Optional)</label>
+            <input type="email" id="signupEmail" name="email" placeholder="Enter your email">
+            <small style="color: var(--text-muted); font-size: 12px;">Optional: Used for password reset via email</small>
+          </div>
+          <div class="form-group">
+            <label for="signupPhone">Phone Number (Optional)</label>
+            <input type="tel" id="signupPhone" name="phone" placeholder="Enter your phone number (for SMS reset)">
+            <small style="color: var(--text-muted); font-size: 12px;">Optional: Used for password reset via SMS</small>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" name="password" required placeholder="Create a password">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+          </div>
+          <button type="submit" class="signup-btn">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0A0E27 0%, #151B2D 50%, #1a1f2e 100%);
+    }
+
+    .login-card {
+      background: var(--glassmorphism);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-card h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(26, 31, 46, 0.5);
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      color: var(--primary-dark);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: rgba(26, 31, 46, 0.5);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-gold);
+      color: var(--primary-dark);
+    }
+
+    .form-section.hidden {
+      display: none;
+    }
+
+    .method-btn {
+      padding: 10px 15px;
+      border: 2px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(26, 31, 46, 0.5);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .method-btn.active {
+      border-color: var(--accent-gold);
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--accent-gold);
+    }
+
+    .method-btn:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .signup-btn {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-rose));
+      color: var(--primary-dark);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .signup-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .forgot-password a {
+      color: var(--accent-gold);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s ease;
+    }
+
+    .forgot-password a:hover {
+      color: var(--accent-rose);
+      text-decoration: underline;
+    }
+
+    #resetSection {
+      text-align: center;
+    }
+
+    #resetSection h3 {
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+    }
+
+    #resetSection p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+  </style>
+
+  <script>
+    // Tab switching
+    document.getElementById('signinTab').addEventListener('click', function() {
+      document.getElementById('signinTab').classList.add('active');
+      document.getElementById('signupTab').classList.remove('active');
+      document.getElementById('signinForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+    });
+
+    document.getElementById('signupTab').addEventListener('click', function() {
+      document.getElementById('signupTab').classList.add('active');
+      document.getElementById('signinTab').classList.remove('active');
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('signinForm').classList.add('hidden');
+    });
+
+    // Sign In
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('signinUsername').value.trim();
+      const password = document.getElementById('signinPassword').value;
+      
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if (users[username] && users[username].password === password) {
+        localStorage.setItem('currentUser', username);
+        window.location.href = 'index.html';
+      } else {
+        alert('Invalid username or password');
+      }
+    });
+
+    // Sign Up
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('signupUsername').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const phone = document.getElementById('signupPhone').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      
+      if (!email && !phone) {
+        alert('Please provide either an email or phone number for password recovery.');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if (users[username]) {
+        alert('Username already exists');
+        return;
+      }
+      
+      users[username] = {
+        email: email,
+        phone: phone,
+        password: password,
+        xp: 0,
+        level: 1,
+        streak: 0
+      };
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('currentUser', username);
+      window.location.href = 'index.html';
+    });
+
+    // Forgot Password
+    document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      const username = prompt('Enter your username:');
+      if (username) {
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (users[username]) {
+          const user = users[username];
+          
+          // Check available contact methods
+          const hasEmail = user.email && user.email.trim();
+          const hasPhone = user.phone && user.phone.trim();
+          
+          if (!hasEmail && !hasPhone) {
+            alert('No email or phone number associated with this account. Please contact support.');
+            return;
+          }
+          
+          let contactMethod = '';
+          let contactValue = '';
+          
+          if (hasEmail && hasPhone) {
+            // Both available, let user choose
+            const choice = prompt('How would you like to receive your reset code?\n\nType "email" for email\nType "phone" for SMS');
+            if (choice && choice.toLowerCase() === 'email') {
+              contactMethod = 'email';
+              contactValue = user.email;
+            } else if (choice && choice.toLowerCase() === 'phone') {
+              contactMethod = 'phone';
+              contactValue = user.phone;
+            } else {
+              alert('Invalid choice. Please try again.');
+              return;
+            }
+          } else if (hasEmail) {
+            contactMethod = 'email';
+            contactValue = user.email;
+          } else if (hasPhone) {
+            contactMethod = 'phone';
+            contactValue = user.phone;
+          }
+          
+          // Generate a 6-digit reset code
+          const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+          
+          // Store reset code with expiration (15 minutes from now)
+          const resetData = {
+            username: username,
+            code: resetCode,
+            method: contactMethod,
+            contact: contactValue,
+            expires: Date.now() + (15 * 60 * 1000) // 15 minutes
+          };
+          localStorage.setItem('passwordReset', JSON.stringify(resetData));
+          
+          // Simulate sending (in real app, this would send actual email/SMS)
+          const methodText = contactMethod === 'email' ? 'email' : 'phone';
+          alert(`Password reset code has been sent to your ${methodText}.\n\n(In a real app, this would be sent to: ${contactValue})`);
+          
+          // Update reset instructions
+          const instructionsEl = document.getElementById('resetInstructions');
+          instructionsEl.textContent = `Enter the reset code sent to your ${methodText} and choose a new password.`;
+          
+          // Show reset section
+          document.getElementById('signinForm').classList.add('hidden');
+          document.getElementById('resetSection').classList.remove('hidden');
+        } else {
+          alert('Username not found.');
+        }
+      }
+    });
+
+    // Back to Login
+    document.getElementById('backToLoginLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('resetSection').classList.add('hidden');
+      document.getElementById('signinForm').classList.remove('hidden');
+    });
+
+    // Reset Password
+    document.getElementById('resetPasswordBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const enteredCode = document.getElementById('resetCode').value.trim();
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+      
+      if (!enteredCode || !newPassword || !confirmNewPassword) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      
+      if (newPassword !== confirmNewPassword) {
+        alert('New passwords do not match.');
+        return;
+      }
+      
+      const resetData = JSON.parse(localStorage.getItem('passwordReset') || '{}');
+      
+      if (!resetData.code || !resetData.username || !resetData.expires) {
+        alert('No password reset request found. Please try again.');
+        return;
+      }
+      
+      if (Date.now() > resetData.expires) {
+        alert('Reset code has expired. Please request a new one.');
+        localStorage.removeItem('passwordReset');
+        return;
+      }
+      
+      if (enteredCode !== resetData.code) {
+        alert('Invalid reset code.');
+        return;
+      }
+      
+      // Update password
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if (users[resetData.username]) {
+        users[resetData.username].password = newPassword;
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.removeItem('passwordReset');
+        
+        alert('Password reset successfully! You can now sign in with your new password.');
+        
+        // Go back to sign in form
+        document.getElementById('resetSection').classList.add('hidden');
+        document.getElementById('signinForm').classList.remove('hidden');
+        
+        // Clear the form
+        document.getElementById('resetCode').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+      } else {
+        alert('User not found. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

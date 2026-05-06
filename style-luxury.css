@@ -553,6 +553,65 @@ footer {
   padding: 1.5rem;
 }
 
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  height: calc(100vh - 80px);
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  max-height: 400px;
+  min-height: 300px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.chat-input input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.send-btn {
+  background: var(--accent-gold);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #1E293B;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.send-btn:hover {
+  background: var(--accent-gold-hover);
+  transform: translateY(-2px);
+}
+
 .chat-message {
   margin-bottom: 1rem;
   padding: 1rem;
@@ -561,6 +620,100 @@ footer {
   border-radius: 8px;
   font-size: 0.9rem;
   line-height: 1.6;
+}
+
+.chat-message.user-message {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  align-self: flex-end;
+  text-align: right;
+}
+
+.chat-message.nadir-message {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.6);
+}
+
+.placeholder {
+  opacity: 0.7;
+}
+
+.sidebar-subtitle {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.nadir-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.nadir-settings label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.nadir-settings select {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-light);
+}
+
+.nadir-logging {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.nadir-logging h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.log-item label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 80px;
+}
+
+.log-item input, .log-item select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.log-item button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent-gold);
+  color: #1E293B;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.log-item button:hover {
+  background: var(--accent-gold-hover);
+  transform: translateY(-1px);
 }
 
 /* ANIMATIONS */
@@ -615,3 +768,256 @@ footer {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.8; }
 }
+
+/* LIGHT THEME STYLES */
+body.light-theme {
+  background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #CBD5E1 100%);
+  color: #1E293B;
+}
+
+body.light-theme .card {
+  background: rgba(248, 250, 252, 0.95);
+  border-color: rgba(34, 211, 238, 0.3);
+  color: #1E293B;
+}
+
+body.light-theme .brand {
+  color: #1E293B;
+}
+
+body.light-theme header {
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+body.light-theme nav a {
+  color: #1E293B;
+}
+
+body.light-theme nav a:hover {
+  color: var(--accent-gold);
+}
+
+body.light-theme .search-bar input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #1E293B;
+}
+
+body.light-theme .search-bar input::placeholder {
+  color: #64748B;
+}
+
+body.light-theme .search-bar button {
+  background: var(--accent-gold);
+  color: #1E293B;
+}
+
+body.light-theme .theme-toggle button {
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #22D3EE;
+}
+
+body.light-theme .theme-toggle button:hover {
+  background: rgba(34, 211, 238, 0.2);
+}
+
+body.light-theme h1, body.light-theme h2, body.light-theme h3 {
+  color: #1E293B;
+}
+
+body.light-theme p, body.light-theme li {
+  color: #475569;
+}
+
+body.light-theme .stats-bar {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+body.light-theme .stat {
+  color: #1E293B;
+}
+
+body.light-theme .card-btn {
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+  color: #1E293B;
+}
+
+body.light-theme .card-btn:hover {
+  background: linear-gradient(135deg, #B8860B, #C2185B);
+}
+
+body.light-theme .expand-btn {
+  background: rgba(34, 211, 238, 0.1);
+  color: #22D3EE;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+body.light-theme .expand-btn:hover {
+  background: rgba(34, 211, 238, 0.2);
+}
+
+body.light-theme .form-group input,
+body.light-theme .form-group textarea {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #1E293B;
+}
+
+body.light-theme .form-group input::placeholder,
+body.light-theme .form-group textarea::placeholder {
+  color: #64748B;
+}
+
+body.light-theme .form-group label {
+  color: #1E293B;
+}
+
+body.light-theme .chat-container {
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+body.light-theme .message.user-message {
+  background: rgba(34, 211, 238, 0.1);
+  color: #1E293B;
+}
+
+body.light-theme .message.nadir-message {
+  background: rgba(212, 175, 55, 0.1);
+  color: #1E293B;
+}
+
+body.light-theme .chat-input input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #1E293B;
+}
+
+body.light-theme .chat-input input::placeholder {
+  color: #64748B;
+}
+
+/* HYDRATION PROGRESS BAR */
+.water-progress {
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.water-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #22D3EE, #3B82F6);
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+body.light-theme .water-progress {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+body.light-theme .water-bar {
+  background: linear-gradient(90deg, #22D3EE, #06B6D4);
+}
+
+/* LARGE TIMER DISPLAY */
+.timer-display-large {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.timer-display-large #timer {
+  font-size: 4rem;
+  font-weight: bold;
+  color: var(--accent-gold);
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.timer-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.timer-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-gold), #FFD700);
+  width: 0%;
+  transition: width 1s linear;
+  border-radius: 4px;
+}
+
+body.light-theme .timer-progress-bar {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .timer-progress-fill {
+  background: linear-gradient(90deg, #22D3EE, #06B6D4);
+}
+
+/* HERO SEARCH BAR */
+.hero-search {
+  margin: 2rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-search .search-bar {
+  margin: 0;
+}
+
+.hero-search input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  border: 2px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  backdrop-filter: blur(10px);
+}
+
+.hero-search input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.hero-search button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent-gold);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #1E293B;
+  font-size: 1.2rem;
+}
+
+.hero-search button:hover {
+  background: var(--accent-gold-hover);
+}
+
+body.light-theme .chat-input button {
+  background: var(--accent-gold);
+  color: #1E293B;
+}
+.hidden { display: none !important; }

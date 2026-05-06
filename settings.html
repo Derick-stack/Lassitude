@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Settings</title>
+  <link rel="stylesheet" href="style-luxury.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+  <script src="script.js"></script>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <div class="brand-block">
+        <div class="brand">Lassitude</div>
+        <div class="brand-subtitle">Level Up with Faith, Fit, Focus</div>
+      </div>
+      <div class="search-bar">
+        <input id="globalSearch" placeholder="Search content, quotes, workouts..." type="text">
+        <button onclick="performSearch()">🔍</button>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="start.html">Start</a>
+        <a href="progress.html">Progress</a>
+        <a href="focus.html">Focus</a>
+        <a href="future.html">Future</a>
+        <a href="settings.html" class="active">Settings</a>
+      </nav>
+      <div class="theme-toggle">
+        <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="container">
+      <h1 style="text-align: center; color: var(--accent-gold); margin-bottom: 2rem;">⚙️ Settings</h1>
+
+      <div class="settings-grid">
+        <!-- APPEARANCE SETTINGS -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <span class="settings-icon">🎨</span>
+            <h2>Appearance</h2>
+          </div>
+          <div class="settings-content">
+
+            <!-- Theme Selection -->
+            <div class="setting-group">
+              <h3>Theme</h3>
+              <div class="theme-options">
+                <button class="theme-option" data-theme="midnight-gold" onclick="applyTheme('midnight-gold')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #0A0E27 0%, #151B2D 50%, #1a1f2e 100%);"></div>
+                  <span>Midnight Gold</span>
+                </button>
+                <button class="theme-option" data-theme="rose-twilight" onclick="applyTheme('rose-twilight')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #2A1825 0%, #3A1F2D 50%, #4A2535 100%);"></div>
+                  <span>Rose Twilight</span>
+                </button>
+                <button class="theme-option" data-theme="deep-ocean" onclick="applyTheme('deep-ocean')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #0D1B2A 0%, #1B2632 50%, #2A3A4A 100%);"></div>
+                  <span>Deep Ocean</span>
+                </button>
+                <button class="theme-option" data-theme="emerald-night" onclick="applyTheme('emerald-night')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #0A1F1A 0%, #1A2F26 50%, #2A3F32 100%);"></div>
+                  <span>Emerald Night</span>
+                </button>
+                <button class="theme-option" data-theme="sunset-blaze" onclick="applyTheme('sunset-blaze')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #2D1B1B 0%, #4A2C2C 50%, #6A3D3D 100%);"></div>
+                  <span>Sunset Blaze</span>
+                </button>
+                <button class="theme-option" data-theme="arctic-aurora" onclick="applyTheme('arctic-aurora')">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #0F1419 0%, #1A2332 50%, #25344B 100%);"></div>
+                  <span>Arctic Aurora</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Light/Dark Mode Toggle -->
+            <div class="setting-group">
+              <h3>Light Mode</h3>
+              <label class="toggle-switch">
+                <input type="checkbox" id="lightModeToggle" onchange="toggleLightMode()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PROFILE SETTINGS -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <span class="settings-icon">👤</span>
+            <h2>Profile</h2>
+          </div>
+          <div class="settings-content">
+
+            <!-- Profile Picture -->
+            <div class="setting-group">
+              <h3>Profile Picture</h3>
+              <div class="profile-pic-section">
+                <div class="current-avatar" id="currentAvatar">👤</div>
+                <div class="avatar-options">
+                  <button onclick="changeAvatar('random')">🎲 Random</button>
+                  <button onclick="changeAvatar('custom')">🎨 Custom Emoji</button>
+                  <input type="text" id="customEmoji" placeholder="Enter emoji" style="display: none;">
+                  <button onclick="saveCustomEmoji()" style="display: none;" id="saveEmojiBtn">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="setting-group">
+              <h3>Profile Information</h3>
+              <div class="form-group">
+                <label for="profileName">Display Name</label>
+                <input type="text" id="profileName" placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label for="profileBio">Bio</label>
+                <textarea id="profileBio" placeholder="Tell us about yourself..." rows="3"></textarea>
+              </div>
+              <button onclick="saveProfile()" class="settings-btn">Save Profile</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECURITY SETTINGS -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <span class="settings-icon">🔒</span>
+            <h2>Security</h2>
+          </div>
+          <div class="settings-content">
+
+            <!-- Change Password -->
+            <div class="setting-group">
+              <h3>Change Password</h3>
+              <div class="form-group">
+                <label for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" placeholder="Enter current password">
+              </div>
+              <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password">
+              </div>
+              <div class="form-group">
+                <label for="confirmNewPassword">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+              </div>
+              <button onclick="changePassword()" class="settings-btn">Change Password</button>
+            </div>
+
+            <!-- Account Email/Phone -->
+            <div class="setting-group">
+              <h3>Contact Information</h3>
+              <div class="contact-info">
+                <p><strong>Email:</strong> <span id="accountEmail">Not set</span></p>
+                <p><strong>Phone:</strong> <span id="accountPhone">Not set</span></p>
+                <button onclick="updateContactInfo()" class="settings-btn secondary">Update Contact Info</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <span class="settings-icon">⚡</span>
+            <h2>Preferences</h2>
+          </div>
+          <div class="settings-content">
+
+            <!-- Notifications -->
+            <div class="setting-group">
+              <h3>Notifications</h3>
+              <label class="checkbox-label">
+                <input type="checkbox" id="quoteNotifications" checked>
+                <span>Daily motivation quotes</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="streakNotifications" checked>
+                <span>Streak reminders</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="achievementNotifications" checked>
+                <span>Achievement notifications</span>
+              </label>
+            </div>
+
+            <!-- Data Management -->
+            <div class="setting-group">
+              <h3>Data Management</h3>
+              <button onclick="exportData()" class="settings-btn secondary">Export My Data</button>
+              <button onclick="clearData()" class="settings-btn danger">Clear All Data</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <style>
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .settings-card {
+      background: var(--glassmorphism);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .settings-icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+
+    .settings-header h2 {
+      color: var(--accent-gold);
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .setting-group {
+      margin-bottom: 2rem;
+    }
+
+    .setting-group h3 {
+      color: var(--text-light);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .theme-option {
+      background: rgba(26, 31, 46, 0.5);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .theme-option:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-2px);
+    }
+
+    .theme-option.active {
+      border-color: var(--accent-gold);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .theme-preview {
+      width: 100%;
+      height: 60px;
+      border-radius: 5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .theme-option span {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(26, 31, 46, 0.5);
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--accent-gold);
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--accent-gold);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .profile-pic-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .current-avatar {
+      font-size: 4rem;
+      padding: 1rem;
+      background: rgba(26, 31, 46, 0.5);
+      border-radius: 50%;
+      border: 2px solid var(--accent-gold);
+    }
+
+    .avatar-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .avatar-options button {
+      background: var(--accent-gold);
+      color: var(--primary-dark);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(26, 31, 46, 0.5);
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .settings-btn {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      color: var(--primary-dark);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .settings-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .settings-btn.secondary {
+      background: rgba(26, 31, 46, 0.5);
+      color: var(--text-light);
+    }
+
+    .settings-btn.danger {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      margin-right: 0.5rem;
+    }
+
+    .checkbox-label span {
+      color: var(--text-light);
+    }
+
+    .contact-info p {
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+
+    .contact-info span {
+      color: var(--accent-gold);
+    }
+
+    nav a.active {
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .theme-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+
+  <script>
+    // Initialize settings page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTheme();
+      loadProfileSettings();
+      loadSecuritySettings();
+      updateThemeSelection();
+
+      // Check light mode toggle
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.getElementById('lightModeToggle').checked = theme === 'light';
+    });
+
+    // Theme functions
+    function toggleLightMode() {
+      const isLight = document.getElementById('lightModeToggle').checked;
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      toggleTheme();
+    }
+
+    function updateThemeSelection() {
+      const currentTheme = localStorage.getItem('selectedTheme') || 'midnight-gold';
+      document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.theme === currentTheme) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Profile functions
+    function loadProfileSettings() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      const users = getUsers();
+      const user = users[currentUser];
+
+      if (user) {
+        document.getElementById('profileName').value = user.name || '';
+        document.getElementById('profileBio').value = user.bio || '';
+        document.getElementById('currentAvatar').textContent = user.avatar || '👤';
+      }
+    }
+
+    function changeAvatar(type) {
+      const avatarEl = document.getElementById('currentAvatar');
+      const customInput = document.getElementById('customEmoji');
+      const saveBtn = document.getElementById('saveEmojiBtn');
+
+      if (type === 'random') {
+        const randomEmoji = String.fromCodePoint(0x1F600 + Math.floor(Math.random() * 60));
+        avatarEl.textContent = randomEmoji;
+        saveProfile();
+      } else if (type === 'custom') {
+        customInput.style.display = 'inline-block';
+        saveBtn.style.display = 'inline-block';
+      }
+    }
+
+    function saveCustomEmoji() {
+      const customEmoji = document.getElementById('customEmoji').value.trim();
+      if (customEmoji) {
+        document.getElementById('currentAvatar').textContent = customEmoji;
+        document.getElementById('customEmoji').style.display = 'none';
+        document.getElementById('saveEmojiBtn').style.display = 'none';
+        document.getElementById('customEmoji').value = '';
+        saveProfile();
+      }
+    }
+
+    function saveProfile() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please log in first');
+        return;
+      }
+
+      const users = getUsers();
+      if (!users[currentUser]) users[currentUser] = {};
+
+      users[currentUser].name = document.getElementById('profileName').value.trim() || 'User';
+      users[currentUser].bio = document.getElementById('profileBio').value.trim() || 'Passionate about fitness and growth!';
+      users[currentUser].avatar = document.getElementById('currentAvatar').textContent;
+
+      saveUsers(users);
+      alert('Profile saved successfully!');
+    }
+
+    // Security functions
+    function loadSecuritySettings() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      const users = getUsers();
+      const user = users[currentUser];
+
+      if (user) {
+        document.getElementById('accountEmail').textContent = user.email || 'Not set';
+        document.getElementById('accountPhone').textContent = user.phone || 'Not set';
+      }
+    }
+
+    function changePassword() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please log in first');
+        return;
+      }
+
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+      }
+
+      const users = getUsers();
+      if (users[currentUser] && users[currentUser].password === currentPassword) {
+        users[currentUser].password = newPassword;
+        saveUsers(users);
+        alert('Password changed successfully!');
+
+        // Clear form
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+      } else {
+        alert('Current password is incorrect');
+      }
+    }
+
+    function updateContactInfo() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please log in first');
+        return;
+      }
+
+      const newEmail = prompt('Enter new email (leave empty to keep current):');
+      const newPhone = prompt('Enter new phone number (leave empty to keep current):');
+
+      const users = getUsers();
+      if (users[currentUser]) {
+        if (newEmail !== null && newEmail.trim()) {
+          users[currentUser].email = newEmail.trim();
+        }
+        if (newPhone !== null && newPhone.trim()) {
+          users[currentUser].phone = newPhone.trim();
+        }
+        saveUsers(users);
+        loadSecuritySettings();
+        alert('Contact information updated!');
+      }
+    }
+
+    // Data management functions
+    function exportData() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please log in first');
+        return;
+      }
+
+      const users = getUsers();
+      const userData = users[currentUser];
+
+      if (userData) {
+        const dataStr = JSON.stringify(userData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `lassitude-data-${currentUser}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        alert('Data exported successfully!');
+      }
+    }
+
+    function clearData() {
+      if (confirm('Are you sure you want to clear all your data? This action cannot be undone!')) {
+        if (confirm('This will permanently delete all your progress, stats, and settings. Are you absolutely sure?')) {
+          const currentUser = getCurrentUser();
+          if (currentUser) {
+            const users = getUsers();
+            delete users[currentUser];
+            saveUsers(users);
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('xp');
+            localStorage.removeItem('level');
+            localStorage.removeItem('streak');
+            window.location.href = 'login.html';
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

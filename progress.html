@@ -16,9 +16,11 @@
       </div>
       <nav>
         <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
         <a href="start.html">Start</a>
         <a href="focus.html">Focus</a>
         <a href="future.html">Future</a>
+        <a href="settings.html">Settings</a>
       </nav>
     </div>
   </header>
@@ -63,53 +65,85 @@
           </div>
         </div>
 
-        <div class="card habit-card" onclick="toggleExpand(this, event)">
+        <div class="card habit-card">
           <div class="card-header">
             <span class="icon">✅</span>
             <h3>Habit Tracker</h3>
           </div>
           <div class="card-content">
-            <div class="habit-list">
-              <div class="habit-item">
-                <input type="checkbox" id="habit1" onclick="checkHabit(1); event.stopPropagation()">
-                <label for="habit1">Workout Completed</label>
-              </div>
-              <div class="habit-item">
-                <input type="checkbox" id="habit2" onclick="checkHabit(2); event.stopPropagation()">
-                <label for="habit2">Read Scripture</label>
-              </div>
-              <div class="habit-item">
-                <input type="checkbox" id="habit3" onclick="checkHabit(3); event.stopPropagation()">
-                <label for="habit3">Hydrate (8+ glasses)</label>
-              </div>
-              <div class="habit-item">
-                <input type="checkbox" id="habit4" onclick="checkHabit(4); event.stopPropagation()">
-                <label for="habit4">Focus Session</label>
-              </div>
+            <div class="habit-input" style="margin-bottom: 1rem;">
+              <input id="newHabitInput" type="text" placeholder="Add a new habit to track..." style="flex: 1; margin-right: 0.5rem;">
+              <button onclick="addCustomHabit()" class="card-btn" style="padding: 0.5rem 1rem;">Add</button>
+            </div>
+            <div class="habit-list" id="habitList">
+              <!-- Habits will be loaded here -->
             </div>
             <div id="habitStreak" class="habit-streak">Streak: 0 days</div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
-          </div>
         </div>
 
-        <div class="card journal-card" onclick="toggleExpand(this, event)">
+        <div class="card hydration-card">
           <div class="card-header">
-            <span class="icon">📓</span>
-            <h3>Daily Journal</h3>
+            <span class="icon">💧</span>
+            <h3>Hydration Tracker</h3>
           </div>
           <div class="card-content">
-            <textarea id="journalInput" placeholder="Reflect on your day..." onclick="event.stopPropagation()"></textarea>
-            <button onclick="saveJournal(); event.stopPropagation()" class="card-btn">Save Entry</button>
-            <div id="journalList" class="journal-list"></div>
+            <div class="hydration-tracker">
+              <div class="water-input">
+                <label>Glasses of water today:</label>
+                <input id="waterInput" type="number" min="0" max="20" placeholder="0">
+                <button onclick="logWater()" class="card-btn">Log Water</button>
+              </div>
+              <div id="waterProgress" class="water-progress">
+                <div class="water-bar" id="waterBar"></div>
+                <span id="waterCount">0/8 glasses</span>
+              </div>
+              <div class="hydration-tips">
+                <p><strong>Daily Goal:</strong> 8 glasses (64 oz)</p>
+                <p><strong>Tip:</strong> Drink water with every meal and workout</p>
+              </div>
+            </div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+        </div>
+        
+        <div class="card journal-card">
+          <div class="card-header">
+            <span class="icon">📝</span>
+            <h3>Daily Reflection</h3>
+          </div>
+          <div class="card-content">
+            <div id="reflectionPrompt" style="margin-bottom: 1rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border-left: 4px solid var(--accent-gold);">
+              <strong style="color: var(--accent-gold);">Today's Reflection Prompt:</strong><br>
+              <span id="promptText">What is one thing you did today that moved you closer to your goals?</span>
+            </div>
+            <textarea id="journalInput" placeholder="Reflect on your day..." onclick="event.stopPropagation()"></textarea>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+              <button onclick="saveJournal(); event.stopPropagation()" class="card-btn">Save Entry</button>
+              <button onclick="newReflectionPrompt(); event.stopPropagation()" class="card-btn" style="background: rgba(0, 212, 255, 0.2);">New Prompt</button>
+            </div>
+            <div id="journalList" class="journal-list"></div>
           </div>
         </div>
 
-        <div class="card chart-card" onclick="toggleExpand(this, event)">
+        <div class="card prayer-card">
+          <div class="card-header">
+            <span class="icon">🙏</span>
+            <h3>Prayer & Faith Tracker</h3>
+          </div>
+          <div class="card-content">
+            <p>Track your daily prayer time and spiritual reflections.</p>
+            <div class="prayer-input" style="margin: 1rem 0;">
+              <label>Prayer time today (minutes):</label>
+              <input id="prayerInput" type="number" min="0" placeholder="10" style="margin-left: 0.5rem; width: 80px;">
+              <button onclick="logPrayer()" class="card-btn" style="margin-left: 0.5rem;">Log Prayer</button>
+            </div>
+            <div id="prayerStreak" class="prayer-streak">Prayer Streak: 0 days</div>
+            <div style="margin-top: 1rem;">
+              <button onclick="getPrayerPrompt()" class="card-btn" style="background: rgba(212, 175, 55, 0.2);">Prayer Prompt</button>
+              <div id="prayerPromptDisplay" style="margin-top: 0.5rem; font-style: italic; color: var(--text-muted);"></div>
+            </div>
+          </div>
+        </div>
           <div class="card-header">
             <span class="icon">📊</span>
             <h3>Progress Chart</h3>
@@ -118,9 +152,6 @@
             <p>Visualize your growth.</p>
             <button onclick="showChart(); event.stopPropagation()" class="card-btn">Show Chart</button>
             <div id="chartDisplay" class="chart-display"></div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
       </section>
@@ -131,6 +162,9 @@
     window.addEventListener('DOMContentLoaded', () => {
       updateStatsDisplay();
       renderPageStats();
+      updateWaterProgress();
+      loadHabits();
+      updatePrayerStreak();
     });
   </script>
 </body>

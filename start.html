@@ -16,9 +16,11 @@
       </div>
       <nav>
         <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
         <a href="progress.html">Progress</a>
         <a href="focus.html">Focus</a>
         <a href="future.html">Future</a>
+        <a href="settings.html">Settings</a>
       </nav>
     </div>
   </header>
@@ -26,135 +28,230 @@
   <main>
     <div class="container">
       <section class="hero">
-        <h2>Start Strong</h2>
-        <p>Welcome to the launch pad. Set your first goal and build momentum today.</p>
+        <h2>🚀 Welcome to Lassitude</h2>
+        <p>Your comprehensive guide to faith-driven personal development, fitness, and growth. Follow these steps to get started!</p>
       </section>
 
-      <section class="dashboard">
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">🚀</span>
-            <h3>First Task</h3>
-          </div>
-          <div class="card-content">
-            <p>Complete a simple habit to start your streak. Each small win builds a stronger routine.</p>
-            <button onclick="completeTask()" class="card-btn">Complete First Task</button>
-            <p id="stats"></p>
-          </div>
-        </div>
+      <section class="guide-section">
+        <h2>📋 Getting Started Guide</h2>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">🧭</span>
-            <h3>Daily Start Guide</h3>
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">1</span>
+            <h3>🔐 Create Your Account</h3>
           </div>
-          <div class="card-content">
-            <ul class="recovery-list">
-              <li>Review your goals.</li>
-              <li>Choose a workout or recovery focus.</li>
-              <li>Pick music to match your energy.</li>
-              <li>Use the timer to lock in focused work.</li>
+          <div class="guide-content">
+            <p><strong>Sign up for a free account to unlock all features:</strong></p>
+            <ul>
+              <li>Click "Login" in the navigation bar</li>
+              <li>Select "Sign Up" tab</li>
+              <li>Enter username, email, and phone (optional for SMS recovery)</li>
+              <li>Create a strong password</li>
+              <li>Complete registration to access your personalized dashboard</li>
             </ul>
-            <p class="music-meta">Use the main dashboard to keep everything in one place.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">📈</span>
-            <h3>Quick Wins</h3>
-          </div>
-          <div class="card-content">
-            <p>Start with these easy actions to build momentum.</p>
-            <button onclick="newQuote()" class="card-btn">Get Motivation</button>
-            <button onclick="getBibleVerse()" class="card-btn">Daily Verse</button>
-          </div>
-        </div>
-
-        <div class="card meal-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🍎</span>
-            <h3>Meal Tracker</h3>
-          </div>
-          <div class="card-content">
-            <div class="meal-log">
-              <input id="mealInput" placeholder="Log a meal (e.g., Chicken salad)" type="text" onclick="event.stopPropagation()">
-              <input id="caloriesInput" placeholder="Calories" type="number" onclick="event.stopPropagation()">
-              <button onclick="logMeal(); event.stopPropagation()" class="card-btn">Log Meal</button>
-            </div>
-            <div id="mealLog" class="meal-log-display">Track your daily nutrition to fuel your goals.</div>
-            <div class="meal-suggestions">
-              <button onclick="suggestMeal('protein')" class="card-btn">High Protein</button>
-              <button onclick="suggestMeal('carb')" class="card-btn">Energy Boost</button>
-              <button onclick="suggestMeal('recovery')" class="card-btn">Recovery Meal</button>
+            <div class="guide-tip">
+              💡 <strong>Tip:</strong> Provide both email and phone for maximum password recovery options.
             </div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">2</span>
+            <h3>⚙️ Customize Your Experience</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Make Lassitude yours with these settings:</strong></p>
+            <ul>
+              <li><strong>Themes:</strong> Choose from Midnight Gold, Rose Twilight, Deep Ocean, or Emerald Night</li>
+              <li><strong>Profile:</strong> Set your display name, bio, and profile picture (emoji)</li>
+              <li><strong>Light Mode:</strong> Toggle between dark and light themes</li>
+              <li><strong>Notifications:</strong> Control daily quotes, streak reminders, and achievements</li>
+            </ul>
+            <p>Access all settings through the "Settings" link in the navigation bar.</p>
           </div>
         </div>
 
-        <div class="card guided-workout-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🏋️</span>
-            <h3>Guided Workouts</h3>
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">3</span>
+            <h3>🏠 Using the Main Dashboard</h3>
           </div>
-          <div class="card-content">
-            <div class="workout-options">
-              <button onclick="startGuidedWorkout('strength'); event.stopPropagation()" class="card-btn">Strength Session</button>
-              <button onclick="startGuidedWorkout('faith-yoga'); event.stopPropagation()" class="card-btn">Faith Yoga</button>
-              <button onclick="startGuidedWorkout('hiit'); event.stopPropagation()" class="card-btn">HIIT Blast</button>
+          <div class="guide-content">
+            <p><strong>Your central hub for daily growth:</strong></p>
+            <ul>
+              <li><strong>Motivation Card:</strong> Get daily inspirational quotes from Quotable API</li>
+              <li><strong>Daily Scripture:</strong> Receive random Bible verses for spiritual guidance</li>
+              <li><strong>Workout Generator:</strong> Discover new exercises with target muscles and equipment</li>
+              <li><strong>Focus Timer:</strong> Use Pomodoro technique (25-min work sessions with breaks)</li>
+              <li><strong>Music Library:</strong> Access curated Spotify playlists for different activities</li>
+              <li><strong>Video Library:</strong> Watch guided workouts and training videos</li>
+              <li><strong>Community Feed:</strong> Share progress and connect with others</li>
+              <li><strong>NADIR AI:</strong> Get personalized advice on fitness, faith, and growth</li>
+            </ul>
+            <p><strong>Access the main dashboard:</strong> <a href="index.html" style="color: var(--accent-gold); text-decoration: underline;">Click here to go to Home</a></p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">4</span>
+            <h3>📊 Tracking Your Progress</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Monitor your growth journey:</strong></p>
+            <ul>
+              <li><strong>XP & Levels:</strong> Earn experience points through completed tasks and workouts</li>
+              <li><strong>Streaks:</strong> Build consecutive day streaks for consistency</li>
+              <li><strong>Progress Page:</strong> View detailed statistics and achievements</li>
+              <li><strong>Meal Tracking:</strong> Log nutrition and get meal suggestions</li>
+              <li><strong>Hydration:</strong> Track daily water intake</li>
+              <li><strong>Workout Logging:</strong> Record completed exercises and sessions</li>
+            </ul>
+            <p>Visit the "Progress" page to see your complete growth analytics.</p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">5</span>
+            <h3>🎯 Focus & Productivity Tools</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Maximize your concentration:</strong></p>
+            <ul>
+              <li><strong>Pomodoro Timer:</strong> 25-minute focused work sessions with 5-minute breaks</li>
+              <li><strong>Custom Timer:</strong> Set any duration for specific tasks</li>
+              <li><strong>Guided Workouts:</strong> Follow structured strength, HIIT, or yoga sessions</li>
+              <li><strong>Meditation:</strong> Quick 1-minute centering exercises</li>
+              <li><strong>Affirmations:</strong> Daily positive statements for mindset</li>
+              <li><strong>Video Challenges:</strong> 15-second stretch, prayer, or breathing exercises</li>
+            </ul>
+            <p>Access these tools through the "Focus" page or expand cards on the main dashboard.</p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">6</span>
+            <h3>🔮 Planning Your Future</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Build long-term success:</strong></p>
+            <ul>
+              <li><strong>Goal Setting:</strong> Define specific, measurable objectives</li>
+              <li><strong>Habit Building:</strong> Create sustainable daily routines</li>
+              <li><strong>Progress Tracking:</strong> Monitor long-term growth trends</li>
+              <li><strong>Milestone Planning:</strong> Set checkpoints for major achievements</li>
+              <li><strong>Reflection:</strong> Review progress and adjust strategies</li>
+            </ul>
+            <p>Use the "Future" page to plan your path to success.</p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">7</span>
+            <h3>🛠️ Advanced Features</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Power user tools:</strong></p>
+            <ul>
+              <li><strong>Global Search:</strong> Find content, quotes, workouts across the entire app</li>
+              <li><strong>GitHub Integration:</strong> Connect your coding projects and track contributions</li>
+              <li><strong>Email Notifications:</strong> Subscribe for updates and motivational content</li>
+              <li><strong>Data Export:</strong> Download your complete data for backup</li>
+              <li><strong>AI Assistant:</strong> Get personalized advice from NADIR AI</li>
+              <li><strong>Community Features:</strong> Share achievements and get inspired by others</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-number">8</span>
+            <h3>🔐 Security & Privacy</h3>
+          </div>
+          <div class="guide-content">
+            <p><strong>Your data is protected:</strong></p>
+            <ul>
+              <li><strong>Password Recovery:</strong> Reset via email or SMS (if provided)</li>
+              <li><strong>Secure Storage:</strong> All data stored locally in your browser</li>
+              <li><strong>Privacy First:</strong> No personal data shared without permission</li>
+              <li><strong>Account Control:</strong> Change password or delete account anytime</li>
+              <li><strong>Data Export:</strong> Download and backup your information</li>
+            </ul>
+            <div class="guide-tip">
+              🔒 <strong>Security Note:</strong> For maximum security, use a strong password and enable two-factor recovery with both email and phone.
             </div>
-            <div id="workoutGuide" class="workout-guide">Select a workout to begin guided instructions.</div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
           </div>
         </div>
 
-        <div class="card affirmation-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">💪</span>
-            <h3>Daily Affirmation</h3>
+      </section>
+
+      <section class="quick-start">
+        <h2>⚡ Quick Start Actions</h2>
+        <div class="dashboard">
+          <div class="card">
+            <div class="card-header">
+              <span class="icon">🚀</span>
+              <h3>Complete Your First Task</h3>
+            </div>
+            <div class="card-content">
+              <p>Start building your streak with a simple action.</p>
+              <button onclick="completeTask()" class="card-btn">Complete First Task</button>
+              <p id="stats"></p>
+            </div>
           </div>
-          <div class="card-content">
-            <p>Start your day with positive words.</p>
-            <button onclick="getAffirmation(); event.stopPropagation()" class="card-btn">Get Affirmation</button>
-            <div id="affirmationDisplay" class="affirmation-display"></div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="icon">💪</span>
+              <h3>Get Inspired</h3>
+            </div>
+            <div class="card-content">
+              <p>Start your day with motivation and faith.</p>
+              <button onclick="newQuote()" class="card-btn">Daily Quote</button>
+              <button onclick="getBibleVerse()" class="card-btn">Bible Verse</button>
+            </div>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="icon">🎵</span>
+              <h3>Set Your Vibe</h3>
+            </div>
+            <div class="card-content">
+              <p>Choose music to match your energy level.</p>
+              <button onclick="loadMusic('focus')" class="card-btn">Focus Music</button>
+              <button onclick="loadMusic('hype')" class="card-btn">Workout Energy</button>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="card meditation-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">🧘</span>
-            <h3>Quick Meditation</h3>
+      <section class="help-section">
+        <h2>❓ Need Help?</h2>
+        <div class="help-grid">
+          <div class="help-card" onclick="scrollToSection('guide-section')">
+            <h4>📖 Documentation</h4>
+            <p>Visit our comprehensive guides and tutorials.</p>
+            <button class="help-btn">View Guides</button>
           </div>
-          <div class="card-content">
-            <p>Take a 1-minute break to center yourself.</p>
-            <button onclick="startMeditation(); event.stopPropagation()" class="card-btn">Start Meditation</button>
-            <div id="meditationGuide" class="meditation-guide"></div>
+          <div class="help-card" onclick="window.location.href='index.html'">
+            <h4>💬 Community Support</h4>
+            <p>Connect with other users in our community feed.</p>
+            <button class="help-btn">Go to Home</button>
           </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          <div class="help-card" onclick="toggleNadir()">
+            <h4>🤖 AI Assistant</h4>
+            <p>Ask NADIR AI for personalized guidance.</p>
+            <button class="help-btn">Open NADIR</button>
           </div>
-        </div>
-
-        <div class="card hydration-card" onclick="toggleExpand(this, event)">
-          <div class="card-header">
-            <span class="icon">💧</span>
-            <h3>Hydration Tracker</h3>
-          </div>
-          <div class="card-content">
-            <p>Log your water intake to stay hydrated.</p>
-            <input id="hydrationInput" placeholder="Glasses of water" type="number" onclick="event.stopPropagation()">
-            <button onclick="logHydration(); event.stopPropagation()" class="card-btn">Log</button>
-            <div id="hydrationDisplay" class="hydration-display"></div>
-          </div>
-          <div class="card-actions">
-            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          <div class="help-card" onclick="scrollToSection('email-card')">
+            <h4>📧 Contact Us</h4>
+            <p>Reach out through the email subscription form.</p>
+            <button class="help-btn">Subscribe</button>
           </div>
         </div>
       </section>
@@ -167,5 +264,249 @@
       renderPageStats();
     });
   </script>
+
+  <style>
+    .guide-section {
+      margin: 3rem 0;
+    }
+
+    .guide-section h2 {
+      text-align: center;
+      color: var(--accent-gold);
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+    }
+
+    .guide-card {
+      background: var(--glassmorphism);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .guide-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .guide-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .guide-number {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      color: var(--primary-dark);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .guide-header h3 {
+      color: var(--accent-gold);
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .guide-content ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .guide-content li {
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .guide-content li strong {
+      color: var(--accent-gold);
+    }
+
+    .guide-tip {
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid var(--accent-gold);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+      color: var(--text-light);
+    }
+
+    .guide-tip strong {
+      color: var(--accent-gold);
+    }
+
+    .quick-start {
+      margin: 4rem 0;
+      text-align: center;
+    }
+
+    .quick-start h2 {
+      color: var(--accent-gold);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .help-section {
+      margin: 4rem 0;
+      text-align: center;
+    }
+
+    .help-section h2 {
+      color: var(--accent-gold);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .help-card {
+      background: var(--glassmorphism);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .help-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-gold);
+    }
+
+    .help-card h4 {
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .help-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .help-btn {
+      background: var(--accent-gold);
+      color: #1E293B;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover {
+      background: var(--accent-gold-hover);
+      transform: translateY(-2px);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: var(--glassmorphism);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 15px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 0.75rem;
+    }
+
+    .card-header h3 {
+      color: var(--accent-gold);
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .card-content p {
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .card-btn {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      color: var(--primary-dark);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      margin: 0.25rem;
+    }
+
+    .card-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .guide-card {
+        padding: 1.5rem;
+      }
+
+      .guide-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .guide-number {
+        align-self: flex-start;
+      }
+
+      .help-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </body>
 </html>
