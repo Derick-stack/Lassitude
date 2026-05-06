@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Future</title>
+  <link rel="stylesheet" href="style-luxury.css">
+</head>
+<body>
+  <script src="script.js"></script>
+  <header>
+    <div class="header-content">
+      <div class="brand-block">
+        <div class="brand">Lassitude</div>
+        <div class="brand-subtitle">Plan your progress and purpose</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="start.html">Start</a>
+        <a href="progress.html">Progress</a>
+        <a href="focus.html">Focus</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h2>Future Vision</h2>
+        <p>Define the long-term goals that keep you disciplined, consistent, and growing.</p>
+      </section>
+
+      <section class="dashboard">
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🎯</span>
+            <h3>Goal Setting</h3>
+          </div>
+          <div class="card-content">
+            <p>Write down one weekly goal and two actions that will move you closer to your future self.</p>
+            <ul class="recovery-list">
+              <li>Goal: Train harder while recovering smarter.</li>
+              <li>Action 1: Commit to 4 workouts this week.</li>
+              <li>Action 2: Rest and mobilize daily.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">📌</span>
+            <h3>Vision Reminder</h3>
+          </div>
+          <div class="card-content">
+            <p>Your future success depends on the small decisions you make today. Keep your goals visible and stay consistent.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">📅</span>
+            <h3>Timeline</h3>
+          </div>
+          <div class="card-content">
+            <p>Set deadlines for big goals, like "Marathon in 3 months."</p>
+            <div id="timeline">Milestone: Week 1 - Build base</div>
+          </div>
+        </div>
+
+        <div class="card goal-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🎯</span>
+            <h3>Goal Planning</h3>
+          </div>
+          <div class="card-content">
+            <div class="goal-input">
+              <input id="goalInput" placeholder="Set a goal (e.g., Run 5k)" type="text" onclick="event.stopPropagation()">
+              <button onclick="addGoal(); event.stopPropagation()" class="card-btn">Add Goal</button>
+            </div>
+            <div id="goalList" class="goal-list">Your goals will appear here. Track progress and stay motivated.</div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card vision-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🎨</span>
+            <h3>Vision Board</h3>
+          </div>
+          <div class="card-content">
+            <input id="visionInput" placeholder="Add a vision item..." type="text" onclick="event.stopPropagation()">
+            <button onclick="addVisionItem(); event.stopPropagation()" class="card-btn">Add</button>
+            <div id="visionBoard" class="vision-board"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card milestone-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🏁</span>
+            <h3>Milestone Tracker</h3>
+          </div>
+          <div class="card-content">
+            <input id="milestoneInput" placeholder="Log a milestone..." type="text" onclick="event.stopPropagation()">
+            <button onclick="trackMilestone(); event.stopPropagation()" class="card-btn">Log</button>
+            <ul id="milestoneList" class="milestone-list"></ul>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStatsDisplay();
+      renderPageStats();
+    });
+  </script>
+</body>
+</html>

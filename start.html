@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Start</title>
+  <link rel="stylesheet" href="style-luxury.css">
+</head>
+<body>
+  <script src="script.js"></script>
+  <header>
+    <div class="header-content">
+      <div class="brand-block">
+        <div class="brand">Lassitude</div>
+        <div class="brand-subtitle">Start your daily growth routine</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="progress.html">Progress</a>
+        <a href="focus.html">Focus</a>
+        <a href="future.html">Future</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h2>Start Strong</h2>
+        <p>Welcome to the launch pad. Set your first goal and build momentum today.</p>
+      </section>
+
+      <section class="dashboard">
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🚀</span>
+            <h3>First Task</h3>
+          </div>
+          <div class="card-content">
+            <p>Complete a simple habit to start your streak. Each small win builds a stronger routine.</p>
+            <button onclick="completeTask()" class="card-btn">Complete First Task</button>
+            <p id="stats"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🧭</span>
+            <h3>Daily Start Guide</h3>
+          </div>
+          <div class="card-content">
+            <ul class="recovery-list">
+              <li>Review your goals.</li>
+              <li>Choose a workout or recovery focus.</li>
+              <li>Pick music to match your energy.</li>
+              <li>Use the timer to lock in focused work.</li>
+            </ul>
+            <p class="music-meta">Use the main dashboard to keep everything in one place.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">📈</span>
+            <h3>Quick Wins</h3>
+          </div>
+          <div class="card-content">
+            <p>Start with these easy actions to build momentum.</p>
+            <button onclick="newQuote()" class="card-btn">Get Motivation</button>
+            <button onclick="getBibleVerse()" class="card-btn">Daily Verse</button>
+          </div>
+        </div>
+
+        <div class="card meal-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🍎</span>
+            <h3>Meal Tracker</h3>
+          </div>
+          <div class="card-content">
+            <div class="meal-log">
+              <input id="mealInput" placeholder="Log a meal (e.g., Chicken salad)" type="text" onclick="event.stopPropagation()">
+              <input id="caloriesInput" placeholder="Calories" type="number" onclick="event.stopPropagation()">
+              <button onclick="logMeal(); event.stopPropagation()" class="card-btn">Log Meal</button>
+            </div>
+            <div id="mealLog" class="meal-log-display">Track your daily nutrition to fuel your goals.</div>
+            <div class="meal-suggestions">
+              <button onclick="suggestMeal('protein')" class="card-btn">High Protein</button>
+              <button onclick="suggestMeal('carb')" class="card-btn">Energy Boost</button>
+              <button onclick="suggestMeal('recovery')" class="card-btn">Recovery Meal</button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card guided-workout-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🏋️</span>
+            <h3>Guided Workouts</h3>
+          </div>
+          <div class="card-content">
+            <div class="workout-options">
+              <button onclick="startGuidedWorkout('strength'); event.stopPropagation()" class="card-btn">Strength Session</button>
+              <button onclick="startGuidedWorkout('faith-yoga'); event.stopPropagation()" class="card-btn">Faith Yoga</button>
+              <button onclick="startGuidedWorkout('hiit'); event.stopPropagation()" class="card-btn">HIIT Blast</button>
+            </div>
+            <div id="workoutGuide" class="workout-guide">Select a workout to begin guided instructions.</div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card affirmation-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">💪</span>
+            <h3>Daily Affirmation</h3>
+          </div>
+          <div class="card-content">
+            <p>Start your day with positive words.</p>
+            <button onclick="getAffirmation(); event.stopPropagation()" class="card-btn">Get Affirmation</button>
+            <div id="affirmationDisplay" class="affirmation-display"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card meditation-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🧘</span>
+            <h3>Quick Meditation</h3>
+          </div>
+          <div class="card-content">
+            <p>Take a 1-minute break to center yourself.</p>
+            <button onclick="startMeditation(); event.stopPropagation()" class="card-btn">Start Meditation</button>
+            <div id="meditationGuide" class="meditation-guide"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card hydration-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">💧</span>
+            <h3>Hydration Tracker</h3>
+          </div>
+          <div class="card-content">
+            <p>Log your water intake to stay hydrated.</p>
+            <input id="hydrationInput" placeholder="Glasses of water" type="number" onclick="event.stopPropagation()">
+            <button onclick="logHydration(); event.stopPropagation()" class="card-btn">Log</button>
+            <div id="hydrationDisplay" class="hydration-display"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStatsDisplay();
+      renderPageStats();
+    });
+  </script>
+</body>
+</html>

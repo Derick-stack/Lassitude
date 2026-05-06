@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <title>Level Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://open.spotify.com/embed/oembed"></script>
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX'); // Replace with your GA ID
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0A0A0A, #0F172A);
+      color: white;
+      text-align: center;
+    }
+
+    /* INTRO SCREEN */
+    #intro {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    #introText {
+      font-size: 40px;
+      color: #FFD700;
+      animation: moveAround 3s ease-in-out;
+    }
+
+    @keyframes moveAround {
+      0% { transform: translate(-200px, -200px); }
+      50% { transform: translate(200px, 200px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* CARDS */
+    .card {
+      background: rgba(26,26,26,0.7);
+      margin: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 15px rgba(34,211,238,0.2);
+    }
+
+    button {
+      background: linear-gradient(90deg, #FFD700, #7C3AED);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 5px;
+      cursor: pointer;
+      color: black;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #22D3EE;
+    }
+
+    /* SCROLL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: 1s;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* NADIR PANDA */
+    #nadir {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(26,26,26,0.9);
+      padding: 15px;
+      border-radius: 15px;
+      border: 2px solid #FFD700;
+      backdrop-filter: blur(10px);
+      max-width: 300px;
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+
+    #pandaFace {
+      font-size: 50px;
+      animation: float 3s infinite ease-in-out;
+    }
+
+    #userInput {
+      width: 90%;
+      padding: 8px;
+      border: 1px solid #22D3EE;
+      border-radius: 5px;
+      background: rgba(15, 23, 42, 0.8);
+      color: white;
+      margin: 5px 0;
+    }
+
+    #botReply {
+      color: #22D3EE;
+      min-height: 40px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 5px;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+  </style>
+</head>
+<script src="script.js"></script>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <h1 id="introText">LEVEL UP</h1>
+</div>
+
+<h1 class="reveal">Level Up</h1>
+<p class="reveal">Faith • Discipline • Growth</p>
+
+<!-- NAV -->
+<div class="reveal">
+  <a href="start.html"><button>Start Here</button></a>
+  <a href="progress.html"><button>Progress</button></a>
+  <a href="focus.html"><button>Focus</button></a>
+  <a href="future.html"><button>Future You</button></a>
+</div>
+
+<!-- QUOTES -->
+<div class="card reveal">
+  <h2>Motivation</h2>
+  <button onclick="newQuote()">New Quote</button>
+  <p id="quoteText"></p>
+  <small id="quoteAuthor" style="color:#22D3EE;"></small>
+</div>
+
+<!-- BIBLE VERSE -->
+<div class="card reveal">
+  <h2>Daily Scripture</h2>
+  <button onclick="getBibleVerse()">Get Verse</button>
+  <p id="verseText" style="font-style:italic;"></p>
+  <p id="verseRef" style="color:#FFD700;"></p>
+</div>
+
+<!-- WORKOUTS -->
+<div class="card reveal">
+  <h2>Workout of The Day</h2>
+  <button onclick="getWorkout()">Get Workout</button>
+  <p id="workoutName" style="font-size:1.2em;color:#22D3EE;"></p>
+  <p id="workoutDetails"></p>
+</div>
+
+<!-- DAILY CHALLENGE -->
+<div class="card reveal">
+  <h2>Daily Challenge</h2>
+  <p id="challengeText"></p>
+  <button onclick="newChallenge()">New Challenge</button>
+</div>
+
+<!-- MUSIC -->
+<div class="card reveal">
+  <h2>Music</h2>
+  <button onclick="changeMusic('lofi')">Lofi</button>
+  <button onclick="changeMusic('hype')">Hype</button>
+  <button onclick="changeMusic('focus')">Focus</button>
+  <div id="musicPlayer" style="border-radius:12px;overflow:hidden;"></div>
+</div>
+
+<!-- GITHUB STATS -->
+<div class="card reveal">
+  <h2>GitHub Streak</h2>
+  <input id="githubUser" placeholder="Enter GitHub username">
+  <button onclick="getGitHubStats()">Load Stats</button>
+  <p id="githubStats"></p>
+</div>
+
+<!-- EMAIL NOTIFICATIONS -->
+<div class="card reveal">
+  <h2>Daily Email Reminder</h2>
+  <input id="emailInput" type="email" placeholder="Enter your email">
+  <button onclick="subscribeEmail()">Subscribe</button>
+  <p id="emailStatus"></p>
+</div>
+
+<!-- NADIR -->
+<div id="nadir">
+  <div id="pandaFace">🐼</div>
+  <input id="userInput" placeholder="Ask NADIR...">
+  <button onclick="nadirAI()">Ask</button>
+  <p id="botReply"></p>
+</div>
+
+<script>
+/* INTRO REMOVE */
+setTimeout(() => {
+  document.getElementById("intro").style.display = "none";
+}, 3000);
+
+/* SCROLL ANIMATION */
+window.addEventListener("scroll", () => {
+  document.querySelectorAll(".reveal").forEach(el => {
+    let top = el.getBoundingClientRect().top;
+    if (top < window.innerHeight - 50) {
+      el.classList.add("active");
+    }
+  });
+});
+
+/* QUOTES */
+let quotes = [
+  "The only competition you have is yourself.",
+  "Another man’s success doesn’t reflect yours.",
+  "Discipline beats motivation.",
+  "Consistency creates greatness.",
+  "Faith over fear.",
+  "God has a plan for you.",
+  "No excuses. Just results."
+];
+
+function newQuote() {
+  let q = quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById("quoteText").innerText = q;
+}
+
+/* CHALLENGES */
+let challenges = [
+  "No distractions for 2 hours",
+  "Workout today no excuses",
+  "Study for 1 hour",
+  "Pray and reflect",
+  "No procrastination today"
+];
+
+function newChallenge() {
+  let c = challenges[Math.floor(Math.random() * challenges.length)];
+  document.getElementById("challengeText").innerText = c;
+}
+
+/* MUSIC */
+function changeMusic(type) {
+  let player = document.getElementById("musicPlayer");
+  let playlistUrl = "";
+
+  if (type === "lofi") {
+    playlistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX8Uebhn9wzrS";
+  } else if (type === "hype") {
+    playlistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP";
+  } else {
+    playlistUrl = "https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO";
+  }
+
+  player.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${playlistUrl.split('/').pop()}?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
+
+/* NADIR AI */
+function nadirAI() {
+  let input = document.getElementById("userInput").value.toLowerCase();
+  let panda = document.getElementById("pandaFace");
+
+  panda.style.transform = "scale(1.2)";
+
+  let reply = "";
+
+  if (input.includes("workout")) {
+    reply = "Start simple: push-ups, squats, planks.";
+  } else if (input.includes("study")) {
+    reply = "Use 25-minute focus sessions.";
+  } else if (input.includes("discipline")) {
+    reply = "Do it even when you don’t feel like it.";
+  } else if (input.includes("faith")) {
+    reply = "Stay close to God.";
+  } else {
+    reply = "Ask about workouts, discipline, or focus.";
+  }
+
+  typeText(reply);
+
+  setTimeout(() => {
+    panda.style.transform = "scale(1)";
+  }, 500);
+}
+
+/* TYPING EFFECT */
+function typeText(text) {
+  let i = 0;
+  let output = document.getElementById("botReply");
+  output.innerHTML = "";
+
+  let interval = setInterval(() => {
+    output.innerHTML += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 25);
+}
+</script>
+
+</body>
+</html>

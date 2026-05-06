@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Focus</title>
+  <link rel="stylesheet" href="style-luxury.css">
+</head>
+<body>
+  <script src="script.js"></script>
+  <header>
+    <div class="header-content">
+      <div class="brand-block">
+        <div class="brand">Lassitude</div>
+        <div class="brand-subtitle">Lock in your next focus session</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="start.html">Start</a>
+        <a href="progress.html">Progress</a>
+        <a href="future.html">Future</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h2>Focus Mode</h2>
+        <p>Choose a session length and stay present. Use the timer to block distractions.</p>
+      </section>
+
+      <section class="dashboard">
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">⏱️</span>
+            <h3>Set Timer</h3>
+          </div>
+          <div class="card-content">
+            <div class="timer-display"><span id="timer">25:00</span></div>
+            <div class="timer-controls">
+              <input id="timerInput" type="number" min="1" max="120" placeholder="Minutes">
+              <button onclick="startCustomTimer()" class="card-btn">Start</button>
+            </div>
+            <p id="timerNote">Enter how long you want to focus, then hit start.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🎧</span>
+            <h3>Focus Advice</h3>
+          </div>
+          <div class="card-content">
+            <ul class="recovery-list">
+              <li>Quiet the space and avoid multitasking.</li>
+              <li>Use one playlist and keep the beat going.</li>
+              <li>Take short breaks to reset your energy.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🌱</span>
+            <h3>Forest Mode</h3>
+          </div>
+          <div class="card-content">
+            <p>Stay focused to grow your virtual tree. Distractions kill it!</p>
+            <div id="plantGrow" class="plant-grow">🌱</div>
+          </div>
+        </div>
+
+        <div class="card soundscape-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">🌊</span>
+            <h3>Ambient Sounds</h3>
+          </div>
+          <div class="card-content">
+            <p>Enhance focus with calming sounds.</p>
+            <button onclick="loadSoundscape('rain'); event.stopPropagation()" class="card-btn">Rain</button>
+            <button onclick="loadSoundscape('ocean'); event.stopPropagation()" class="card-btn">Ocean</button>
+            <button onclick="loadSoundscape('forest'); event.stopPropagation()" class="card-btn">Forest</button>
+            <div id="soundscapePlayer" class="soundscape-player"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStatsDisplay();
+      renderPageStats();
+    });
+  </script>
+</body>
+</html>

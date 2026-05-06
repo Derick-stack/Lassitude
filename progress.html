@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lassitude - Progress</title>
+  <link rel="stylesheet" href="style-luxury.css">
+</head>
+<body>
+  <script src="script.js"></script>
+  <header>
+    <div class="header-content">
+      <div class="brand-block">
+        <div class="brand">Lassitude</div>
+        <div class="brand-subtitle">Track your gains and milestones</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="start.html">Start</a>
+        <a href="focus.html">Focus</a>
+        <a href="future.html">Future</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h2>Progress Dashboard</h2>
+        <p>See your streak, XP, and daily growth. Every habit adds up.</p>
+      </section>
+
+      <section class="dashboard">
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">📈</span>
+            <h3>Current Status</h3>
+          </div>
+          <div class="card-content">
+            <p id="stats"></p>
+            <button onclick="completeTask()" class="card-btn">Add Progress</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">📝</span>
+            <h3>Reflection</h3>
+          </div>
+          <div class="card-content">
+            <p>Review what worked today, what felt strong, and what you want to improve tomorrow.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="icon">🏆</span>
+            <h3>Achievements</h3>
+          </div>
+          <div class="card-content">
+            <p>Unlock badges for milestones like 7-day streak or completing a workout plan.</p>
+            <div id="badges">Badge: Consistency Champion</div>
+          </div>
+        </div>
+
+        <div class="card habit-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">✅</span>
+            <h3>Habit Tracker</h3>
+          </div>
+          <div class="card-content">
+            <div class="habit-list">
+              <div class="habit-item">
+                <input type="checkbox" id="habit1" onclick="checkHabit(1); event.stopPropagation()">
+                <label for="habit1">Workout Completed</label>
+              </div>
+              <div class="habit-item">
+                <input type="checkbox" id="habit2" onclick="checkHabit(2); event.stopPropagation()">
+                <label for="habit2">Read Scripture</label>
+              </div>
+              <div class="habit-item">
+                <input type="checkbox" id="habit3" onclick="checkHabit(3); event.stopPropagation()">
+                <label for="habit3">Hydrate (8+ glasses)</label>
+              </div>
+              <div class="habit-item">
+                <input type="checkbox" id="habit4" onclick="checkHabit(4); event.stopPropagation()">
+                <label for="habit4">Focus Session</label>
+              </div>
+            </div>
+            <div id="habitStreak" class="habit-streak">Streak: 0 days</div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card journal-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">📓</span>
+            <h3>Daily Journal</h3>
+          </div>
+          <div class="card-content">
+            <textarea id="journalInput" placeholder="Reflect on your day..." onclick="event.stopPropagation()"></textarea>
+            <button onclick="saveJournal(); event.stopPropagation()" class="card-btn">Save Entry</button>
+            <div id="journalList" class="journal-list"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+
+        <div class="card chart-card" onclick="toggleExpand(this, event)">
+          <div class="card-header">
+            <span class="icon">📊</span>
+            <h3>Progress Chart</h3>
+          </div>
+          <div class="card-content">
+            <p>Visualize your growth.</p>
+            <button onclick="showChart(); event.stopPropagation()" class="card-btn">Show Chart</button>
+            <div id="chartDisplay" class="chart-display"></div>
+          </div>
+          <div class="card-actions">
+            <button onclick="toggleExpand(this.closest('.card'), event)" class="expand-btn">Expand</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStatsDisplay();
+      renderPageStats();
+    });
+  </script>
+</body>
+</html>
