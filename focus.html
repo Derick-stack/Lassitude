@@ -1,113 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lassitude - Focus</title>
-  <link rel="stylesheet" href="style-luxury.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Lassitude: a private daily routine for faith, fitness and focus.">
+<title>Focus · Lassitude</title>
+<link rel="stylesheet" href="style-luxury.css">
+<script type="module" src="js/app.js"></script>
 </head>
-<body>
-  <script src="script.js"></script>
-  <header>
-    <div class="header-content">
-      <div class="brand-block">
-        <div class="brand">Lassitude</div>
-        <div class="brand-subtitle">Lock in your next focus session</div>
-      </div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="login.html">Login</a>
-        <a href="start.html">Start</a>
-        <a href="progress.html">Progress</a>
-        <a href="future.html">Future</a>
-        <a href="settings.html">Settings</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-      <section class="hero">
-        <h2>Focus Mode</h2>
-        <p>Choose a session length and stay present. Use the timer to block distractions.</p>
-      </section>
-
-      <section class="dashboard">
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">⏱️</span>
-            <h3>Set Timer</h3>
-          </div>
-          <div class="card-content">
-            <div class="timer-display-large">
-              <span id="timer">25:00</span>
-              <div class="timer-progress-bar">
-                <div id="timerProgress" class="timer-progress-fill"></div>
-              </div>
-            </div>
-            <div class="timer-controls">
-              <input id="timerInput" type="number" min="1" max="120" placeholder="Minutes">
-              <button onclick="startCustomTimer()" class="card-btn">Start</button>
-            </div>
-            <p id="timerNote">Enter how long you want to focus, then hit start.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">🎧</span>
-            <h3>Focus Advice</h3>
-          </div>
-          <div class="card-content">
-            <ul class="recovery-list">
-              <li>Quiet the space and avoid multitasking.</li>
-              <li>Use one playlist and keep the beat going.</li>
-              <li>Take short breaks to reset your energy.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">🌱</span>
-            <h3>Forest Mode</h3>
-          </div>
-          <div class="card-content">
-            <p>Stay focused to grow your virtual tree. Distractions kill it!</p>
-            <div id="plantGrow" class="plant-grow">🌱</div>
-          </div>
-        </div>
-
-        <div class="card soundscape-card">
-          <div class="card-header">
-            <span class="icon">🌊</span>
-            <h3>Ambient Sounds</h3>
-          </div>
-          <div class="card-content">
-            <p>Enhance focus with calming sounds.</p>
-            <button onclick="loadSoundscape('rain'); event.stopPropagation()" class="card-btn">Rain</button>
-            <button onclick="loadSoundscape('ocean'); event.stopPropagation()" class="card-btn">Ocean</button>
-            <button onclick="loadSoundscape('forest'); event.stopPropagation()" class="card-btn">Forest</button>
-            <div id="soundscapePlayer" class="soundscape-player"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      updateStatsDisplay();
-      renderPageStats();
-      
-      // Initialize plant growth
-      const plant = document.getElementById('plantGrow');
-      if (plant) {
-        const growthStages = ['🌱', '🌿', '🌳', '🌲', '🌴'];
-        const currentStage = localStorage.getItem('plantStage') || 0;
-        plant.textContent = growthStages[parseInt(currentStage)];
-      }
-    });
-  </script>
+<body data-page="focusPage">
+<header id="site-header"></header>
+<main class="wrap">
+<section class="hero"><h1>Focus</h1><p>Work in focused intervals, attach a task, and keep a quiet record of your sessions.</p></section>
+<div class="focus-layout">
+<section class="card focus-timer-card" data-tour="pomodoro"><p class="eyebrow">Pomodoro</p><h2 id="phase-title">Focus session</h2><div class="time" id="time" role="timer" aria-live="polite">25:00</div><div class="meter" id="barWrap" role="progressbar" aria-label="Current interval progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div><p id="cycle-count" aria-live="polite">Cycle 1 of 4</p><label for="focus-task-select">Attach to task</label><select id="focus-task-select"><option value="">No task</option></select><div class="focus-controls"><button id="start" type="button">Start</button><button id="pause" type="button" class="ghost">Pause</button><button id="reset" type="button" class="ghost">Reset interval</button></div><p id="note" aria-live="polite"></p></section>
+<section class="card"><h2>Cycle settings</h2><form id="pomodoro-settings" class="focus-settings"><label for="focus-minutes">Focus minutes</label><input id="focus-minutes" type="number" min="1" max="120" required><label for="short-minutes">Short break minutes</label><input id="short-minutes" type="number" min="1" max="60" required><label for="long-minutes">Long break minutes</label><input id="long-minutes" type="number" min="1" max="90" required><label for="long-every">Long break every cycles</label><input id="long-every" type="number" min="2" max="8" required><button>Save cycle settings</button></form><small id="focus-settings-status" aria-live="polite"></small></section>
+<section class="card" data-tour="focus-tasks"><h2>Tasks</h2><form id="focus-task-form" class="row"><label for="focus-task-title">New task</label><input id="focus-task-title" type="text" maxlength="100" required><button>Add</button></form><ul id="focus-task-list" class="list"></ul></section>
+<section class="card" data-tour="ambient-audio"><h2>Ambient sound</h2><label for="ambient-type">Sound</label><select id="ambient-type"><option value="rain">Rain</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="brown">Brown noise</option></select><label for="ambient-volume">Volume</label><input id="ambient-volume" type="range" min="0" max="1" step="0.01"><output id="ambient-volume-value" for="ambient-volume"></output><div class="focus-controls"><button id="ambient-start" type="button">Play sound</button><button id="ambient-stop" type="button" class="ghost">Stop sound</button></div><small id="ambient-status" aria-live="polite">Sound is generated in your browser. No audio files are loaded.</small></section>
+<section class="card" data-tour="focus-garden"><h2>Focus garden</h2><div class="plant" id="plant" aria-hidden="true">🌱</div><p id="plantNote"></p><p id="garden-status" aria-live="polite"></p><ul id="garden-history" class="list"></ul></section>
+<section class="card"><h2>Focus statistics</h2><div id="focus-stats" class="history-summary"></div><ul id="focus-chart" class="list"></ul></section>
+</div>
+</main>
 </body>
 </html>

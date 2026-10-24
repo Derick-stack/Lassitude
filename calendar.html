@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Plan routines, faith, focus sessions, and goals in your private local calendar.">
+<title>Calendar · Lassitude</title>
+<link rel="stylesheet" href="style-luxury.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body data-page="calendarPage">
+<header id="site-header"></header>
+<main class="wrap">
+<section class="hero"><h1>Calendar</h1><p>Plan routines, see habit activity, and keep important dates in view.</p></section>
+<section class="calendar-panel" aria-label="Calendar">
+<div class="calendar-toolbar">
+<div class="calendar-view-switch" role="group" aria-label="Calendar view">
+<button type="button" class="ghost" data-calendar-view="month" aria-pressed="true">Month</button>
+<button type="button" class="ghost" data-calendar-view="week" aria-pressed="false">Week</button>
+<button type="button" class="ghost" data-calendar-view="day" aria-pressed="false">Day</button>
+</div>
+<div class="calendar-navigation">
+<button type="button" id="calendar-prev" class="ghost" aria-label="Previous period">Previous</button>
+<button type="button" id="calendar-today" class="ghost">Today</button>
+<button type="button" id="calendar-next" class="ghost" aria-label="Next period">Next</button>
+</div>
+<div class="calendar-actions">
+<button type="button" id="calendar-add">Add event</button>
+<button type="button" id="calendar-export" class="ghost">Export ICS</button>
+<button type="button" id="calendar-import-button" class="ghost">Import ICS</button>
+<input class="sr" type="file" id="calendar-import" accept=".ics,text/calendar">
+</div>
+</div>
+<div class="calendar-heading-row"><h2 id="calendar-heading" aria-live="polite"></h2><p id="calendar-range" aria-live="polite"></p></div>
+<div id="calendar-grid" class="calendar-grid calendar-month" aria-label="Calendar dates"></div>
+<p id="calendar-status" class="field-note" aria-live="polite"></p>
+<p class="field-note">Habit indicators include only completed habits. Workout logs and goal due dates appear automatically. To move an event on desktop, drag it to another date.</p>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Track flexible habits with yes, no, or skip logs and a 12-week heatmap.">
+<title>Habits · Lassitude</title>
+<link rel="stylesheet" href="style-luxury.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body data-page="habitsPage">
+<header id="site-header"></header>
+<main class="wrap">
+<section class="hero"><h1>Habits</h1><p>Track what matters with flexible schedules, forgiving chains, and a clear record of each day.</p></section>
+<section class="habit-layout">
+<div class="habit-main">
+<section class="workout-section" data-tour="habit-list"><div class="section-heading"><div><p class="eyebrow">Your routine</p><h2>Habit log</h2></div><p id="habit-freeze-summary" aria-live="polite"></p></div><ul id="habit-list" class="habit-list" aria-live="polite"></ul><p id="habit-empty" class="empty" hidden>No active habits yet. Add one below or choose starter habits in Settings.</p></section>
+<section class="workout-section" data-tour="habit-heatmap"><div class="section-heading"><div><p class="eyebrow">Twelve weeks</p><h2>Habit heatmap</h2></div></div><label for="heatmap-habit">Habit</label><select id="heatmap-habit"></select><div id="habit-heatmap" class="habit-heatmap" aria-label="Twelve-week habit activity"></div><p class="field-note">Each day is labeled with its status: yes, no, skipped, or not logged.</p></section>
+<section class="workout-section"><div class="section-heading"><div><p class="eyebrow">Archived</p><h2>Archived habits</h2></div></div><ul id="archived-habits" class="list"></ul></section>
+</div>
+<aside class="habit-aside">
+<section class="card"><h2 id="habit-form-heading">Add a habit</h2><form id="habit-definition-form"><label for="habit-title">Habit name</label><input id="habit-title" type="text" maxlength="60" required><label for="habit-schedule">Schedule</label><select id="habit-schedule"><option value="daily">Daily</option><option value="weekdays">Specific weekdays</option><option value="weekly">Times per week</option></select><fieldset id="habit-weekdays" class="weekday-picker" hidden><legend>Choose weekdays</legend><div id="habit-weekday-options"></div></fieldset><div id="habit-weekly-target" hidden><label for="habit-target">Target times per week</label><input id="habit-target" type="number" min="1" max="7" value="3"></div><div class="routine-actions"><button type="submit" id="habit-save">Add habit</button><button type="button" id="habit-cancel-edit" class="ghost" hidden>Cancel edit</button></div><small id="habit-form-status" aria-live="polite"></small></form></section>
+<section class="card"><h2>Weekly freeze</h2><p>Use one freeze this week to preserve a chain on a missed scheduled day.</p><label for="freeze-habit">Protect a habit today</label><select id="freeze-habit"></select><button id="use-habit-freeze" type="button" class="ghost">Use weekly freeze</button><small id="freeze-status" aria-live="polite"></small></section>
+</aside>
+</section>
+</main>
+</body>
+</html>

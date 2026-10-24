@@ -1,171 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lassitude - Progress</title>
-  <link rel="stylesheet" href="style-luxury.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Lassitude: a private daily routine for faith, fitness and focus.">
+<title>Progress · Lassitude</title>
+<link rel="stylesheet" href="style-luxury.css">
+<script type="module" src="js/app.js"></script>
 </head>
-<body>
-  <script src="script.js"></script>
-  <header>
-    <div class="header-content">
-      <div class="brand-block">
-        <div class="brand">Lassitude</div>
-        <div class="brand-subtitle">Track your gains and milestones</div>
-      </div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="login.html">Login</a>
-        <a href="start.html">Start</a>
-        <a href="focus.html">Focus</a>
-        <a href="future.html">Future</a>
-        <a href="settings.html">Settings</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-      <section class="hero">
-        <h2>Progress Dashboard</h2>
-        <p>See your streak, XP, and daily growth. Every habit adds up.</p>
-      </section>
-
-      <section class="dashboard">
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">📈</span>
-            <h3>Current Status</h3>
-          </div>
-          <div class="card-content">
-            <p id="stats"></p>
-            <button onclick="completeTask()" class="card-btn">Add Progress</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">📝</span>
-            <h3>Reflection</h3>
-          </div>
-          <div class="card-content">
-            <p>Review what worked today, what felt strong, and what you want to improve tomorrow.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="icon">🏆</span>
-            <h3>Achievements</h3>
-          </div>
-          <div class="card-content">
-            <p>Unlock badges for milestones like 7-day streak or completing a workout plan.</p>
-            <div id="badges">Badge: Consistency Champion</div>
-          </div>
-        </div>
-
-        <div class="card habit-card">
-          <div class="card-header">
-            <span class="icon">✅</span>
-            <h3>Habit Tracker</h3>
-          </div>
-          <div class="card-content">
-            <div class="habit-input" style="margin-bottom: 1rem;">
-              <input id="newHabitInput" type="text" placeholder="Add a new habit to track..." style="flex: 1; margin-right: 0.5rem;">
-              <button onclick="addCustomHabit()" class="card-btn" style="padding: 0.5rem 1rem;">Add</button>
-            </div>
-            <div class="habit-list" id="habitList">
-              <!-- Habits will be loaded here -->
-            </div>
-            <div id="habitStreak" class="habit-streak">Streak: 0 days</div>
-          </div>
-        </div>
-
-        <div class="card hydration-card">
-          <div class="card-header">
-            <span class="icon">💧</span>
-            <h3>Hydration Tracker</h3>
-          </div>
-          <div class="card-content">
-            <div class="hydration-tracker">
-              <div class="water-input">
-                <label>Glasses of water today:</label>
-                <input id="waterInput" type="number" min="0" max="20" placeholder="0">
-                <button onclick="logWater()" class="card-btn">Log Water</button>
-              </div>
-              <div id="waterProgress" class="water-progress">
-                <div class="water-bar" id="waterBar"></div>
-                <span id="waterCount">0/8 glasses</span>
-              </div>
-              <div class="hydration-tips">
-                <p><strong>Daily Goal:</strong> 8 glasses (64 oz)</p>
-                <p><strong>Tip:</strong> Drink water with every meal and workout</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card journal-card">
-          <div class="card-header">
-            <span class="icon">📝</span>
-            <h3>Daily Reflection</h3>
-          </div>
-          <div class="card-content">
-            <div id="reflectionPrompt" style="margin-bottom: 1rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border-left: 4px solid var(--accent-gold);">
-              <strong style="color: var(--accent-gold);">Today's Reflection Prompt:</strong><br>
-              <span id="promptText">What is one thing you did today that moved you closer to your goals?</span>
-            </div>
-            <textarea id="journalInput" placeholder="Reflect on your day..." onclick="event.stopPropagation()"></textarea>
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-              <button onclick="saveJournal(); event.stopPropagation()" class="card-btn">Save Entry</button>
-              <button onclick="newReflectionPrompt(); event.stopPropagation()" class="card-btn" style="background: rgba(0, 212, 255, 0.2);">New Prompt</button>
-            </div>
-            <div id="journalList" class="journal-list"></div>
-          </div>
-        </div>
-
-        <div class="card prayer-card">
-          <div class="card-header">
-            <span class="icon">🙏</span>
-            <h3>Prayer & Faith Tracker</h3>
-          </div>
-          <div class="card-content">
-            <p>Track your daily prayer time and spiritual reflections.</p>
-            <div class="prayer-input" style="margin: 1rem 0;">
-              <label>Prayer time today (minutes):</label>
-              <input id="prayerInput" type="number" min="0" placeholder="10" style="margin-left: 0.5rem; width: 80px;">
-              <button onclick="logPrayer()" class="card-btn" style="margin-left: 0.5rem;">Log Prayer</button>
-            </div>
-            <div id="prayerStreak" class="prayer-streak">Prayer Streak: 0 days</div>
-            <div style="margin-top: 1rem;">
-              <button onclick="getPrayerPrompt()" class="card-btn" style="background: rgba(212, 175, 55, 0.2);">Prayer Prompt</button>
-              <div id="prayerPromptDisplay" style="margin-top: 0.5rem; font-style: italic; color: var(--text-muted);"></div>
-            </div>
-          </div>
-        </div>
-          <div class="card-header">
-            <span class="icon">📊</span>
-            <h3>Progress Chart</h3>
-          </div>
-          <div class="card-content">
-            <p>Visualize your growth.</p>
-            <button onclick="showChart(); event.stopPropagation()" class="card-btn">Show Chart</button>
-            <div id="chartDisplay" class="chart-display"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      updateStatsDisplay();
-      renderPageStats();
-      updateWaterProgress();
-      loadHabits();
-      updatePrayerStreak();
-    });
-  </script>
+<body data-page="progressPage">
+<header id="site-header"></header>
+<main class="wrap">
+<section class="hero"><h1>Progress</h1><p>Check off habits, log water and reflect. XP is earned once per habit per day.</p><div class="stats"><span>XP <b data-stat="xp">0</b></span><span>Level <b data-stat="level">1</b></span><span>Streak <b data-stat="streak">0</b> days</span></div></section>
+<div class="grid">
+<section class="card"><h2>Habit tracking</h2><p>Review flexible schedules, log yes/no/skip, add notes, and use your weekly freeze.</p><a class="btn" href="habits.html">Open Habits</a></section>
+<section class="card"><h2>Last 7 days</h2><ul class="list" id="chart"></ul></section>
+<section class="card"><h2>Badges</h2><ul class="list" id="badges"></ul></section>
+<section class="card"><h2>Water</h2><div class="meter" id="waterBarWrap" role="progressbar" aria-label="Water today" aria-valuemin="0" aria-valuemax="8"><div id="waterBar"></div></div><p id="waterCount"></p><button id="wPlus">+1 glass</button><button id="wMinus" class="ghost">−1</button></section>
+<section class="card"><h2>Daily reflection</h2><p id="prompt"></p><form id="journalForm"><label for="journalIn">Your entry</label><textarea id="journalIn" rows="3"></textarea><button>Save entry</button><button type="button" id="newPrompt" class="ghost">New prompt</button></form><ul class="list" id="journalList"></ul></section>
+<section class="card"><h2>Prayer time</h2><form id="prayerForm" class="row"><label for="prayerIn">Minutes today</label><input type="number" id="prayerIn" min="1"><button>Log</button></form><small id="prayerNote"></small></section>
+</div>
+</main>
 </body>
 </html>

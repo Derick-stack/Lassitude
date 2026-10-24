@@ -1,2 +1,7 @@
 # Lassitude
-faith in spired and discipline website
+
+A local, browser-based routine for faith, fitness, and focus. There is no build step. Because the app uses ES modules, open it through an HTTP server instead of `file://`: run `python3 -m http.server 8000` from the repository root, then visit `http://localhost:8000/index.html`. GitHub Pages serves it directly.
+
+The pages are Home, Start, Focus, Calendar, Workouts, Habits, Faith, Progress, Future, and Settings. Calendar supports month/week/day views, recurring events, drag rescheduling, and ICS import/export. Workouts provides an offline exercise library, editable weekday routines, guided set logging, private session history and posts, and image export. Habits includes flexible schedules and status logs; Faith includes KJV reading plans and private prayer, Scripture, and gratitude tools. Focus has Pomodoro cycles, linked tasks, a private garden, and generated ambient audio. Shared UI lives in `js/ui.js`, page handlers in `js/pages/`, calendar/habit helpers in `js/`, the exercise and reading catalogs in `data/`, and versioned local data and migrations in `js/store.js`. Personal data is stored in this browser's local storage; use Export in Settings to make a backup. Clearing browser storage deletes it.
+
+Guest mode uses no backend. Optional Supabase Auth and sync are enabled only after configuring `js/config.js` and applying `supabase/schema.sql`; guest data uploads only after the first-sign-in confirmation. Passwords are handled by Supabase Auth and are never stored in Lassitude data. Revoke any credentials or webhook URLs that were previously exposed in the old site files or their Git history.
