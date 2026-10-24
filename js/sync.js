@@ -16,7 +16,7 @@ async function getClient() {
 export function hasGuestData(state = getState()) {
   const builtInHabits = ['workout', 'scripture', 'water', 'focus'];
   const customizedHabits = state.habitDefinitions.some(habit => !builtInHabits.includes(habit.id) || habit.archived || habit.schedule?.type !== 'daily');
-  return Boolean(state.name || state.xp || state.plant || state.onboarding.completed || customizedHabits || Object.keys(state.habitLogs).length || Object.keys(state.habits).length || state.calendarEvents.length || state.workoutSessions.length || state.workoutRoutines.some(routine => !routine.programId) || state.journal.length || state.prayerEntries.length || state.prayerRequests.length || state.scriptureCards.length || state.gratitude.length || state.focusSessions.length || state.focusTasks.length || state.goals.length || state.miles.length || state.vision.length || state.workoutPosts.length || Object.keys(state.water).length || Object.keys(state.prayer).length);
+  return Boolean(state.name || state.xp || state.plant || state.onboarding.completed || customizedHabits || Object.keys(state.habitLogs).length || Object.keys(state.habits).length || state.calendarEvents.length || state.workoutSessions.length || state.workoutRoutines.some(routine => !routine.programId) || state.journal.length || state.prayerEntries.length || state.prayerRequests.length || state.scriptureCards.length || state.gratitude.length || state.focusSessions.length || state.focusTasks.length || state.studyNotes.length || Object.keys(state.studyCards).length || state.goals.length || state.miles.length || state.vision.length || state.workoutPosts.length || Object.keys(state.water).length || Object.keys(state.prayer).length);
 }
 
 export async function syncOnSignIn(user, confirmDialog, toast) {
@@ -102,7 +102,7 @@ function buildRows(userId, state) {
   const base = { user_id: userId };
   return {
     profiles: [{ ...base, display_name: state.name, avatar: state.avatar || '' }],
-    settings: [{ ...base, data: { name: state.name, xp: state.xp, theme: state.theme, light: state.light, appPrefs: state.appPrefs, reminders: state.reminders, focusPrefs: state.focusPrefs, workoutPrefs: state.workoutPrefs, workoutExperience: state.workoutExperience, workoutDays: state.workoutDays, profileGoals: state.profileGoals, starterHabits: state.starterHabits, onboarding: state.onboarding, firstWeek: state.firstWeek, habitXP: state.habitXP, focusXP: state.focusXP, habitFreezeWeeks: state.habitFreezeWeeks, habits: state.habits, custom: state.custom, devotionalRead: state.devotionalRead, chal: state.chal, plant: state.plant, workoutLogs: state.workoutLogs, miles: state.miles, vision: state.vision, faithPlan: state.faithPlan, worshipSeries: state.worshipSeries } }],
+    settings: [{ ...base, data: { name: state.name, xp: state.xp, theme: state.theme, light: state.light, appPrefs: state.appPrefs, reminders: state.reminders, focusPrefs: state.focusPrefs, workoutPrefs: state.workoutPrefs, workoutExperience: state.workoutExperience, workoutDays: state.workoutDays, profileGoals: state.profileGoals, starterHabits: state.starterHabits, onboarding: state.onboarding, firstWeek: state.firstWeek, habitXP: state.habitXP, focusXP: state.focusXP, habitFreezeWeeks: state.habitFreezeWeeks, habits: state.habits, custom: state.custom, devotionalRead: state.devotionalRead, chal: state.chal, plant: state.plant, workoutLogs: state.workoutLogs, miles: state.miles, vision: state.vision, faithPlan: state.faithPlan, worshipSeries: state.worshipSeries, studyNotes: state.studyNotes, studyNotebooks: state.studyNotebooks, studyCards: state.studyCards } }],
     habits: state.habitDefinitions.map(habit => ({ ...base, habit_id: habit.id, title: habit.title, schedule: habit.schedule, archived: habit.archived, sort_order: habit.order })),
     habit_logs: Object.entries(state.habitLogs).flatMap(([date, logs]) => Object.entries(logs).map(([habitId, log]) => ({ ...base, habit_id: habitId, log_date: date, status: log.status, note: log.note || '', frozen: Boolean(log.freeze), updated_at: log.updatedAt || Date.now() }))),
     workouts: state.workoutRoutines.map(routine => ({ ...base, routine_id: routine.id, title: routine.title, schedule_days: routine.days, data: routine })),
@@ -220,7 +220,10 @@ function mergeCloudState(cloud, userId) {
       miles: settings.miles ?? state.miles,
       vision: settings.vision ?? state.vision,
       faithPlan: settings.faithPlan ?? state.faithPlan,
-      worshipSeries: settings.worshipSeries ?? state.worshipSeries
+      worshipSeries: settings.worshipSeries ?? state.worshipSeries,
+      studyNotes: settings.studyNotes ?? state.studyNotes,
+      studyNotebooks: settings.studyNotebooks ?? state.studyNotebooks,
+      studyCards: settings.studyCards ?? state.studyCards
     });
     state.workoutRoutines = cloud.workouts.map(row => row.data);
     state.workoutSessions = cloud.workout_sessions.map(row => row.data);

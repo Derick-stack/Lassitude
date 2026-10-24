@@ -1,5 +1,16 @@
 import { finishFocusSession, getDayKey, getState, update } from '../store.js';
-import { $, h, toast } from '../ui.js';
+import { $, $$, confirmDialog, h, toast } from '../ui.js';
+import { addToParkingLot, dueCount, initNotes, initStudy } from '../study.js';
+
+const RING = 2 * Math.PI * 100;
+const PRESETS = [
+  { id: 'quick', label: 'Quick start', detail: '15 / 3', focus: 15, short: 3, hint: 'Good for getting started' },
+  { id: 'classic', label: 'Classic', detail: '25 / 5', focus: 25, short: 5, hint: 'Recommended' },
+  { id: 'deep', label: 'Deep work', detail: '50 / 10', focus: 50, short: 10, hint: 'For long tasks' }
+];
+const SOUNDS = [['off', 'Off'], ['rain', 'Rain'], ['ocean', 'Ocean'], ['forest', 'Forest'], ['brown', 'Brown noise']];
+const TABS = ['timer', 'notes', 'study'];
+const pageTitle = document.title;
 
 export function initFocus() {
   let prefs = { ...getState().focusPrefs };
@@ -19,22 +30,62 @@ export function initFocus() {
   let birdTimer = null;
   const birds = new Set();
 
+  setupTabs();
   $('#pomodoro-settings').addEventListener('submit', savePreferences);
-  $('#start').addEventListener('click', startTimer);
-  $('#pause').addEventListener('click', pauseTimer);
+  $('#start').addEventListener('click', () => (timer ? pauseTimer() : startTimer()));
   $('#reset').addEventListener('click', resetTimer);
+  $('#skip').addEventListener('click', skipPhase);
+  $('#focus-mode').addEventListener('click', toggleFocusMode);
+  $('#quick-task').addEventListener('click', showQuickTask);
   $('#focus-task-form').addEventListener('submit', addTask);
-  $('#ambient-start').addEventListener('click', startSound);
-  $('#ambient-stop').addEventListener('click', stopSound);
-  $('#ambient-type').addEventListener('change', () => { if (audioContext) { stopSound(); startSound(); } });
+  $('#parking-form').addEventListener('submit', parkThought);
   $('#ambient-volume').addEventListener('input', changeVolume);
   document.addEventListener('visibilitychange', handleVisibility);
+  document.addEventListener('keydown', handleKeys);
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) document.body.classList.remove('focus-mode-on'); syncFocusModeButton(); });
   window.addEventListener('pagehide', stopSound);
   loadPreferences();
+  renderPresets();
+  renderSounds();
   renderTasks();
   renderStats();
   renderGarden();
   updateDisplay();
+  initNotes();
+  initStudy(renderDueBadge);
+  renderDueBadge();
+
+  function setupTabs() {
+    const tabs = $$('[data-ftab]');
+    const show = (tab, focus = false) => {
+      if (!TABS.includes(tab)) tab = 'timer';
+      tabs.forEach(button => {
+        const selected = button.dataset.ftab === tab;
+        button.setAttribute('aria-selected', String(selected));
+        button.tabIndex = selected ? 0 : -1;
+        if (selected && focus) button.focus();
+      });
+      TABS.forEach(id => { $(`#fpanel-${id}`).hidden = id !== tab; });
+      if (location.hash.slice(1) !== tab) history.replaceState(null, '', `#${tab}`);
+      document.dispatchEvent(new CustomEvent('focus-tab', { detail: tab }));
+    };
+    tabs.forEach(button => button.addEventListener('click', () => show(button.dataset.ftab)));
+    $('.focus-tabs').addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      const index = tabs.indexOf(document.activeElement);
+      show(tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length].dataset.ftab, true);
+    });
+    window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+    show(location.hash.slice(1));
+  }
+
+  function renderDueBadge() {
+    const count = dueCount();
+    const badge = $('#due-badge');
+    badge.hidden = !count;
+    badge.textContent = String(count);
+    badge.setAttribute('aria-label', `${count} cards due`);
+  }
 
   function loadPreferences() {
     $('#focus-minutes').value = prefs.focusMinutes;
@@ -44,21 +95,40 @@ export function initFocus() {
     $('#ambient-volume').value = prefs.ambientVolume;
     $('#ambient-volume-value').textContent = `${Math.round(prefs.ambientVolume * 100)}%`;
   }
+  function applyPrefs(next, message) {
+    prefs = { ...prefs, ...next };
+    update(state => { state.focusPrefs = { ...state.focusPrefs, ...next }; });
+    if (!timer) { totalSeconds = remaining = phaseDuration() * 60; updateDisplay(); }
+    loadPreferences();
+    renderPresets();
+    if (message) toast(message, { duration: 1800 });
+  }
   function savePreferences(event) {
     event.preventDefault();
-    prefs = { ...prefs, focusMinutes: clamp($('#focus-minutes').value, 1, 120, 25), shortBreakMinutes: clamp($('#short-minutes').value, 1, 60, 5), longBreakMinutes: clamp($('#long-minutes').value, 1, 90, 15), longBreakEvery: clamp($('#long-every').value, 2, 8, 4) };
-    update(state => { state.focusPrefs = { ...state.focusPrefs, ...prefs }; });
-    if (!timer) { totalSeconds = remaining = phaseDuration() * 60; updateDisplay(); }
-    $('#focus-settings-status').textContent = 'Cycle settings saved on this device.';
-    toast('Focus settings saved.');
+    applyPrefs({ focusMinutes: clamp($('#focus-minutes').value, 1, 120, 25), shortBreakMinutes: clamp($('#short-minutes').value, 1, 60, 5), longBreakMinutes: clamp($('#long-minutes').value, 1, 90, 15), longBreakEvery: clamp($('#long-every').value, 2, 8, 4) }, 'Timer settings saved');
+    $('#focus-settings-status').textContent = timer ? 'Saved. New lengths apply from the next interval.' : 'Saved.';
   }
+  function renderPresets() {
+    $('#presets').replaceChildren(...PRESETS.map(preset => {
+      const active = prefs.focusMinutes === preset.focus && prefs.shortBreakMinutes === preset.short;
+      const button = h('button', { type: 'button', class: 'preset', 'aria-pressed': String(active), title: preset.hint }, h('strong', {}, preset.label), h('span', {}, preset.detail), preset.id === 'classic' ? h('em', {}, 'Recommended') : null);
+      button.addEventListener('click', () => {
+        if (timer) { toast('Pause the timer to change presets.'); return; }
+        applyPrefs({ focusMinutes: preset.focus, shortBreakMinutes: preset.short }, `${preset.label}: ${preset.detail} minutes`);
+      });
+      return button;
+    }));
+  }
+
   function phaseDuration() { return phase === 'short' ? prefs.shortBreakMinutes : phase === 'long' ? prefs.longBreakMinutes : prefs.focusMinutes; }
   function startTimer() {
     if (timer) return;
     if (phase === 'focus' && !sessionStartedAt) sessionStartedAt = Date.now();
     endsAt = Date.now() + remaining * 1000;
     timer = window.setInterval(tick, 200);
-    $('#note').textContent = phase === 'focus' ? 'Focus interval in progress.' : 'Break interval in progress.';
+    $('#note').textContent = phase === 'focus' ? 'Stay with it. Park any stray thoughts below.' : 'Stand up, stretch, drink some water.';
+    $('#timer-card').dataset.running = 'true';
+    updateDisplay();
   }
   function pauseTimer() {
     if (!timer) return;
@@ -66,6 +136,7 @@ export function initFocus() {
     window.clearInterval(timer);
     timer = null;
     $('#note').textContent = 'Paused.';
+    delete $('#timer-card').dataset.running;
     updateDisplay();
   }
   function resetTimer() {
@@ -74,7 +145,22 @@ export function initFocus() {
     remaining = totalSeconds = phaseDuration() * 60;
     sessionStartedAt = 0;
     sessionWithered = false;
-    $('#note').textContent = 'Interval reset.';
+    delete $('#timer-card').dataset.running;
+    $('#note').textContent = 'Interval restarted.';
+    renderGarden();
+    updateDisplay();
+  }
+  async function skipPhase() {
+    if (phase === 'focus' && sessionStartedAt && totalSeconds - remaining > 60) {
+      const ok = await confirmDialog({ title: 'End this focus session early?', message: 'Sessions that end early aren’t added to your garden or stats.', confirmLabel: 'End session' });
+      if (!ok) return;
+    }
+    window.clearInterval(timer);
+    timer = null;
+    delete $('#timer-card').dataset.running;
+    if (phase === 'focus') { sessionStartedAt = 0; sessionWithered = false; phase = 'short'; $('#note').textContent = 'Skipped. Take a short break, or skip again to keep going.'; }
+    else { phase = 'focus'; $('#note').textContent = 'Break skipped. Ready when you are.'; }
+    totalSeconds = remaining = phaseDuration() * 60;
     renderGarden();
     updateDisplay();
   }
@@ -83,40 +169,69 @@ export function initFocus() {
     updateDisplay();
     if (remaining === 0) finishPhase();
   }
+  function chime() {
+    try {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      [523, 659, 784].forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        const start = context.currentTime + index * 0.15;
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.12, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start(start);
+        oscillator.stop(start + 0.5);
+      });
+      window.setTimeout(() => context.close(), 1200);
+    } catch { /* Sound is optional. */ }
+  }
   function finishPhase() {
     window.clearInterval(timer);
     timer = null;
+    delete $('#timer-card').dataset.running;
+    chime();
     const finishedAt = Date.now();
     if (phase === 'focus') {
-      const focusMinutes = prefs.focusMinutes;
-      finishFocusSession({ type: 'focus', date: getDayKey(new Date(sessionStartedAt)), startedAt: sessionStartedAt, finishedAt, focusMinutes, durationSeconds: focusMinutes * 60, taskId: $('#focus-task-select').value, withered: sessionWithered });
+      const focusMinutes = Math.round(totalSeconds / 60);
+      finishFocusSession({ type: 'focus', date: getDayKey(new Date(sessionStartedAt)), startedAt: sessionStartedAt, finishedAt, focusMinutes, durationSeconds: totalSeconds, taskId: $('#focus-task-select').value, withered: sessionWithered });
       const wasWithered = sessionWithered;
       sessionWithered = false;
       cycles += 1;
       phase = cycles % prefs.longBreakEvery === 0 ? 'long' : 'short';
       sessionStartedAt = 0;
-      $('#note').textContent = wasWithered ? 'Focus complete. This session’s garden entry is marked withered.' : 'Focus complete. Take a break when you are ready.';
-      toast(wasWithered ? 'Focus complete. Session marked withered.' : `Focus complete. Cycle ${cycles} saved.`);
+      $('#note').textContent = wasWithered ? 'Session complete, but your tree withered while you were away.' : `Well done! ${focusMinutes} minutes of focus. Your tree has grown.`;
+      toast(wasWithered ? 'Focus complete. Tree withered.' : `Focus complete. Cycle ${cycles} saved.`);
       renderGarden();
       renderStats();
       renderTasks();
     } else {
       finishFocusSession({ type: 'break', date: getDayKey(), startedAt: finishedAt - totalSeconds * 1000, finishedAt, durationSeconds: totalSeconds });
       phase = 'focus';
-      $('#note').textContent = 'Break complete. Ready for another focus interval?';
+      $('#note').textContent = 'Break complete. Ready for another round?';
       toast('Break complete.');
     }
     totalSeconds = remaining = phaseDuration() * 60;
     updateDisplay();
+    $('#time-announcer').textContent = $('#note').textContent;
   }
   function updateDisplay() {
-    const percent = totalSeconds ? Math.round((totalSeconds - remaining) / totalSeconds * 100) : 0;
-    $('#time').textContent = `${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`;
-    $('#bar').style.width = `${percent}%`;
-    $('#barWrap').setAttribute('aria-valuenow', String(percent));
-    $('#phase-title').textContent = phase === 'focus' ? 'Focus session' : phase === 'short' ? 'Short break' : 'Long break';
+    const percent = totalSeconds ? (totalSeconds - remaining) / totalSeconds : 0;
+    const clock = `${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`;
+    $('#time').textContent = clock;
+    $('#ring-fill').style.strokeDasharray = String(RING);
+    $('#ring-fill').style.strokeDashoffset = String(RING * (1 - percent));
+    const label = phase === 'focus' ? 'Focus' : phase === 'short' ? 'Short break' : 'Long break';
+    $('#phase-title').textContent = label;
+    $('#phase-title').dataset.phase = phase;
+    $('#timer-card').dataset.phase = phase;
     const cycleNumber = phase === 'focus' ? (cycles % prefs.longBreakEvery) + 1 : ((cycles - 1) % prefs.longBreakEvery) + 1;
     $('#cycle-count').textContent = `Cycle ${cycleNumber} of ${prefs.longBreakEvery}`;
+    $('#cycle-dots').replaceChildren(...Array.from({ length: prefs.longBreakEvery }, (_, index) => h('span', { class: index < cycles % prefs.longBreakEvery || (phase !== 'focus' && index === cycleNumber - 1) ? 'is-done' : index === cycleNumber - 1 ? 'is-current' : '' })));
+    const started = remaining < totalSeconds;
+    $('#start').textContent = timer ? 'Pause' : started ? 'Resume' : phase === 'focus' ? 'Start focus' : 'Start break';
+    $('#plant').textContent = phase !== 'focus' ? '☕' : sessionWithered ? '🍂' : percent < 0.34 ? '🌱' : percent < 0.67 ? '🌿' : '🌳';
+    document.title = timer ? `${clock} · ${label}` : pageTitle;
   }
   function handleVisibility() {
     if (document.hidden) { if (timer && phase === 'focus') hiddenAt = Date.now(); return; }
@@ -125,28 +240,72 @@ export function initFocus() {
     hiddenAt = 0;
     if (prefs.witherOnLeave && phase === 'focus' && !sessionWithered && awaySeconds >= prefs.witherAfterSeconds && sessionStartedAt) {
       sessionWithered = true;
-      $('#garden-status').textContent = `Away for ${Math.floor(awaySeconds)} seconds; this session will be marked withered when it ends.`;
+      $('#garden-status').textContent = `You were away for ${Math.floor(awaySeconds)} seconds, so this session’s tree withered. The timer kept counting.`;
       renderGarden();
-      toast('Garden session marked withered. Timer stayed accurate.');
+      toast('Your tree withered while you were away.');
     }
     if (timer) tick();
+  }
+  function handleKeys(event) {
+    if ($('#fpanel-timer').hidden || event.target.closest('input, textarea, select, [contenteditable]') || document.querySelector('dialog[open]')) return;
+    if (event.code === 'Space') { event.preventDefault(); $('#start').click(); }
+    if (event.key === 'f' || event.key === 'F') toggleFocusMode();
+  }
+  function toggleFocusMode() {
+    const on = !document.body.classList.contains('focus-mode-on');
+    document.body.classList.toggle('focus-mode-on', on);
+    if (on) document.documentElement.requestFullscreen?.().catch(() => {});
+    else if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    syncFocusModeButton();
+  }
+  function syncFocusModeButton() {
+    const on = document.body.classList.contains('focus-mode-on');
+    $('#focus-mode').setAttribute('aria-label', on ? 'Exit full-screen focus mode' : 'Enter full-screen focus mode');
+    $('#focus-mode').setAttribute('aria-pressed', String(on));
+  }
+
+  function showQuickTask() {
+    const row = $('.task-pick-row');
+    const input = h('input', { type: 'text', maxlength: '100', placeholder: 'New task', 'aria-label': 'New task name' });
+    const add = h('button', { type: 'submit' }, 'Add');
+    const cancel = h('button', { type: 'button', class: 'ghost' }, 'Cancel');
+    const form = h('form', { class: 'task-pick-row' }, input, add, cancel);
+    const restore = () => { form.replaceWith(row); $('#focus-task-select').focus(); };
+    cancel.addEventListener('click', restore);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const title = input.value.trim();
+      if (!title) return;
+      const id = `task-${crypto.randomUUID()}`;
+      update(state => state.focusTasks.push({ id, title, done: false, createdAt: Date.now() }));
+      restore();
+      renderTasks();
+      $('#focus-task-select').value = id;
+      toast('Task added');
+    });
+    row.replaceWith(form);
+    input.focus();
   }
   function renderTasks() {
     const state = getState();
     const select = $('#focus-task-select');
     const selected = select.value;
     const open = state.focusTasks.filter(task => !task.done);
-    select.replaceChildren(h('option', { value: '' }, 'No task'), ...open.map(task => h('option', { value: task.id }, task.title)));
+    select.replaceChildren(h('option', { value: '' }, 'Just focusing'), ...open.map(task => h('option', { value: task.id }, task.title)));
     if (open.some(task => task.id === selected)) select.value = selected;
+    const sessionsByTask = state.focusSessions.reduce((counts, session) => { if (session.type === 'focus' && session.taskId) counts[session.taskId] = (counts[session.taskId] || 0) + 1; return counts; }, {});
     const list = $('#focus-task-list');
     list.replaceChildren();
-    if (!state.focusTasks.length) list.append(h('li', { class: 'empty' }, 'Add a task to attach it to a focus session.'));
-    state.focusTasks.forEach(task => {
-      const done = h('input', { type: 'checkbox', checked: task.done, 'aria-label': `${task.done ? 'Reopen' : 'Complete'} task ${task.title}` });
-      done.addEventListener('change', () => { update(data => { const item = data.focusTasks.find(entry => entry.id === task.id); if (item) item.done = done.checked; }); toast(done.checked ? 'Task completed.' : 'Task reopened.'); renderTasks(); });
-      const remove = h('button', { type: 'button', class: 'x', 'aria-label': `Delete task ${task.title}` }, '×');
+    if (!state.focusTasks.length) list.append(h('li', { class: 'empty' }, 'Add what you need to get done, then pick it on the timer.'));
+    [...state.focusTasks].sort((a, b) => Number(a.done) - Number(b.done)).forEach(task => {
+      const done = h('input', { type: 'checkbox', checked: task.done, 'aria-label': `${task.done ? 'Reopen' : 'Complete'} ${task.title}` });
+      done.addEventListener('change', () => { update(data => { const item = data.focusTasks.find(entry => entry.id === task.id); if (item) item.done = done.checked; }); toast(done.checked ? 'Nice, task done.' : 'Task reopened.'); renderTasks(); });
+      const play = h('button', { type: 'button', class: 'icon-btn small', 'aria-label': `Focus on ${task.title}`, title: 'Focus on this' }, '▶');
+      play.addEventListener('click', () => { select.value = task.id; if (!timer && phase === 'focus') startTimer(); $('#timer-card').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      const remove = h('button', { type: 'button', class: 'x', 'aria-label': `Delete ${task.title}` }, '×');
       remove.addEventListener('click', () => removeTask(task));
-      list.append(h('li', {}, done, h('span', { class: task.done ? 'done' : '' }, task.title), remove));
+      const count = sessionsByTask[task.id];
+      list.append(h('li', { class: task.done ? 'is-done' : '' }, done, h('span', { class: 'task-title' }, task.title, count ? h('small', {}, `${count} session${count === 1 ? '' : 's'}`) : null), task.done ? null : play, remove));
     });
   }
   function addTask(event) {
@@ -156,43 +315,65 @@ export function initFocus() {
     if (!title) return;
     update(state => state.focusTasks.push({ id: `task-${crypto.randomUUID()}`, title, done: false, createdAt: Date.now() }));
     input.value = '';
-    toast('Focus task saved.');
+    toast('Task added');
     renderTasks();
   }
   async function removeTask(task) {
-    const confirmed = await confirmDialog({ title: 'Delete task?', message: 'This task can be restored for five seconds.', confirmLabel: 'Delete', danger: true });
+    const confirmed = await confirmDialog({ title: 'Delete task?', message: 'You can undo this for five seconds.', confirmLabel: 'Delete', danger: true });
     if (!confirmed) return;
     const index = getState().focusTasks.findIndex(item => item.id === task.id);
     update(state => { state.focusTasks.splice(index, 1); });
     toast('Task deleted.', { actionLabel: 'Undo', duration: 5000, onAction: () => { update(state => state.focusTasks.splice(index, 0, task)); renderTasks(); } });
     renderTasks();
   }
+  function parkThought(event) {
+    event.preventDefault();
+    const input = $('#parking-input');
+    const text = input.value.trim();
+    if (!text) return;
+    addToParkingLot(text);
+    input.value = '';
+    toast('Parked in Notes → Parking lot. Back to it!', { duration: 2200 });
+  }
+
   function renderGarden() {
     const state = getState();
-    $('#plant').textContent = sessionWithered ? '🍂' : ['🌱', '🌿', '🌳', '🌲', '🌴'][Math.min(state.plant, 4)];
-    $('#plantNote').textContent = `${state.plant} focus sessions grown · ${state.gardenHistory.filter(item => item.outcome === 'withered').length} withered`;
-    if (!sessionWithered) $('#garden-status').textContent = prefs.witherOnLeave ? `A session is marked withered after ${prefs.witherAfterSeconds} seconds away.` : 'Withering is off. Sessions can grow even if you switch tabs.';
-    const list = $('#garden-history');
-    list.replaceChildren();
-    const recent = state.gardenHistory.slice(0, 8);
-    if (!recent.length) list.append(h('li', { class: 'empty' }, 'Complete a focus interval to begin your garden history.'));
-    recent.forEach(item => list.append(h('li', {}, `${item.date} · ${item.outcome === 'withered' ? 'Withered' : 'Grown'}`)));
+    const withered = state.gardenHistory.filter(item => item.outcome === 'withered').length;
+    $('#plantNote').textContent = state.plant ? `${state.plant} tree${state.plant === 1 ? '' : 's'} grown${withered ? ` · ${withered} withered` : ''}` : '';
+    if (!sessionWithered) $('#garden-status').textContent = prefs.witherOnLeave ? `Leave this tab for more than ${prefs.witherAfterSeconds} seconds during focus and your tree withers.` : 'Each completed focus session grows a tree.';
+    const recent = state.gardenHistory.slice(0, 24).reverse();
+    const row = $('#garden-history');
+    row.replaceChildren();
+    if (!recent.length) { row.append(h('p', { class: 'empty' }, 'Finish your first focus session to plant a tree.')); return; }
+    recent.forEach(item => row.append(h('span', { class: 'garden-tree', title: `${item.date}: ${item.outcome === 'withered' ? 'withered' : 'grown'}` }, item.outcome === 'withered' ? '🍂' : '🌳')));
   }
   function renderStats() {
     const sessions = getState().focusSessions.filter(session => session.type === 'focus');
     const today = getDayKey();
-    const weekStart = new Date();
-    weekStart.setDate(weekStart.getDate() - 6);
-    const recent = sessions.filter(session => session.date >= getDayKey(weekStart) && session.date <= today);
     const todaySessions = sessions.filter(session => session.date === today);
-    const todayMinutes = todaySessions.reduce((sum, session) => sum + session.focusMinutes, 0);
-    const weekMinutes = recent.reduce((sum, session) => sum + session.focusMinutes, 0);
-    $('#focus-stats').replaceChildren(h('div', { class: 'history-stat' }, h('strong', {}, String(todaySessions.length)), h('span', {}, 'focus sessions today')), h('div', { class: 'history-stat' }, h('strong', {}, `${todayMinutes} min`), h('span', {}, 'focused today')), h('div', { class: 'history-stat' }, h('div', {}, `${weekMinutes} min`), h('span', {}, 'focused this week')));
-    const chart = $('#focus-chart');
-    chart.replaceChildren();
-    const days = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() - (6 - index)); const key = getDayKey(date); return { date, minutes: sessions.filter(session => session.date === key).reduce((sum, session) => sum + session.focusMinutes, 0) }; });
-    const max = Math.max(1, ...days.map(day => day.minutes));
-    days.forEach(day => chart.append(h('li', {}, h('span', {}, day.date.toLocaleDateString(undefined, { weekday: 'short' })), h('div', { class: 'meter', role: 'img', 'aria-label': `${day.minutes} focus minutes` }, h('div', { style: `width:${day.minutes / max * 100}%` })), h('span', {}, `${day.minutes}m`))));
+    const todayMinutes = todaySessions.reduce((sum, session) => sum + (session.focusMinutes || 0), 0);
+    const days = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() - (6 - index)); const key = getDayKey(date); return { date, key, minutes: sessions.filter(session => session.date === key).reduce((sum, session) => sum + (session.focusMinutes || 0), 0) }; });
+    const dates = new Set(sessions.map(session => session.date));
+    let streak = 0;
+    const cursor = new Date();
+    if (!dates.has(getDayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+    while (dates.has(getDayKey(cursor))) { streak += 1; cursor.setDate(cursor.getDate() - 1); }
+    const stat = (value, label) => h('div', { class: 'focus-stat' }, h('strong', {}, value), h('span', {}, label));
+    $('#focus-stats').replaceChildren(stat(String(todaySessions.length), todaySessions.length === 1 ? 'session' : 'sessions'), stat(`${todayMinutes}`, 'minutes'), stat(`${streak}`, streak === 1 ? 'day streak' : 'day streak'));
+    const max = Math.max(25, ...days.map(day => day.minutes));
+    $('#focus-chart').replaceChildren(...days.map(day => h('li', { class: day.key === today ? 'is-today' : '' },
+      h('span', { class: 'bar-value' }, day.minutes ? `${day.minutes}` : ''),
+      h('span', { class: 'bar', style: `--h:${Math.max(4, day.minutes / max * 100)}%`, role: 'img', 'aria-label': `${day.date.toLocaleDateString(undefined, { weekday: 'long' })}: ${day.minutes} minutes` }),
+      h('span', { class: 'bar-day', 'aria-hidden': 'true' }, day.date.toLocaleDateString(undefined, { weekday: 'narrow' })))));
+  }
+
+  function renderSounds() {
+    $('#sound-pills').replaceChildren(...SOUNDS.map(([id, label]) => {
+      const input = h('input', { type: 'radio', name: 'ambient', value: id, id: `sound-${id}` });
+      input.checked = id === 'off';
+      input.addEventListener('change', () => { if (id === 'off') stopSound(); else startSound(id); });
+      return h('label', { class: 'sound-pill', for: `sound-${id}` }, input, label);
+    }));
   }
   function changeVolume() {
     const value = Number($('#ambient-volume').value);
@@ -201,14 +382,13 @@ export function initFocus() {
     update(state => { state.focusPrefs.ambientVolume = value; });
     if (audioGain && audioContext) audioGain.gain.setTargetAtTime(value, audioContext.currentTime, 0.08);
   }
-  async function startSound() {
+  async function startSound(type) {
     stopSound();
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) throw new Error('Web Audio is unavailable.');
       audioContext = new AudioContextClass();
       await audioContext.resume();
-      const type = $('#ambient-type').value;
       const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
       const channel = buffer.getChannelData(0);
       let brown = 0;
@@ -235,9 +415,11 @@ export function initFocus() {
         audioModulator.start();
       }
       if (type === 'forest') startBirdNotes();
-      $('#ambient-status').textContent = `${type[0].toUpperCase()}${type.slice(1)} ambience playing from generated audio.`;
+      $('#ambient-status').textContent = `${type} sound playing`;
     } catch {
-      $('#ambient-status').textContent = 'Could not start generated audio in this browser.';
+      $('#ambient-status').textContent = 'Could not start sound in this browser.';
+      toast('Sound isn’t available in this browser.');
+      $('#sound-off').checked = true;
     }
   }
   function startBirdNotes() {
@@ -263,16 +445,16 @@ export function initFocus() {
   function stopSound() {
     window.clearInterval(birdTimer);
     birdTimer = null;
-    birds.forEach(oscillator => { try { oscillator.stop(); } catch {} });
+    birds.forEach(oscillator => { try { oscillator.stop(); } catch { /* already stopped */ } });
     birds.clear();
-    try { audioSource?.stop(); } catch {}
-    try { audioModulator?.stop(); } catch {}
+    try { audioSource?.stop(); } catch { /* already stopped */ }
+    try { audioModulator?.stop(); } catch { /* already stopped */ }
     audioSource = null;
     audioModulator = null;
     audioGain = null;
     if (audioContext) audioContext.close();
     audioContext = null;
-    $('#ambient-status').textContent = 'Ambient sound stopped.';
+    $('#ambient-status').textContent = 'Sound off';
   }
 }
 

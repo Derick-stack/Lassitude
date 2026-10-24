@@ -2,24 +2,95 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Lassitude: a private daily routine for faith, fitness and focus.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Focus timer, quick notes and spaced-repetition flashcards in Lassitude.">
 <title>Focus · Lassitude</title>
 <link rel="stylesheet" href="style-luxury.css">
 <script type="module" src="js/app.js"></script>
 </head>
 <body data-page="focusPage">
 <header id="site-header"></header>
-<main class="wrap">
-<section class="hero"><h1>Focus</h1><p>Work in focused intervals, attach a task, and keep a quiet record of your sessions.</p></section>
-<div class="focus-layout">
-<section class="card focus-timer-card" data-tour="pomodoro"><p class="eyebrow">Pomodoro</p><h2 id="phase-title">Focus session</h2><div class="time" id="time" role="timer" aria-live="polite">25:00</div><div class="meter" id="barWrap" role="progressbar" aria-label="Current interval progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div><p id="cycle-count" aria-live="polite">Cycle 1 of 4</p><label for="focus-task-select">Attach to task</label><select id="focus-task-select"><option value="">No task</option></select><div class="focus-controls"><button id="start" type="button">Start</button><button id="pause" type="button" class="ghost">Pause</button><button id="reset" type="button" class="ghost">Reset interval</button></div><p id="note" aria-live="polite"></p></section>
-<section class="card"><h2>Cycle settings</h2><form id="pomodoro-settings" class="focus-settings"><label for="focus-minutes">Focus minutes</label><input id="focus-minutes" type="number" min="1" max="120" required><label for="short-minutes">Short break minutes</label><input id="short-minutes" type="number" min="1" max="60" required><label for="long-minutes">Long break minutes</label><input id="long-minutes" type="number" min="1" max="90" required><label for="long-every">Long break every cycles</label><input id="long-every" type="number" min="2" max="8" required><button>Save cycle settings</button></form><small id="focus-settings-status" aria-live="polite"></small></section>
-<section class="card" data-tour="focus-tasks"><h2>Tasks</h2><form id="focus-task-form" class="row"><label for="focus-task-title">New task</label><input id="focus-task-title" type="text" maxlength="100" required><button>Add</button></form><ul id="focus-task-list" class="list"></ul></section>
-<section class="card" data-tour="ambient-audio"><h2>Ambient sound</h2><label for="ambient-type">Sound</label><select id="ambient-type"><option value="rain">Rain</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="brown">Brown noise</option></select><label for="ambient-volume">Volume</label><input id="ambient-volume" type="range" min="0" max="1" step="0.01"><output id="ambient-volume-value" for="ambient-volume"></output><div class="focus-controls"><button id="ambient-start" type="button">Play sound</button><button id="ambient-stop" type="button" class="ghost">Stop sound</button></div><small id="ambient-status" aria-live="polite">Sound is generated in your browser. No audio files are loaded.</small></section>
-<section class="card" data-tour="focus-garden"><h2>Focus garden</h2><div class="plant" id="plant" aria-hidden="true">🌱</div><p id="plantNote"></p><p id="garden-status" aria-live="polite"></p><ul id="garden-history" class="list"></ul></section>
-<section class="card"><h2>Focus statistics</h2><div id="focus-stats" class="history-summary"></div><ul id="focus-chart" class="list"></ul></section>
+<main class="wrap focus-wrap">
+<div class="focus-head">
+<div><h1>Focus</h1><p>Deep work, quick notes, and study that sticks.</p></div>
+<div class="focus-tabs" role="tablist" aria-label="Focus tools">
+<button type="button" role="tab" id="ftab-timer" aria-controls="fpanel-timer" data-ftab="timer">Timer</button>
+<button type="button" role="tab" id="ftab-notes" aria-controls="fpanel-notes" data-ftab="notes">Notes</button>
+<button type="button" role="tab" id="ftab-study" aria-controls="fpanel-study" data-ftab="study">Study <span class="tab-count" id="due-badge" hidden></span></button>
 </div>
+</div>
+
+<!-- TIMER -->
+<section id="fpanel-timer" role="tabpanel" aria-labelledby="ftab-timer" class="focus-panel">
+<div class="timer-layout">
+<section class="card timer-card" id="timer-card" data-tour="pomodoro">
+<div class="timer-top">
+<span class="phase-pill" id="phase-title" data-phase="focus">Focus</span>
+<span class="cycle-dots" id="cycle-dots" aria-label="Cycle progress"></span>
+<button type="button" class="icon-btn" id="focus-mode" aria-label="Enter full-screen focus mode" title="Full-screen focus mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+<div class="ring-wrap">
+<svg class="ring" viewBox="0 0 220 220" aria-hidden="true"><circle class="ring-track" cx="110" cy="110" r="100"/><circle class="ring-fill" id="ring-fill" cx="110" cy="110" r="100"/></svg>
+<div class="ring-center">
+<div class="ring-tree" id="plant" aria-hidden="true">🌱</div>
+<div class="time" id="time" role="timer" aria-live="off">25:00</div>
+<p class="ring-sub" id="cycle-count">Cycle 1 of 4</p>
+</div>
+</div>
+<div class="sr" id="time-announcer" aria-live="polite"></div>
+<div class="task-pick">
+<label for="focus-task-select">What are you working on?</label>
+<div class="task-pick-row"><select id="focus-task-select"><option value="">Just focusing</option></select><button type="button" class="ghost" id="quick-task" aria-label="Add a new task">+ Task</button></div>
+</div>
+<div class="timer-controls">
+<button id="reset" type="button" class="icon-btn" aria-label="Restart this interval" title="Restart interval"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button id="start" type="button" class="start-btn">Start focus</button>
+<button id="skip" type="button" class="icon-btn" aria-label="Skip to the next interval" title="Skip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5l9 7-9 7V5zM18 5v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+<p id="note" class="timer-note" aria-live="polite"></p>
+<div class="presets" role="group" aria-label="Timer presets" id="presets"></div>
+<form class="parking" id="parking-form">
+<label for="parking-input" class="sr">Park a distracting thought</label>
+<input id="parking-input" type="text" maxlength="200" placeholder="Distracting thought? Park it here and keep going" autocomplete="off">
+<button type="submit" class="ghost">Park</button>
+</form>
+<div class="sound-row">
+<span class="sound-label" id="sound-label">Sound</span>
+<div class="sound-pills" role="radiogroup" aria-labelledby="sound-label" id="sound-pills"></div>
+<label for="ambient-volume" class="sr">Volume</label><input id="ambient-volume" type="range" min="0" max="1" step="0.01" aria-describedby="ambient-volume-value"><output id="ambient-volume-value" for="ambient-volume" class="sr"></output>
+</div>
+<small id="ambient-status" class="sr" aria-live="polite"></small>
+<details class="timer-settings">
+<summary>Timer settings</summary>
+<form id="pomodoro-settings" class="focus-settings"><label for="focus-minutes">Focus minutes</label><input id="focus-minutes" type="number" min="1" max="120" required><label for="short-minutes">Short break minutes</label><input id="short-minutes" type="number" min="1" max="60" required><label for="long-minutes">Long break minutes</label><input id="long-minutes" type="number" min="1" max="90" required><label for="long-every">Long break after this many cycles</label><input id="long-every" type="number" min="2" max="8" required><button>Save</button></form>
+<small id="focus-settings-status" aria-live="polite"></small>
+</details>
+</section>
+
+<div class="timer-side">
+<section class="card today-card"><h2>Today</h2><div id="focus-stats" class="focus-stats"></div><ol id="focus-chart" class="week-bars" aria-label="Focus minutes, last 7 days"></ol></section>
+<section class="card" data-tour="focus-tasks"><h2>Tasks</h2><form id="focus-task-form" class="task-add"><label for="focus-task-title" class="sr">New task</label><input id="focus-task-title" type="text" maxlength="100" placeholder="Add a task…" required><button aria-label="Add task">Add</button></form><ul id="focus-task-list" class="task-list"></ul></section>
+<section class="card" data-tour="focus-garden"><h2>Your garden</h2><div class="garden-row" id="garden-history" aria-label="Recent sessions"></div><p id="plantNote" class="field-note"></p><p id="garden-status" class="field-note" aria-live="polite"></p></section>
+</div>
+</div>
+</section>
+
+<!-- NOTES -->
+<section id="fpanel-notes" role="tabpanel" aria-labelledby="ftab-notes" class="focus-panel" hidden>
+<div class="notes-layout" id="notes-layout">
+<aside class="notes-list-pane card">
+<div class="notes-list-head"><input type="search" id="note-search" placeholder="Search notes" aria-label="Search notes"><button type="button" id="new-note">New note</button></div>
+<div class="notebook-chips" id="notebook-chips" role="group" aria-label="Filter by notebook"></div>
+<ul class="note-list" id="note-list"></ul>
+</aside>
+<section class="note-editor card" id="note-editor" aria-label="Note editor"></section>
+</div>
+</section>
+
+<!-- STUDY -->
+<section id="fpanel-study" role="tabpanel" aria-labelledby="ftab-study" class="focus-panel" hidden>
+<div id="study-root"></div>
+</section>
 </main>
 </body>
 </html>

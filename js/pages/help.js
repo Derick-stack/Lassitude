@@ -3,7 +3,7 @@ import { $, $$, h } from '../ui.js';
 const topics = [
   ['Home', 'Daily verse, routine, focus music, challenge, and NADIR coach.', 'index.html'],
   ['Start', 'Set up your first week and add a simple calendar event.', 'start.html'],
-  ['Focus', 'Choose a session length, start, pause, or reset the timer.', 'focus.html'],
+  ['Focus', 'Focus timer with a growing tree, quick notes with templates, and flashcards that come back right before you forget.', 'focus.html'],
   ['Progress', 'Track habits, water, reflections, prayer time, and streaks.', 'progress.html'],
   ['Future', 'Save goals, milestones, and vision items on this device.', 'future.html'],
   ['Settings', 'Set your display name, theme, export, or delete local data.', 'settings.html']

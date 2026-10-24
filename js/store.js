@@ -48,6 +48,9 @@ const defaults = () => ({
   focusPrefs: { focusMinutes: 25, shortBreakMinutes: 5, longBreakMinutes: 15, longBreakEvery: 4, witherOnLeave: false, witherAfterSeconds: 60, ambientVolume: 0.2 },
   focusTasks: [],
   focusSessions: [],
+  studyNotes: [],
+  studyNotebooks: ['General'],
+  studyCards: {},
   gardenHistory: [],
   accountSync: { migratedUserId: '', lastSyncedAt: '' },
   plant: 0,
@@ -229,6 +232,17 @@ function migrate(value) {
     ambientVolume: Math.max(0, Math.min(1, Number.isFinite(Number(focusPrefs.ambientVolume)) ? Number(focusPrefs.ambientVolume) : 0.2))
   };
   next.focusTasks = arrayOrEmpty(next.focusTasks);
+  next.studyNotes = arrayOrEmpty(next.studyNotes).filter(note => note && typeof note.id === 'string').map(note => ({
+    id: note.id,
+    title: typeof note.title === 'string' ? note.title.slice(0, 120) : '',
+    body: typeof note.body === 'string' ? note.body.slice(0, 20000) : '',
+    notebook: typeof note.notebook === 'string' && note.notebook ? note.notebook : 'General',
+    pinned: Boolean(note.pinned),
+    createdAt: Number(note.createdAt) || Date.now(),
+    updatedAt: Number(note.updatedAt) || Date.now()
+  }));
+  next.studyNotebooks = [...new Set(['General', ...arrayOrEmpty(next.studyNotebooks).filter(name => typeof name === 'string' && name.trim()).map(name => name.trim().slice(0, 40)), ...next.studyNotes.map(note => note.notebook)])];
+  next.studyCards = objectOrEmpty(next.studyCards);
   next.focusSessions = arrayOrEmpty(next.focusSessions);
   next.gardenHistory = arrayOrEmpty(next.gardenHistory);
   next.accountSync = { ...defaults().accountSync, ...objectOrEmpty(next.accountSync) };
