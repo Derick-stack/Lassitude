@@ -16,31 +16,37 @@
 <body data-page="calendarPage">
 <header id="site-header"></header>
 <main class="wrap">
-<section class="hero"><h1>Calendar</h1><p>Plan routines, see habit activity, and keep important dates in view.</p></section>
+<section class="hero cal-hero"><h1>Calendar</h1><p>Plan routines, see habit activity, and keep important dates in view.</p></section>
 <section class="calendar-panel" aria-label="Calendar">
-<div class="calendar-toolbar">
-<div class="calendar-view-switch" role="group" aria-label="Calendar view">
-<button type="button" class="ghost" data-calendar-view="month" aria-pressed="true">Month</button>
-<button type="button" class="ghost" data-calendar-view="week" aria-pressed="false">Week</button>
-<button type="button" class="ghost" data-calendar-view="day" aria-pressed="false">Day</button>
-</div>
-<div class="calendar-navigation">
-<button type="button" id="calendar-prev" class="ghost" aria-label="Previous period">Previous</button>
+<div class="cal-top">
+<div class="cal-title"><h2 id="calendar-heading" aria-live="polite"></h2><p id="calendar-range"></p></div>
+<div class="cal-nav">
+<button type="button" id="calendar-prev" class="icon-btn" aria-label="Previous">‹</button>
 <button type="button" id="calendar-today" class="ghost">Today</button>
-<button type="button" id="calendar-next" class="ghost" aria-label="Next period">Next</button>
+<button type="button" id="calendar-next" class="icon-btn" aria-label="Next">›</button>
+</div>
+</div>
+<div class="cal-controls">
+<div class="calendar-view-switch segmented-pills" role="group" aria-label="Calendar view">
+<button type="button" data-calendar-view="month" aria-pressed="true">Month</button>
+<button type="button" data-calendar-view="week" aria-pressed="false">Week</button>
+<button type="button" data-calendar-view="day" aria-pressed="false">Day</button>
 </div>
 <div class="calendar-actions">
-<button type="button" id="calendar-add">Add event</button>
-<button type="button" id="calendar-export" class="ghost">Export ICS</button>
-<button type="button" id="calendar-import-button" class="ghost">Import ICS</button>
+<button type="button" id="calendar-add">+ Add event</button>
+<details class="cal-more"><summary class="icon-btn" aria-label="More calendar options">⋯</summary>
+<div class="cal-more-menu">
+<button type="button" id="calendar-export" class="ghost">Export to calendar app (.ics)</button>
+<button type="button" id="calendar-import-button" class="ghost">Import .ics file</button>
+</div></details>
 <input class="sr" type="file" id="calendar-import" accept=".ics,text/calendar">
 </div>
 </div>
-<div class="calendar-heading-row"><h2 id="calendar-heading" aria-live="polite"></h2><p id="calendar-range" aria-live="polite"></p></div>
 <div id="calendar-grid" class="calendar-grid calendar-month" aria-label="Calendar dates"></div>
-<p id="calendar-status" class="field-note" aria-live="polite"></p>
-<p class="field-note">Habit indicators include only completed habits. Workout logs and goal due dates appear automatically. To move an event on desktop, drag it to another date.</p>
+<div class="cal-legend" aria-label="Event colors"><span class="type-workout">Workout</span><span class="type-faith">Faith</span><span class="type-focus">Focus</span><span class="type-deadline">Deadline</span><span class="type-custom">Other</span><span class="legend-habit">✓ Habits done</span></div>
 </section>
+<section class="card calendar-agenda" id="calendar-agenda" aria-live="polite"></section>
+<p id="calendar-status" class="field-note"></p>
 </main>
 </body>
 </html>

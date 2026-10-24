@@ -12,6 +12,7 @@ const eventTypes = [
 export function initCalendar() {
   let cursor = fromKey(getDayKey());
   let view = 'month';
+  let selected = getDayKey();
   const grid = $('#calendar-grid');
   const title = $('#calendar-heading');
   const range = $('#calendar-range');
@@ -24,10 +25,11 @@ export function initCalendar() {
   }));
   $('#calendar-prev').addEventListener('click', () => moveCursor(-1));
   $('#calendar-next').addEventListener('click', () => moveCursor(1));
-  $('#calendar-today').addEventListener('click', () => { cursor = fromKey(getDayKey()); render(); });
-  $('#calendar-add').addEventListener('click', () => openEventDialog(getDayKey(cursor)));
-  $('#calendar-export').addEventListener('click', exportICS);
-  $('#calendar-import-button').addEventListener('click', () => $('#calendar-import').click());
+  $('#calendar-today').addEventListener('click', () => { cursor = fromKey(getDayKey()); selected = getDayKey(); render(); });
+  $('#calendar-add').addEventListener('click', () => openEventDialog(selected));
+  $('#calendar-export').addEventListener('click', () => { $('.cal-more').open = false; exportICS(); });
+  $('#calendar-import-button').addEventListener('click', () => { $('.cal-more').open = false; $('#calendar-import').click(); });
+  document.addEventListener('click', event => { const menu = $('.cal-more'); if (menu?.open && !menu.contains(event.target)) menu.open = false; });
   $('#calendar-import').addEventListener('change', importICS);
   render();
   scheduleReminders();
@@ -40,11 +42,13 @@ export function initCalendar() {
 
   function render() {
     viewButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.calendarView === view)));
-    title.textContent = view === 'month' ? cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : view === 'week' ? 'Week view' : 'Day view';
+    title.textContent = view === 'day' ? cursor.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
     const first = view === 'month' ? startOfWeek(new Date(cursor.getFullYear(), cursor.getMonth(), 1)) : view === 'week' ? startOfWeek(cursor) : cursor;
     const count = view === 'month' ? 42 : view === 'week' ? 7 : 1;
     const last = addDays(first, count - 1);
-    range.textContent = count === 1 ? first.toLocaleDateString(undefined, { dateStyle: 'full' }) : `${first.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${last.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    range.textContent = view === 'month' ? '' : count === 1 ? first.getFullYear() : `${first.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${last.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    $('#calendar-prev').setAttribute('aria-label', `Previous ${view}`);
+    $('#calendar-next').setAttribute('aria-label', `Next ${view}`);
     grid.className = `calendar-grid calendar-view-${view}`;
     grid.replaceChildren();
     if (view !== 'day') dayLabels.forEach(label => grid.append(h('div', { class: 'calendar-weekday', 'aria-hidden': 'true' }, label)));
@@ -53,18 +57,76 @@ export function initCalendar() {
       grid.append(renderDay(date));
     }
     const eventCount = getState().calendarEvents.length;
-    eventStatus.textContent = `${eventCount} saved event${eventCount === 1 ? '' : 's'}. Drag an event to another day to reschedule it.`;
+    eventStatus.textContent = `${eventCount} saved event${eventCount === 1 ? '' : 's'}. On a computer, drag an event to another day to move it.`;
+    renderAgenda();
+  }
+
+  // The list under the calendar: everything on the selected day, readable at full width.
+  function renderAgenda() {
+    const panel = $('#calendar-agenda');
+    if (view === 'day') { panel.hidden = true; return; }
+    panel.hidden = false;
+    const date = fromKey(selected);
+    const events = getEventsForDay(date);
+    const habits = Object.values(getState().habits[selected] || {}).filter(Boolean).length;
+    const add = h('button', { type: 'button', class: 'ghost small-btn' }, '+ Add');
+    add.addEventListener('click', () => openEventDialog(selected));
+    const heading = selected === getDayKey() ? 'Today' : date.toLocaleDateString(undefined, { weekday: 'long' });
+    panel.replaceChildren(
+      h('div', { class: 'agenda-head' }, h('div', {}, h('h2', {}, heading), h('p', {}, `${date.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}${habits ? ` · ✓ ${habits} habit${habits === 1 ? '' : 's'} done` : ''}`)), add),
+      events.length ? h('ul', { class: 'agenda-list' }, events.map(event => renderAgendaItem(event, date))) : h('p', { class: 'agenda-empty' }, 'Nothing planned. Tap “+ Add” to schedule something.'));
+  }
+
+  function renderAgendaItem(event, date) {
+    const editable = !event.readOnly && !event.virtual;
+    const item = h('li', { class: `agenda-item type-${event.type}` },
+      h('span', { class: 'agenda-time' }, event.time ? formatTime(event.time) : 'All day'),
+      h('span', { class: 'agenda-main' }, h('strong', {}, event.title), h('small', {}, `${event.typeLabel || typeLabel(event.type)}${event.recurrence && event.recurrence.frequency !== 'none' ? ' · repeats' : ''}`)));
+    if (editable) {
+      const edit = h('button', { type: 'button', class: 'ghost small-btn' }, 'Edit');
+      edit.addEventListener('click', () => openEventDialog(event.date, event));
+      const remove = h('button', { type: 'button', class: 'x', 'aria-label': `Delete ${event.title}` }, '×');
+      remove.addEventListener('click', () => deleteEvent(event));
+      item.append(h('span', { class: 'agenda-actions' }, edit, remove));
+    }
+    item.dataset.date = dateKey(date);
+    return item;
+  }
+
+  function formatTime(value) {
+    const [hours, minutes] = value.split(':').map(Number);
+    return new Date(2000, 0, 1, hours, minutes).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+
+  async function deleteEvent(event) {
+    const confirmed = await confirmDialog({ title: 'Delete calendar event?', message: event.recurrence?.frequency !== 'none' ? 'This removes the recurring event series.' : 'This removes this event from your calendar.', confirmLabel: 'Delete', danger: true });
+    if (!confirmed) return;
+    const saved = getState().calendarEvents.find(item => item.id === event.id);
+    update(state => { state.calendarEvents = state.calendarEvents.filter(item => item.id !== event.id); });
+    toast('Calendar event deleted.', { actionLabel: 'Undo', duration: 5000, onAction: () => { update(state => state.calendarEvents.push(saved)); render(); } });
+    render();
   }
 
   function renderDay(date) {
     const key = dateKey(date);
     const today = key === getDayKey();
     const outsideMonth = view === 'month' && date.getMonth() !== cursor.getMonth();
-    const cell = h('section', { class: `calendar-day${today ? ' is-today' : ''}${outsideMonth ? ' is-outside' : ''}`, 'aria-label': `${date.toLocaleDateString(undefined, { dateStyle: 'full' })}${today ? ', today' : ''}` });
-    const dayButton = h('button', { type: 'button', class: 'calendar-day-number', 'aria-label': `Add event on ${date.toLocaleDateString(undefined, { dateStyle: 'full' })}` }, String(date.getDate()));
-    dayButton.addEventListener('click', () => openEventDialog(key));
-    cell.append(dayButton, renderHabitIndicator(key));
     const events = getEventsForDay(date);
+    const cell = h('section', { class: `calendar-day${today ? ' is-today' : ''}${outsideMonth ? ' is-outside' : ''}${key === selected ? ' is-selected' : ''}`, 'aria-label': `${date.toLocaleDateString(undefined, { dateStyle: 'full' })}${today ? ', today' : ''}, ${events.length} event${events.length === 1 ? '' : 's'}` });
+    const dayButton = h('button', { type: 'button', class: 'calendar-day-number', 'aria-pressed': String(key === selected), 'aria-label': `Show ${date.toLocaleDateString(undefined, { dateStyle: 'full' })}` }, String(date.getDate()));
+    const select = () => {
+      selected = key;
+      if (view === 'day') return;
+      $$('.calendar-day.is-selected', grid).forEach(day => day.classList.remove('is-selected'));
+      $$('.calendar-day-number[aria-pressed="true"]', grid).forEach(button => button.setAttribute('aria-pressed', 'false'));
+      cell.classList.add('is-selected');
+      dayButton.setAttribute('aria-pressed', 'true');
+      renderAgenda();
+      if (matchMedia('(max-width: 640px)').matches) $('#calendar-agenda').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    dayButton.addEventListener('click', select);
+    cell.addEventListener('click', event => { if (!event.target.closest('.calendar-event, button')) select(); });
+    cell.append(h('div', { class: 'calendar-day-head', 'data-weekday': date.toLocaleDateString(undefined, { weekday: 'short' }) }, dayButton, renderHabitIndicator(key)));
     const list = h('ul', { class: 'calendar-day-events', 'aria-label': `Events for ${date.toLocaleDateString()}` });
     events.forEach(event => list.append(renderEvent(event, date)));
     if (view === 'month' && events.length > 3) {
@@ -93,14 +155,15 @@ export function initCalendar() {
   function renderHabitIndicator(key) {
     const habits = getState().habits[key] || {};
     const count = Object.values(habits).filter(Boolean).length;
-    return h('span', { class: `habit-indicator${count ? ' has-habits' : ''}`, 'aria-label': `${count} habits completed` }, count ? `${count} habits` : 'No habits');
+    return count ? h('span', { class: 'habit-indicator has-habits', title: `${count} habit${count === 1 ? '' : 's'} completed`, 'aria-label': `${count} habit${count === 1 ? '' : 's'} completed` }, `✓${count}`) : '';
   }
 
   function renderEvent(event, occurrenceDate) {
-    const item = h('li', { class: `calendar-event type-${event.type}`, draggable: !event.readOnly, tabindex: '0' },
+    const label = event.typeLabel || typeLabel(event.type);
+    const item = h('li', { class: `calendar-event type-${event.type}`, draggable: !event.readOnly, tabindex: '0', title: `${event.time ? `${formatTime(event.time)} · ` : ''}${event.title} (${label})` },
       h('span', { class: 'event-marker', 'aria-hidden': 'true' }, eventIcon(event.type)),
-      h('span', { class: 'event-type' }, event.typeLabel || typeLabel(event.type)),
-      h('span', { class: 'event-time' }, event.time || ''),
+      h('span', { class: 'event-type' }, label),
+      h('span', { class: 'event-time' }, event.time ? formatTime(event.time).replace(/\s?(AM|PM)$/i, match => match.trim().charAt(0).toLowerCase()) : ''),
       h('span', { class: 'event-title' }, event.title));
     if (!event.readOnly && !event.virtual) {
       item.addEventListener('dragstart', drag => {
@@ -117,15 +180,7 @@ export function initCalendar() {
         if (!click.target.closest('button')) openEventDialog(event.date, event);
       });
       const remove = h('button', { class: 'x event-delete', type: 'button', 'aria-label': `Delete ${event.title}${event.recurrence?.frequency !== 'none' ? ' series' : ''}` }, '×');
-      remove.addEventListener('click', async click => {
-        click.stopPropagation();
-        const confirmed = await confirmDialog({ title: 'Delete calendar event?', message: event.recurrence?.frequency !== 'none' ? 'This removes the recurring event series.' : 'This removes this event from your calendar.', confirmLabel: 'Delete', danger: true });
-        if (!confirmed) return;
-        const saved = getState().calendarEvents.find(item => item.id === event.id);
-        update(state => { state.calendarEvents = state.calendarEvents.filter(item => item.id !== event.id); });
-        toast('Calendar event deleted.', { actionLabel: 'Undo', duration: 5000, onAction: () => { update(state => state.calendarEvents.push(saved)); render(); } });
-        render();
-      });
+      remove.addEventListener('click', click => { click.stopPropagation(); deleteEvent(event); });
       item.append(remove);
     }
     if (event.virtual) item.setAttribute('aria-label', `${event.typeLabel}: ${event.title}`);
