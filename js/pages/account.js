@@ -43,6 +43,10 @@ export async function initAccount() {
     $('#sync-now').addEventListener('click', syncNow);
     $('#delete-account').addEventListener('click', deleteAccount);
     bindExport();
+    if (new URLSearchParams(location.search).get('delete') === '1') {
+      history.replaceState(null, '', 'account.html');
+      void deleteAccount();
+    }
 
     async function syncNow() {
       try {
@@ -53,6 +57,9 @@ export async function initAccount() {
     }
 
     async function deleteAccount() {
+      // Two separate confirmations: an "are you sure" step, then typing DELETE.
+      const proceed = await confirmDialog({ title: 'Delete your account?', message: 'Your account, synced habits, workouts, journal and prayer entries will be permanently deleted. This cannot be undone. Consider exporting your data first.', confirmLabel: 'Continue', danger: true });
+      if (!proceed) return;
       const dialog = h('dialog', { class: 'dialog', 'aria-labelledby': 'delete-account-title' });
       const form = h('form', { method: 'dialog' });
       const typed = h('input', { type: 'text', autocomplete: 'off', required: true, 'aria-label': 'Type DELETE to confirm' });

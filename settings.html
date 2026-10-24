@@ -2,22 +2,165 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Lassitude: a private daily routine for faith, fitness and focus.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Manage your Lassitude profile, appearance, notifications, training, NADIR chat, data, account and legal information.">
 <title>Settings · Lassitude</title>
 <link rel="stylesheet" href="style-luxury.css">
 <script type="module" src="js/app.js"></script>
 </head>
 <body data-page="settingsPage">
 <header id="site-header"></header>
-<main class="wrap">
-<section class="hero"><h1>Settings</h1></section>
-<div class="grid">
-<section class="card"><h2>Profile</h2><form id="nameForm" class="row"><label for="name">Display name</label><input type="text" id="name" maxlength="40"><button>Save</button></form><small id="saved" aria-live="polite"></small></section>
-<section class="card"><h2>Appearance</h2><button class="ghost" data-t="midnight" aria-pressed="false">Midnight gold</button><button class="ghost" data-t="rose" aria-pressed="false">Rose</button><button class="ghost" data-t="ocean" aria-pressed="false">Ocean</button><button class="ghost" data-t="emerald" aria-pressed="false">Emerald</button><p><label><input type="checkbox" id="light"> Light mode</label></p></section>
-<section class="card"><h2>Reminder</h2><form id="reminderForm"><label class="choice" for="reminder-enabled"><input id="reminder-enabled" type="checkbox"><span>Daily browser reminder</span></label><label for="reminder-time">Reminder time</label><input id="reminder-time" type="time" required><p class="field-note">Notifications require browser permission and this site to remain open near the chosen time.</p><button>Save reminder</button></form><small id="reminder-status" aria-live="polite"></small></section>
-<section class="card"><h2>Focus garden</h2><form id="focus-preferences-form"><label class="choice" for="wither-enabled"><input id="wither-enabled" type="checkbox"><span>Wither a session tree after leaving the tab</span></label><label for="wither-seconds">Time away before withering (seconds)</label><input id="wither-seconds" type="number" min="10" max="3600" step="10"><p class="field-note">Optional. If enabled, leaving an active focus session in another tab longer than this marks its garden entry withered. The timer still tracks time in the background.</p><button>Save Focus preference</button></form><small id="focus-preferences-status" aria-live="polite"></small></section>
-<section class="card"><h2>Your data</h2><p>Everything is stored only in this browser.</p><button id="export" class="ghost">Export my data</button><button id="clear" class="danger">Delete all data</button></section>
+<main class="wrap settings-wrap">
+<div class="settings-head">
+<h1>Settings</h1>
+<p>Manage your profile, appearance, privacy and account. Changes save automatically.</p>
+</div>
+<div class="settings-layout">
+<div class="settings-tabs" role="tablist" aria-label="Settings sections" aria-orientation="vertical">
+<button type="button" role="tab" id="tab-profile" aria-controls="panel-profile" data-panel="profile">Profile</button>
+<button type="button" role="tab" id="tab-appearance" aria-controls="panel-appearance" data-panel="appearance">Appearance</button>
+<button type="button" role="tab" id="tab-notifications" aria-controls="panel-notifications" data-panel="notifications">Notifications</button>
+<button type="button" role="tab" id="tab-training" aria-controls="panel-training" data-panel="training">Training &amp; focus</button>
+<button type="button" role="tab" id="tab-chat" aria-controls="panel-chat" data-panel="chat">NADIR &amp; chat</button>
+<button type="button" role="tab" id="tab-data" aria-controls="panel-data" data-panel="data">Data &amp; privacy</button>
+<button type="button" role="tab" id="tab-account" aria-controls="panel-account" data-panel="account">Account &amp; security</button>
+<button type="button" role="tab" id="tab-legal" aria-controls="panel-legal" data-panel="legal">Legal &amp; about</button>
+</div>
+
+<div class="settings-panels">
+<section class="settings-panel" role="tabpanel" id="panel-profile" aria-labelledby="tab-profile">
+<h2>Profile</h2>
+<div class="setting-group">
+<h3>Your profile</h3>
+<div class="setting-row"><div class="setting-text"><label for="name">Display name</label><p>Shown in greetings and by NADIR.</p></div><input type="text" id="name" maxlength="40" autocomplete="nickname" placeholder="Your first name"></div>
+<fieldset class="setting-row setting-stack"><legend class="setting-text"><span class="setting-label">Focus areas</span><p>NADIR prioritizes these when it suggests your next step.</p></legend><div class="chip-options" id="goal-options"></div></fieldset>
+</div>
+<div class="setting-group">
+<h3>Training profile</h3>
+<div class="setting-row"><div class="setting-text"><label for="experience">Fitness level</label><p>Sets the default workout suggestions and worship-workout level.</p></div><select id="experience"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
+<div class="setting-row"><div class="setting-text"><label for="workout-days">Workout days per week</label><p>Your weekly target in progress summaries.</p></div><select id="workout-days"></select></div>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-appearance" aria-labelledby="tab-appearance" hidden>
+<h2>Appearance</h2>
+<div class="setting-group">
+<h3>Mode</h3>
+<div class="segmented" role="radiogroup" aria-label="Color mode" id="mode-options"></div>
+<p class="setting-hint">System matches your device and switches automatically at night.</p>
+</div>
+<div class="setting-group">
+<h3>Accent color</h3>
+<div class="swatches" role="radiogroup" aria-label="Accent color" id="theme-options"></div>
+</div>
+<div class="setting-group">
+<h3>Display</h3>
+<div class="setting-row"><div class="setting-text"><span class="setting-label" id="text-size-label">Text size</span><p>Larger text across every page.</p></div><div class="segmented segmented-sm" role="radiogroup" aria-labelledby="text-size-label" id="text-options"></div></div>
+<div class="setting-row"><div class="setting-text"><label for="reduce-motion">Reduce motion</label><p>Turns off animations. When off, Lassitude follows your device setting.</p></div><input type="checkbox" role="switch" class="switch" id="reduce-motion"></div>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-notifications" aria-labelledby="tab-notifications" hidden>
+<h2>Notifications</h2>
+<form class="setting-group" id="reminderForm">
+<h3>Daily reminder</h3>
+<div class="setting-row"><div class="setting-text"><label for="reminder-enabled">Daily check-in reminder</label><p>A browser notification to pray, move and focus.</p></div><input type="checkbox" role="switch" class="switch" id="reminder-enabled"></div>
+<div class="setting-row"><div class="setting-text"><label for="reminder-time">Reminder time</label><p>Notifications need browser permission, and this site open in a tab near that time.</p></div><input id="reminder-time" type="time" required></div>
+<div class="setting-actions"><button>Save reminder</button><small id="reminder-status" aria-live="polite"></small></div>
+</form>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-training" aria-labelledby="tab-training" hidden>
+<h2>Training &amp; focus</h2>
+<div class="setting-group">
+<h3>Guided workouts</h3>
+<div class="setting-row"><div class="setting-text"><label for="workout-sound">Sound cues</label><p>A short tone when each interval starts.</p></div><input type="checkbox" role="switch" class="switch" id="workout-sound"></div>
+<div class="setting-row"><div class="setting-text"><label for="workout-vibration">Vibration</label><p>On phones that support it.</p></div><input type="checkbox" role="switch" class="switch" id="workout-vibration"></div>
+</div>
+<div class="setting-group">
+<h3>Focus timer</h3>
+<div class="setting-row"><div class="setting-text"><label for="focus-minutes">Focus length</label><p>25 minutes is a good starting point.</p></div><select id="focus-minutes"></select></div>
+<div class="setting-row"><div class="setting-text"><label for="break-minutes">Short break</label></div><select id="break-minutes"></select></div>
+<div class="setting-row"><div class="setting-text"><label for="wither-enabled">Wither on leaving the tab</label><p>If you leave an active session longer than the time below, its garden tree withers.</p></div><input type="checkbox" role="switch" class="switch" id="wither-enabled"></div>
+<div class="setting-row"><div class="setting-text"><label for="wither-seconds">Time away before withering</label><p>In seconds, 10 to 3600.</p></div><input id="wither-seconds" type="number" min="10" max="3600" step="10" inputmode="numeric"></div>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-chat" aria-labelledby="tab-chat" hidden>
+<h2>NADIR &amp; chat</h2>
+<div class="setting-group">
+<h3>Chat</h3>
+<div class="setting-row"><div class="setting-text"><label for="chat-sound">Message sounds</label><p>Soft chimes when you send and receive.</p></div><input type="checkbox" role="switch" class="switch" id="chat-sound"></div>
+<div class="setting-row"><div class="setting-text"><label for="chat-scroll">Auto-scroll to new messages</label></div><input type="checkbox" role="switch" class="switch" id="chat-scroll"></div>
+<div class="setting-row"><div class="setting-text"><label for="chat-time">Show timestamps</label></div><input type="checkbox" role="switch" class="switch" id="chat-time"></div>
+</div>
+<div class="setting-group">
+<h3>Conversation history</h3>
+<div class="setting-row"><div class="setting-text"><span class="setting-label">Saved on this device</span><p id="chat-count"></p></div><div class="setting-buttons"><button type="button" class="ghost" id="chat-export">Export transcript</button><button type="button" class="ghost danger-text" id="chat-clear">Clear history</button></div></div>
+</div>
+<div class="setting-group">
+<h3>AI replies</h3>
+<p class="setting-hint" id="ai-status"></p>
+<p class="setting-hint">NADIR gives general guidance only. It is not a doctor, counselor or pastor. In a crisis in the U.S., call or text 988.</p>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden>
+<h2>Data &amp; privacy</h2>
+<div class="setting-group">
+<h3>Your data</h3>
+<p class="setting-hint" id="storage-status"></p>
+<div class="setting-row"><div class="setting-text"><span class="setting-label">Export a backup</span><p>Download everything as a JSON file.</p></div><button type="button" class="ghost" id="export">Export data</button></div>
+<div class="setting-row"><div class="setting-text"><label for="import-file">Restore a backup</label><p>Replaces this browser’s data with a Lassitude export.</p></div><input type="file" id="import-file" accept="application/json,.json" class="file-input"></div>
+</div>
+<div class="setting-group">
+<h3>Privacy</h3>
+<p class="setting-hint">Lassitude has no ads, analytics or tracking. Guest data stays in this browser. Account data is visible only to you.</p>
+<div class="setting-links"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of service</a></div>
+</div>
+<div class="setting-group danger-zone">
+<h3>Delete local data</h3>
+<div class="setting-row"><div class="setting-text"><span class="setting-label">Delete all data on this device</span><p>Removes habits, logs, journal and settings from this browser. Your account’s cloud copy is not affected.</p></div><button type="button" class="danger" id="clear">Delete data</button></div>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-account" aria-labelledby="tab-account" hidden>
+<h2>Account &amp; security</h2>
+<div class="setting-group">
+<h3>Account</h3>
+<div class="account-summary" id="account-summary"><p>Checking your account…</p></div>
+</div>
+<div class="setting-group danger-zone" id="account-danger" hidden>
+<h3>Delete account</h3>
+<div class="setting-row"><div class="setting-text"><span class="setting-label">Delete account and cloud data</span><p>Permanently removes your account and synced data. You’ll be asked to confirm twice.</p></div><a class="btn danger-btn" href="account.html?delete=1">Delete account</a></div>
+</div>
+</section>
+
+<section class="settings-panel" role="tabpanel" id="panel-legal" aria-labelledby="tab-legal" hidden>
+<h2>Legal &amp; about</h2>
+<div class="setting-group">
+<h3>Legal</h3>
+<nav class="setting-nav" aria-label="Legal documents">
+<a href="terms.html"><span>Terms of service</span><small>Rules for using Lassitude</small></a>
+<a href="privacy.html"><span>Privacy policy</span><small>What’s stored, where, and for how long</small></a>
+<a href="licenses.html"><span>Open-source licenses</span><small>Software and texts Lassitude builds on</small></a>
+</nav>
+</div>
+<div class="setting-group">
+<h3>Health and AI disclaimer</h3>
+<p class="setting-hint">Workouts, nutrition tips and NADIR replies are general information, not medical, mental-health or professional advice. Talk to a doctor before starting a new exercise program, and stop if you feel pain or unwell.</p>
+</div>
+<div class="setting-group">
+<h3>About</h3>
+<dl class="about-list">
+<div><dt>App</dt><dd>Lassitude</dd></div>
+<div><dt>Version</dt><dd>1.0 · October 2026</dd></div>
+<div><dt>Scripture</dt><dd>King James Version (public domain)</dd></div>
+<div><dt>Support</dt><dd><a href="https://github.com/Derick-stack/Lassitude/issues" rel="noopener">Report a problem</a></dd></div>
+</dl>
+</div>
+</section>
+</div>
 </div>
 </main>
 </body>

@@ -24,17 +24,25 @@ const iconPaths = {
   workouts: 'M6 8v8m12-8v8M3 10v4m18-4v4M6 12h12M6 6v12m12-12v12',
   habits: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
   faith: 'M12 3v18m-7-11h14m-12-4h10',
+  more: 'M5 12h.01M12 12h.01M19 12h.01',
   menu: 'M4 6h16M4 12h16M4 18h16'
 };
 
 export function icon(name) {
-  const svg = h('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' });
+  // SVG must be created in the SVG namespace; document.createElement('svg') renders nothing.
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
   svg.setAttribute('fill', 'none');
   svg.setAttribute('stroke', 'currentColor');
   svg.setAttribute('stroke-width', '1.7');
   svg.setAttribute('stroke-linecap', 'round');
   svg.setAttribute('stroke-linejoin', 'round');
-  svg.append(h('path', { d: iconPaths[name] || iconPaths.home }));
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', iconPaths[name] || iconPaths.home);
+  svg.append(path);
   return svg;
 }
 
@@ -83,11 +91,23 @@ export function mountShell() {
     });
     const help = h('button', { id: 'help-trigger', class: 'help-trigger ghost', type: 'button', 'aria-label': 'Open help' }, '?');
     header.replaceChildren(h('div', { class: 'bar' }, h('a', { class: 'brand', href: 'index.html' }, 'Lassitude'), menu, nav, help));
+    // Phones get the most-used pages in a bottom bar within thumb reach; "More" opens the full menu above it.
+    const more = h('button', { type: 'button', class: 'tab-link', 'aria-controls': 'main-nav', 'aria-expanded': 'false' }, icon('more'), h('span', {}, 'More'));
+    const setOpen = open => {
+      nav.dataset.open = String(open);
+      [menu, more].forEach(button => button.setAttribute('aria-expanded', String(open)));
+      menu.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+    };
+    more.addEventListener('click', () => setOpen(nav.dataset.open !== 'true'));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && nav.dataset.open === 'true') { setOpen(false); more.focus(); } });
+    document.addEventListener('click', event => { if (nav.dataset.open === 'true' && !nav.contains(event.target) && !more.contains(event.target) && !menu.contains(event.target)) setOpen(false); });
+    const tabs = [['index.html', 'Home', 'home'], ['workouts.html', 'Workouts', 'workouts'], ['focus.html', 'Focus', 'focus'], ['faith.html', 'Faith', 'faith']];
+    document.body.append(h('nav', { class: 'tabbar', 'aria-label': 'Quick navigation' },
+      tabs.map(([url, label, symbol]) => h('a', { class: 'tab-link', href: url, ...(url === current ? { 'aria-current': 'page' } : {}) }, icon(symbol), h('span', {}, label))), more));
     document.body.append(h('footer', {}, h('span', {}, 'Your data stays in this browser. '), h('a', { href: 'privacy.html' }, 'Privacy'), ' · ', h('a', { href: 'terms.html' }, 'Terms')));
   }
   if (!$('#toast-region')) document.body.append(h('div', { id: 'toast-region', class: 'toast-region', 'aria-live': 'polite', 'aria-atomic': 'false' }));
-  document.documentElement.dataset.theme = getState().theme;
-  document.documentElement.dataset.mode = getState().light ? 'light' : 'dark';
+  applyTheme();
   renderStats();
   subscribe(renderStats);
 }
@@ -120,7 +140,19 @@ export function confirmDialog({ title, message, confirmLabel = 'Continue', dange
   });
 }
 
+const systemDark = window.matchMedia?.('(prefers-color-scheme: dark)');
+let followingSystem = false;
+
 export function applyTheme(state = getState()) {
-  document.documentElement.dataset.theme = state.theme;
-  document.documentElement.dataset.mode = state.light ? 'light' : 'dark';
+  const prefs = state.appPrefs;
+  const root = document.documentElement;
+  const dark = prefs.mode === 'system' ? systemDark?.matches ?? true : prefs.mode === 'dark';
+  root.dataset.theme = state.theme;
+  root.dataset.mode = dark ? 'dark' : 'light';
+  root.dataset.text = prefs.textSize;
+  if (prefs.reduceMotion === 'on') root.dataset.motion = 'reduce'; else delete root.dataset.motion;
+  if (!followingSystem && systemDark) {
+    followingSystem = true;
+    systemDark.addEventListener('change', () => { if (getState().appPrefs.mode === 'system') applyTheme(); });
+  }
 }

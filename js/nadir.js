@@ -210,6 +210,39 @@ function saveHistory(history) {
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-MAX_HISTORY))); } catch { /* History is a convenience; the chat still works without it. */ }
 }
 
+export const chatMessageCount = () => loadHistory().length;
+export function clearChatHistory() { saveHistory([]); }
+
+export function chatTranscript() {
+  return loadHistory().map(item => {
+    const when = item.at ? new Date(item.at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '';
+    return `[${when}] ${item.role === 'user' ? 'You' : 'NADIR'}: ${item.text}`;
+  }).join('\n\n');
+}
+
+const formatTime = at => new Date(at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+let chimeContext = null;
+function chime(outgoing) {
+  if (!getState().appPrefs.chatSound) return;
+  try {
+    chimeContext ??= new AudioContext();
+    const now = chimeContext.currentTime;
+    const gain = chimeContext.createGain();
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    gain.connect(chimeContext.destination);
+    (outgoing ? [660] : [784, 1046]).forEach((frequency, index) => {
+      const oscillator = chimeContext.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      oscillator.connect(gain);
+      oscillator.start(now + index * 0.08);
+      oscillator.stop(now + 0.35);
+    });
+  } catch { /* Sound is optional. */ }
+}
+
 export function mountNadir(root) {
   const log = $('[data-nadir-log]', root);
   const form = $('[data-nadir-form]', root);
@@ -235,9 +268,11 @@ export function mountNadir(root) {
       });
       bubble.append(row);
     }
+    if (getState().appPrefs.chatTimestamps && item.at) bubble.append(h('time', { class: 'nadir-time', datetime: new Date(item.at).toISOString() }, formatTime(item.at)));
     log.append(bubble);
-    log.scrollTop = log.scrollHeight;
+    scrollToEnd();
   };
+  const scrollToEnd = (force = false) => { if (force || getState().appPrefs.chatAutoScroll) log.scrollTop = log.scrollHeight; };
   // Actions are stored by id so the buttons keep working after a reload.
   const actionsById = Object.fromEntries(Object.entries(actions).filter(([, action]) => action.run).map(([id, action]) => [id, action]));
   const serialize = list => list.map(action => action.href ? { label: action.label, href: action.href } : { label: action.label, id: Object.keys(actionsById).find(id => actionsById[id] === action) });
@@ -254,14 +289,16 @@ export function mountNadir(root) {
     busy = true;
     send.disabled = true;
     add('user', text.trim());
-    const typing = h('div', { class: 'nadir-msg nadir-bot nadir-typing', 'aria-label': 'NADIR is typing' }, h('span'), h('span'), h('span'));
+    chime(true);
+    const typing = h('div', { class: 'ai-typing-indicator', role: 'status', 'aria-label': 'NADIR is typing' }, h('span', { class: 'dot' }), h('span', { class: 'dot' }), h('span', { class: 'dot' }));
     log.append(typing);
-    log.scrollTop = log.scrollHeight;
+    scrollToEnd();
     const context = buildContext();
     const [answer] = await Promise.all([aiReply(history, context), new Promise(resolve => setTimeout(resolve, 350))]);
     const result = answer || offlineReply(text, context);
     typing.remove();
     add('assistant', result.text, result.actions);
+    chime(false);
     busy = false;
     send.disabled = false;
   }
@@ -288,7 +325,7 @@ export function mountNadir(root) {
     const opening = offlineReply('hello');
     add('assistant', opening.text, opening.actions);
   }
-  if (history.length) history.forEach(render); else greet();
+  if (history.length) { history.forEach(render); scrollToEnd(true); } else greet();
 
   void (async () => {
     if (!supabaseConfigured) return;

@@ -3,6 +3,7 @@ import { isScheduled, parseHabitDate } from './habit-utils.js';
 const STORAGE_KEY = 'lassitude';
 const SCHEMA_VERSION = 6;
 const listeners = new Set();
+export const THEMES = ['midnight', 'emerald', 'royal', 'ocean', 'sunset', 'rose', 'violet'];
 
 const defaults = () => ({
   schemaVersion: SCHEMA_VERSION,
@@ -10,6 +11,7 @@ const defaults = () => ({
   xp: 0,
   theme: 'midnight',
   light: false,
+  appPrefs: { mode: 'dark', textSize: 'default', reduceMotion: 'system', chatSound: false, chatAutoScroll: true, chatTimestamps: true },
   profileGoals: [],
   starterHabits: [],
   workoutExperience: 'beginner',
@@ -66,8 +68,17 @@ function migrate(value) {
   next.schemaVersion = SCHEMA_VERSION;
   next.name = typeof next.name === 'string' ? next.name : '';
   next.xp = Number.isFinite(Number(next.xp)) ? Math.max(0, Number(next.xp)) : 0;
-  next.theme = ['midnight', 'rose', 'ocean', 'emerald'].includes(next.theme) ? next.theme : 'midnight';
+  next.theme = THEMES.includes(next.theme) ? next.theme : 'midnight';
   next.light = Boolean(next.light);
+  const prefs = objectOrEmpty(next.appPrefs);
+  next.appPrefs = {
+    mode: ['system', 'dark', 'light'].includes(prefs.mode) ? prefs.mode : next.light ? 'light' : 'dark',
+    textSize: ['default', 'large'].includes(prefs.textSize) ? prefs.textSize : 'default',
+    reduceMotion: ['system', 'on'].includes(prefs.reduceMotion) ? prefs.reduceMotion : 'system',
+    chatSound: Boolean(prefs.chatSound),
+    chatAutoScroll: prefs.chatAutoScroll !== false,
+    chatTimestamps: prefs.chatTimestamps !== false
+  };
   next.profileGoals = arrayOrEmpty(next.profileGoals);
   next.starterHabits = arrayOrEmpty(next.starterHabits);
   next.workoutExperience = ['beginner', 'intermediate', 'advanced'].includes(next.workoutExperience) ? next.workoutExperience : 'beginner';
