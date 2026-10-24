@@ -7,3 +7,5 @@ NADIR works without this step: it coaches offline from the visitor's own progres
 3. Deploy with `supabase functions deploy nadir-coach`.
 
 The function checks the user's session, allows up to 30 messages per user per hour, sends at most the last 12 messages plus a short summary of that user's progress, and asks for replies under 120 words. It uses `claude-opus-5-5` at low effort; for lower cost, change `model` in `supabase/functions/nadir-coach/index.ts` to `claude-haiku-5-5`.
+
+The same function also writes flashcards when a signed-in user taps **Improve with AI** on a note in Focus → Notes. It sends that note's text (up to 12,000 characters) and asks Claude to make cards using only facts in the note. Without the function, Lassitude still makes flashcards automatically in the browser.

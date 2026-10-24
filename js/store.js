@@ -238,6 +238,8 @@ function migrate(value) {
     body: typeof note.body === 'string' ? note.body.slice(0, 20000) : '',
     notebook: typeof note.notebook === 'string' && note.notebook ? note.notebook : 'General',
     pinned: Boolean(note.pinned),
+    skipCards: arrayOrEmpty(note.skipCards).filter(id => typeof id === 'string'),
+    ...(Array.isArray(note.aiCards) && note.aiCards.length ? { aiCards: note.aiCards.filter(card => typeof card?.front === 'string' && typeof card?.back === 'string').slice(0, 40) } : {}),
     createdAt: Number(note.createdAt) || Date.now(),
     updatedAt: Number(note.updatedAt) || Date.now()
   }));

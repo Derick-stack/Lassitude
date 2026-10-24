@@ -25,6 +25,51 @@ How you coach:
 - If someone mentions self-harm or suicide, respond with care and tell them to call or text 988 in the U.S., or their local emergency number, right away.
 - Stay on these topics. If asked about something unrelated, steer gently back to the person's routine.`;
 
+const FLASHCARD_PROMPT = `You turn a student's notes into study flashcards for spaced repetition.
+- Use only facts stated in the notes. Never add outside information, and never correct the notes.
+- One fact per card. The front is a short, specific question; the back is the shortest complete answer.
+- Cover definitions, key terms, people, dates, lists, processes and scripture references (front: reference, back: verse text exactly as written).
+- Skip reminders, logistics, opinions and anything too vague to test.
+- Write 3 to 30 cards, fewer for short notes. Return an empty list if nothing is worth testing.`;
+const MAX_NOTE_CHARS = 12000;
+const CARD_SCHEMA = {
+  type: 'object',
+  properties: {
+    cards: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { front: { type: 'string' }, back: { type: 'string' } },
+        required: ['front', 'back'],
+        additionalProperties: false
+      }
+    }
+  },
+  required: ['cards'],
+  additionalProperties: false
+};
+
+async function writeFlashcards(text: string, headers: Record<string, string>) {
+  const response = await anthropic.beta.messages.create({
+    model: 'claude-opus-5-5',
+    max_tokens: 8000,
+    system: FLASHCARD_PROMPT,
+    messages: [{ role: 'user', content: `<notes>\n${text}\n</notes>` }],
+    output_config: { effort: 'low', format: { type: 'json_schema', schema: CARD_SCHEMA } },
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default'
+  } as Anthropic.Beta.MessageCreateParamsNonStreaming);
+  if (response.stop_reason === 'refusal') return Response.json({ error: 'Declined.' }, { status: 422, headers });
+  const json = response.content.flatMap(block => block.type === 'text' ? [block.text] : []).join('');
+  let parsed;
+  try { parsed = JSON.parse(json); } catch { return Response.json({ error: 'Could not read cards.' }, { status: 502, headers }); }
+  const cards = (Array.isArray(parsed?.cards) ? parsed.cards : [])
+    .filter((card: { front?: unknown; back?: unknown }) => typeof card?.front === 'string' && typeof card?.back === 'string' && card.front.trim() && card.back.trim())
+    .slice(0, 40)
+    .map((card: { front: string; back: string }) => ({ front: card.front.trim().slice(0, 220), back: card.back.trim().slice(0, 600) }));
+  return Response.json({ cards }, { status: 200, headers });
+}
+
 const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') });
 // Best-effort per-user limit; it resets whenever the function instance restarts.
 const usage = new Map<string, { windowStart: number; count: number }>();
@@ -72,6 +117,14 @@ Deno.serve(async request => {
 
   let body;
   try { body = await request.json(); } catch { return Response.json({ error: 'Invalid request body.' }, { status: 400, headers }); }
+  if (body?.task === 'flashcards') {
+    const text = typeof body.text === 'string' ? body.text.trim().slice(0, MAX_NOTE_CHARS) : '';
+    if (!text) return Response.json({ error: 'Note text is required.' }, { status: 400, headers });
+    try { return await writeFlashcards(text, headers); } catch (error) {
+      if (error instanceof Anthropic.RateLimitError) return Response.json({ error: 'Busy. Try again shortly.' }, { status: 429, headers });
+      return Response.json({ error: 'Flashcards are unavailable.' }, { status: 502, headers });
+    }
+  }
   const messages = cleanMessages(body?.messages);
   if (!messages) return Response.json({ error: 'A user message is required.' }, { status: 400, headers });
   const context = typeof body?.context === 'string' ? body.context.slice(0, MAX_CONTEXT_CHARS) : '';

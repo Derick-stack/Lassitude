@@ -1,8 +1,10 @@
+import { supabaseConfigured } from './config.js';
+import { extractCards } from './card-maker.js';
 import { getState, update } from './store.js';
 import { $, confirmDialog, h, toast } from './ui.js';
 
 // Notes and spaced-repetition flashcards for the Focus page.
-// Any note line written as "front :: back" becomes a flashcard automatically.
+// Flashcards are made automatically from whatever is in a note (see card-maker.js).
 
 const DAY = 864e5;
 const NEW_PER_SESSION = 20;
@@ -17,12 +19,73 @@ const TEMPLATES = [
 const uid = prefix => `${prefix}-${crypto.randomUUID()}`;
 const hash = text => [...text].reduce((value, char) => (Math.imul(31, value) + char.charCodeAt(0)) | 0, 0).toString(36);
 
-export function cardsFromNote(note) {
-  return note.body.split('\n').flatMap(line => {
-    const match = line.match(/^\s*(?:[-*]\s+)?(.+?)\s*::\s*(.+?)\s*$/);
-    if (!match) return [];
-    return [{ id: `n:${note.id}:${hash(match[1].toLowerCase())}`, front: match[1], back: match[2], deck: note.notebook, noteId: note.id }];
+// Every card a note produces, including ones the person has hidden (marked `skipped`).
+// AI-written cards, when present, replace the automatic ones; "::" lines are always kept.
+export function noteCardCandidates(note) {
+  const automatic = extractCards(note.body);
+  const source = note.aiCards?.length ? [...automatic.filter(card => card.kind === 'manual'), ...note.aiCards.map(card => ({ ...card, kind: 'ai' }))] : automatic;
+  const skipped = new Set(note.skipCards || []);
+  return source.map(card => {
+    const id = `n:${note.id}:${hash(card.front.toLowerCase())}`;
+    return { id, front: card.front, back: card.back, kind: card.kind, deck: note.notebook, noteId: note.id, skipped: skipped.has(id) };
   });
+}
+export const cardsFromNote = note => noteCardCandidates(note).filter(card => !card.skipped);
+
+const KIND_LABELS = { manual: 'Your card', definition: 'Definition', verse: 'Verse', qa: 'Q&A', cloze: 'Fill in', date: 'Date', list: 'List', ai: 'AI' };
+
+async function aiCardsFor(text) {
+  if (!supabaseConfigured) return { error: 'unavailable' };
+  try {
+    const { supabase } = await import('./auth.js');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return { error: 'signed-out' };
+    const { data, error } = await supabase.functions.invoke('nadir-coach', { body: { task: 'flashcards', text: text.slice(0, 12000) } });
+    if (error || !Array.isArray(data?.cards)) return { error: 'failed' };
+    return { cards: data.cards.filter(card => typeof card?.front === 'string' && typeof card?.back === 'string').slice(0, 40) };
+  } catch {
+    return { error: 'failed' };
+  }
+}
+
+/** Opens the "Paste notes" dialog: paste anything, get a note plus flashcards. */
+export function openPasteDialog() {
+  const dialog = h('dialog', { class: 'dialog paste-dialog', 'aria-labelledby': 'paste-title' });
+  const text = h('textarea', { id: 'paste-text', rows: '10', maxlength: '20000', placeholder: 'Paste class notes, a sermon outline, a study guide, vocabulary… anything.', 'aria-describedby': 'paste-found' });
+  const title = h('input', { type: 'text', id: 'paste-title-input', maxlength: '120', placeholder: 'Title (optional)', 'aria-label': 'Note title (optional)' });
+  const notebook = h('select', { 'aria-label': 'Notebook' }, getState().studyNotebooks.map(book => h('option', { value: book }, book)));
+  const found = h('p', { id: 'paste-found', class: 'paste-found', 'aria-live': 'polite' }, 'Lassitude will find definitions, key terms, verses, dates and questions in your notes.');
+  const preview = h('ul', { class: 'paste-preview' });
+  const create = h('button', { value: 'ok', disabled: true }, 'Make flashcards');
+  const update_ = () => {
+    const cards = extractCards(text.value);
+    create.disabled = !text.value.trim();
+    found.textContent = !text.value.trim() ? 'Lassitude will find definitions, key terms, verses, dates and questions in your notes.' : cards.length ? `Found ${cards.length} flashcard${cards.length === 1 ? '' : 's'}. You can review and hide any of them after saving.` : 'No flashcards found yet. The note will still be saved, and you can add cards by hand.';
+    preview.replaceChildren(...cards.slice(0, 3).map(card => h('li', {}, h('strong', {}, card.front), h('span', {}, card.back.split('\n')[0]))));
+    if (cards.length > 3) preview.append(h('li', { class: 'more' }, `+ ${cards.length - 3} more`));
+  };
+  text.addEventListener('input', update_);
+  const form = h('form', { method: 'dialog' },
+    h('h2', { id: 'paste-title' }, 'Paste notes'),
+    h('p', {}, 'Paste notes in any format. Flashcards are made automatically.'),
+    text, h('div', { class: 'paste-fields' }, title, notebook), found, preview,
+    h('div', { class: 'dialog-actions' }, h('button', { value: 'cancel', class: 'ghost', formnovalidate: true }, 'Cancel'), create));
+  dialog.append(form);
+  document.body.append(dialog);
+  dialog.addEventListener('close', () => {
+    const body = text.value.trim();
+    dialog.remove();
+    if (dialog.returnValue !== 'ok' || !body) return;
+    const firstLine = body.split('\n').find(line => line.trim()) || '';
+    const note = { id: uid('note'), title: title.value.trim() || firstLine.replace(/^#+\s*/, '').slice(0, 80), body, notebook: notebook.value, pinned: false, createdAt: Date.now(), updatedAt: Date.now() };
+    update(state => { state.studyNotes.unshift(note); });
+    const count = cardsFromNote(note).length;
+    document.dispatchEvent(new CustomEvent('notes-changed'));
+    document.dispatchEvent(new CustomEvent('open-note', { detail: note.id }));
+    toast(count ? `Saved with ${count} flashcard${count === 1 ? '' : 's'}` : 'Note saved', count ? { actionLabel: 'Study now', duration: 6000, onAction: () => { location.hash = 'study'; } } : {});
+  });
+  dialog.showModal();
+  text.focus();
 }
 
 export function allCards(state = getState()) {
@@ -78,6 +141,7 @@ export function initNotes() {
 
   $('#note-search').addEventListener('input', event => { query = event.target.value.trim().toLowerCase(); renderList(); });
   $('#new-note').addEventListener('click', () => { currentId = null; renderEditor(); layout.dataset.view = 'editor'; });
+  $('#paste-notes').addEventListener('click', openPasteDialog);
   document.addEventListener('notes-changed', () => { renderChips(); renderList(); if (currentId === PARKING_ID) renderEditor(); });
   document.addEventListener('open-note', event => { currentId = event.detail; renderList(); renderEditor(); layout.dataset.view = 'editor'; });
   renderChips();
@@ -141,7 +205,7 @@ export function initNotes() {
           button.addEventListener('click', () => createNote(template));
           return button;
         })),
-        h('p', { class: 'tip' }, h('strong', {}, 'Tip: '), 'Type ', h('code', {}, 'question :: answer'), ' on its own line and it becomes a flashcard in Study.')));
+        h('p', { class: 'tip' }, h('strong', {}, 'Flashcards are automatic: '), 'definitions, key terms, verses, dates and questions in your notes become cards in Study. Want an exact card? Write ', h('code', {}, 'question :: answer'), '.')));
       return;
     }
     const title = h('input', { type: 'text', id: 'note-title', class: 'note-title', value: note.title, placeholder: 'Untitled', maxlength: '120', 'aria-label': 'Note title' });
@@ -149,7 +213,7 @@ export function initNotes() {
     notebook.value = note.notebook;
     const pin = h('button', { type: 'button', class: 'icon-btn small', 'aria-pressed': String(note.pinned), 'aria-label': note.pinned ? 'Unpin note' : 'Pin note', title: 'Pin' }, '📌');
     const remove = h('button', { type: 'button', class: 'icon-btn small', 'aria-label': 'Delete note', title: 'Delete' }, '🗑');
-    const body = h('textarea', { class: 'note-body', 'aria-label': 'Note text', placeholder: 'Start writing…\n\nTip: “question :: answer” makes a flashcard.' });
+    const body = h('textarea', { class: 'note-body', 'aria-label': 'Note text', placeholder: 'Start writing or paste your notes…\n\nFlashcards are made automatically from what you write.' });
     body.value = note.body;
     const status = h('span', { class: 'save-status', 'aria-live': 'polite' }, 'Saved');
     const meta = h('span', { class: 'note-meta' });
@@ -160,9 +224,61 @@ export function initNotes() {
       button.addEventListener('click', () => { insert(body, before, after); queueSave(); });
       return button;
     });
+    const cardPanel = h('details', { class: 'card-panel' });
+    let panelOpen = false;
+    cardPanel.addEventListener('toggle', () => { panelOpen = cardPanel.open; });
+    const currentNote = () => ({ ...(notes().find(item => item.id === note.id) || note), body: body.value });
+    const renderCardPanel = () => {
+      const candidates = noteCardCandidates(currentNote());
+      const active = candidates.filter(card => !card.skipped);
+      const hidden = candidates.length - active.length;
+      const usingAi = Boolean(currentNote().aiCards?.length);
+      const toggleSkip = card => {
+        update(state => {
+          const item = state.studyNotes.find(entry => entry.id === note.id);
+          const skip = new Set(item.skipCards || []);
+          if (skip.has(card.id)) skip.delete(card.id); else skip.add(card.id);
+          item.skipCards = [...skip];
+        });
+        renderCardPanel();
+        updateMeta();
+        renderList();
+        document.dispatchEvent(new CustomEvent('cards-changed'));
+      };
+      const aiButton = h('button', { type: 'button', class: 'ghost small-btn' }, usingAi ? 'Use automatic cards' : '✨ Improve with AI');
+      aiButton.addEventListener('click', async () => {
+        if (usingAi) {
+          update(state => { delete state.studyNotes.find(entry => entry.id === note.id).aiCards; });
+          renderCardPanel(); updateMeta(); document.dispatchEvent(new CustomEvent('cards-changed'));
+          return;
+        }
+        aiButton.disabled = true;
+        aiButton.setAttribute('aria-busy', 'true');
+        aiButton.textContent = 'Writing cards…';
+        const result = await aiCardsFor(body.value);
+        if (result.cards?.length) {
+          update(state => { state.studyNotes.find(entry => entry.id === note.id).aiCards = result.cards; });
+          toast(`AI wrote ${result.cards.length} flashcards`);
+          document.dispatchEvent(new CustomEvent('cards-changed'));
+        } else {
+          toast(result.error === 'signed-out' ? 'Sign in to use AI flashcards.' : result.error === 'unavailable' ? 'AI flashcards aren’t set up on this site yet.' : 'AI couldn’t make cards right now. Your automatic cards are unchanged.');
+        }
+        renderCardPanel();
+        updateMeta();
+      });
+      cardPanel.replaceChildren(
+        h('summary', {}, h('span', {}, `Flashcards from this note (${active.length})`), hidden ? h('small', {}, `${hidden} hidden`) : null),
+        h('p', { class: 'card-panel-hint' }, usingAi ? 'These cards were written by AI from your note.' : 'Made automatically from your note. Hide any you don’t want.', supabaseConfigured ? aiButton : null),
+        candidates.length ? h('ul', { class: 'card-panel-list' }, candidates.map(card => {
+          const button = h('button', { type: 'button', class: 'icon-btn small', 'aria-label': `${card.skipped ? 'Restore' : 'Hide'} card: ${card.front}`, title: card.skipped ? 'Restore' : 'Hide' }, card.skipped ? '↺' : '×');
+          button.addEventListener('click', () => toggleSkip(card));
+          return h('li', { class: card.skipped ? 'is-skipped' : '' }, h('span', { class: 'card-kind' }, KIND_LABELS[card.kind] || 'Card'), h('div', { class: 'card-qa' }, h('strong', {}, card.front), h('span', {}, card.back)), button);
+        })) : h('p', { class: 'empty' }, 'No flashcards yet. Add definitions (“Term: meaning”), key sentences (“X is …”), verses, or questions.'));
+      cardPanel.open = panelOpen;
+    };
     const updateMeta = () => {
       const words = body.value.trim() ? body.value.trim().split(/\s+/).length : 0;
-      const cards = cardsFromNote({ ...note, body: body.value }).length;
+      const cards = cardsFromNote(currentNote()).length;
       meta.replaceChildren(`${words} word${words === 1 ? '' : 's'}`);
       if (cards) {
         const link = h('button', { type: 'button', class: 'link-btn' }, `${cards} flashcard${cards === 1 ? '' : 's'} → Study`);
@@ -177,12 +293,17 @@ export function initNotes() {
         update(state => { const item = state.studyNotes.find(entry => entry.id === note.id); if (item) { item.title = title.value.trim(); item.body = body.value.slice(0, 20000); item.updatedAt = Date.now(); } });
         status.textContent = 'Saved';
         updateMeta();
+        renderCardPanel();
         renderList();
         document.dispatchEvent(new CustomEvent('cards-changed'));
       }, 400);
     }
     title.addEventListener('input', queueSave);
     body.addEventListener('input', () => { queueSave(); updateMeta(); });
+    body.addEventListener('paste', () => window.setTimeout(() => {
+      const count = cardsFromNote(currentNote()).length;
+      if (count) { panelOpen = true; toast(`Found ${count} flashcard${count === 1 ? '' : 's'} in your notes`, { duration: 2500 }); }
+    }, 450));
     body.addEventListener('keydown', event => { if (event.key === 'Enter') continueList(event, body) && queueSave(); });
     notebook.addEventListener('change', () => {
       if (notebook.value === '__new') { promptNotebook(name => { update(state => { state.studyNotes.find(item => item.id === note.id).notebook = name; }); renderChips(); renderList(); renderEditor(); }, () => { notebook.value = note.notebook; }); return; }
@@ -211,10 +332,11 @@ export function initNotes() {
       if (on) renderPreview(preview, body.value);
     });
     updateMeta();
+    renderCardPanel();
     editor.replaceChildren(back,
       h('div', { class: 'note-head' }, title, h('div', { class: 'note-actions' }, pin, remove)),
       h('div', { class: 'note-bar' }, notebook, h('div', { class: 'toolbar', role: 'toolbar', 'aria-label': 'Formatting' }, tools), previewToggle),
-      body, preview,
+      body, preview, cardPanel,
       h('div', { class: 'note-foot' }, meta, status));
   }
   function promptNotebook(onCreate, onCancel = () => {}) {
@@ -318,16 +440,23 @@ export function initStudy(onChange = () => {}) {
       h('section', { class: 'card study-hero' },
         h('div', {}, h('h2', {}, cards.length ? (ready ? 'Ready to review' : 'You’re all caught up') : 'Remember what you study'),
           h('p', {}, cards.length ? `${due} due · ${fresh} new · ${cards.length} total. Cards come back right before you’d forget them.` : 'Flashcards here are scheduled with spaced repetition, so you review each one right before you’d forget it.')),
-        h('div', { class: 'study-hero-actions' }, start, practice)),
+        h('div', { class: 'study-hero-actions' }, start, practice, cards.length ? pasteButton('ghost') : null)),
       cards.length ? null : h('section', { class: 'card study-how' },
-        h('h3', {}, 'Two ways to make cards'),
-        h('ol', {}, h('li', {}, 'In any note, write ', h('code', {}, 'question :: answer'), ' on its own line. It turns into a card automatically.'), h('li', {}, 'Or add one below.'))),
+        h('h3', {}, 'Make cards from your notes'),
+        h('p', {}, 'Paste notes in any format: class notes, a sermon outline, a vocab list. Lassitude finds the definitions, key terms, verses and questions and turns them into flashcards.'),
+        pasteButton()),
       deckList.length ? h('div', { class: 'deck-grid' }, deckList.map(deck => {
         const study = h('button', { type: 'button', class: deck.due + deck.fresh ? '' : 'ghost', disabled: !deck.total }, deck.due + deck.fresh ? 'Study' : 'Practice');
         study.addEventListener('click', () => startSession(deck.name, !(deck.due + deck.fresh)));
         return h('article', { class: 'deck' }, h('h3', {}, deck.name), h('p', {}, h('span', { class: 'due' }, `${deck.due} due`), ' · ', h('span', { class: 'new' }, `${deck.fresh} new`), ` · ${deck.total} total`), study);
       })) : null,
       addCardForm());
+  }
+
+  function pasteButton(style = '') {
+    const button = h('button', { type: 'button', class: style }, 'Paste notes');
+    button.addEventListener('click', openPasteDialog);
+    return button;
   }
 
   function addCardForm() {

@@ -1,4 +1,5 @@
 import { getDayKey, getState, subscribe } from './store.js';
+import { initMesh } from './mesh.js';
 
 export const $ = (selector, root = document) => root.querySelector(selector);
 export const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -108,6 +109,7 @@ export function mountShell() {
   }
   if (!$('#toast-region')) document.body.append(h('div', { id: 'toast-region', class: 'toast-region', 'aria-live': 'polite', 'aria-atomic': 'false' }));
   applyTheme();
+  initMesh();
   renderStats();
   subscribe(renderStats);
 }
