@@ -11,34 +11,110 @@
 <body data-page="loginPage">
 <header id="site-header"></header>
 <main class="wrap auth-wrap">
-<section class="hero"><h1>Account access</h1><p>Guest mode still works on this device. Create an account only if you want to sync your Lassitude data across devices.</p></section>
-<section class="card auth-panel">
-<div class="auth-tabs" role="tablist" aria-label="Account actions">
-<button type="button" role="tab" data-auth-tab="signin" aria-selected="true">Sign in</button>
-<button type="button" role="tab" data-auth-tab="signup" aria-selected="false">Create account</button>
-<button type="button" role="tab" data-auth-tab="reset" aria-selected="false">Forgot password</button>
+<div class="auth-layout">
+<aside class="auth-welcome" aria-labelledby="auth-welcome-title">
+<p class="auth-eyebrow">Faith · Focus · Food · Fitness</p>
+<h1 id="auth-welcome-title">Steward your strength, one day at a time.</h1>
+<blockquote class="auth-verse">“Do you not know that your bodies are temples of the Holy Spirit?”<cite>1 Corinthians 6:19</cite></blockquote>
+<ul class="auth-benefits">
+<li><span aria-hidden="true">✓</span> Keep habits, workouts and prayer streaks in sync on every device</li>
+<li><span aria-hidden="true">✓</span> Your data stays private to your account</li>
+<li><span aria-hidden="true">✓</span> No account needed to start: guest mode works right away</li>
+</ul>
+</aside>
+
+<section class="card auth-panel" aria-labelledby="auth-title">
+<div id="auth-signed-in" class="auth-banner" hidden></div>
+<div id="auth-unavailable" class="auth-banner" hidden>
+<strong>Accounts are coming soon.</strong> Everything works in guest mode today, and your progress is saved in this browser.
 </div>
-<p id="auth-error" class="form-error" role="alert"></p>
-<p id="auth-status" aria-live="polite"></p>
-<form id="signin-form" class="auth-form">
-<label for="signin-email">Email</label><input id="signin-email" type="email" autocomplete="username" required>
-<label for="signin-password">Password</label><div class="password-control"><input id="signin-password" type="password" autocomplete="current-password" required><button type="button" id="signin-toggle" class="ghost" aria-pressed="false">Show</button></div>
-<button type="submit">Sign in</button><button type="button" id="magic-link" class="ghost">Email me a sign-in link</button><button type="button" id="google-signin" class="ghost">Continue with Google</button>
+
+<div class="auth-tabs" role="tablist" aria-label="Account actions">
+<button type="button" role="tab" id="tab-signin" data-auth-tab="signin" aria-controls="signin-form" aria-selected="true">Sign in</button>
+<button type="button" role="tab" id="tab-signup" data-auth-tab="signup" aria-controls="signup-form" aria-selected="false">Create account</button>
+</div>
+
+<h2 id="auth-title" class="auth-title">Welcome back</h2>
+<p id="auth-subtitle" class="auth-subtitle">Sign in to pick up where you left off.</p>
+
+<div id="auth-error" class="auth-alert auth-alert-error" role="alert" hidden></div>
+<div id="auth-status" class="auth-alert auth-alert-ok" role="status" aria-live="polite" hidden></div>
+
+<div id="social-block" class="social-block">
+<button type="button" id="google-signin" class="ghost social-btn">
+<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.3 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12Z"/></svg>
+Continue with Google
+</button>
+<div class="auth-divider"><span>or use email</span></div>
+</div>
+
+<form id="signin-form" class="auth-form" role="tabpanel" aria-labelledby="tab-signin" novalidate>
+<div class="field">
+<label for="signin-email">Email</label>
+<input id="signin-email" type="email" inputmode="email" autocomplete="username" placeholder="you@example.com" required>
+<p class="field-error" data-error-for="signin-email"></p>
+</div>
+<div class="field">
+<div class="label-row"><label for="signin-password">Password</label><button type="button" class="link-btn" data-goto="reset">Forgot password?</button></div>
+<div class="password-control"><input id="signin-password" type="password" autocomplete="current-password" required><button type="button" id="signin-toggle" class="pw-toggle" aria-pressed="false" aria-label="Show password">Show</button></div>
+<p class="field-error" data-error-for="signin-password"></p>
+</div>
+<button type="submit" class="auth-submit">Sign in</button>
+<button type="button" id="magic-link" class="link-btn auth-alt">Email me a sign-in link instead</button>
 </form>
-<form id="signup-form" class="auth-form" hidden>
-<label for="signup-name">Display name (optional)</label><input id="signup-name" type="text" maxlength="40" autocomplete="nickname">
-<label for="signup-email">Email</label><input id="signup-email" type="email" autocomplete="username" required>
-<label for="signup-password">Password (10 characters minimum)</label><div class="password-control"><input id="signup-password" type="password" minlength="10" autocomplete="new-password" required><button type="button" id="signup-toggle" class="ghost" aria-pressed="false">Show</button></div>
-<small id="password-strength" aria-live="polite">Use at least 10 characters.</small><button type="submit">Create account</button>
+
+<form id="signup-form" class="auth-form" role="tabpanel" aria-labelledby="tab-signup" novalidate hidden>
+<div class="field">
+<label for="signup-name">First name <span class="optional">(optional)</span></label>
+<input id="signup-name" type="text" maxlength="40" autocomplete="given-name" placeholder="What should we call you?">
+</div>
+<div class="field">
+<label for="signup-email">Email</label>
+<input id="signup-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+<p class="field-error" data-error-for="signup-email"></p>
+</div>
+<div class="field">
+<label for="signup-password">Create a password</label>
+<div class="password-control"><input id="signup-password" type="password" minlength="10" autocomplete="new-password" aria-describedby="password-rules" required><button type="button" id="signup-toggle" class="pw-toggle" aria-pressed="false" aria-label="Show password">Show</button></div>
+<div class="strength" aria-hidden="true"><div id="password-meter"></div></div>
+<p id="password-strength" class="strength-label" aria-live="polite"></p>
+<ul id="password-rules" class="pw-rules">
+<li data-rule="length">At least 10 characters</li>
+<li data-rule="case">Upper- and lowercase letters</li>
+<li data-rule="number">A number or symbol</li>
+</ul>
+<p class="field-error" data-error-for="signup-password"></p>
+</div>
+<button type="submit" class="auth-submit">Create account</button>
+<p class="field-note auth-legal">By creating an account you agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
 </form>
-<form id="reset-form" class="auth-form" hidden>
-<label for="reset-email">Account email</label><input id="reset-email" type="email" autocomplete="username" required><p class="field-note">Supabase will email a secure reset link if the address belongs to an account.</p><button type="submit">Send reset link</button>
+
+<form id="reset-form" class="auth-form" novalidate hidden>
+<div class="field">
+<label for="reset-email">Email</label>
+<input id="reset-email" type="email" inputmode="email" autocomplete="username" placeholder="you@example.com" required>
+<p class="field-error" data-error-for="reset-email"></p>
+</div>
+<button type="submit" class="auth-submit">Send reset link</button>
+<button type="button" class="link-btn auth-alt" data-goto="signin">← Back to sign in</button>
 </form>
-<form id="recovery-form" class="auth-form" hidden>
-<label for="recovery-password">New password (10 characters minimum)</label><div class="password-control"><input id="recovery-password" type="password" minlength="10" autocomplete="new-password" required><button type="button" id="recovery-toggle" class="ghost" aria-pressed="false">Show</button></div><button type="submit">Update password</button>
+
+<form id="recovery-form" class="auth-form" novalidate hidden>
+<div class="field">
+<label for="recovery-password">New password</label>
+<div class="password-control"><input id="recovery-password" type="password" minlength="10" autocomplete="new-password" required><button type="button" id="recovery-toggle" class="pw-toggle" aria-pressed="false" aria-label="Show password">Show</button></div>
+<p class="field-note">At least 10 characters.</p>
+<p class="field-error" data-error-for="recovery-password"></p>
+</div>
+<button type="submit" class="auth-submit">Update password</button>
 </form>
-<p class="field-note">You can also <a href="index.html">continue in guest mode</a>. Guest data stays in this browser unless you confirm a sync after signing in.</p>
+
+<div class="auth-guest">
+<a class="btn ghost-btn" href="index.html">Continue as guest</a>
+<p class="field-note">Guest progress stays in this browser. You can sign up later and choose to bring it with you.</p>
+</div>
 </section>
+</div>
 </main>
 </body>
 </html>
