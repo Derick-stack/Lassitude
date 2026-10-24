@@ -147,7 +147,7 @@ export function startReminderScheduler() {
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     const today = getDayKey(now);
-    if (time !== state.reminders.time || state.reminders.lastSent === today) return;
+    if (time < state.reminders.time || state.reminders.lastSent === today) return;
     new Notification('Lassitude reminder', { body: 'Take a moment for your routine today.' });
     update(draft => { draft.reminders.lastSent = today; });
   };

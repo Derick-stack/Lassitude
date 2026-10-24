@@ -111,7 +111,7 @@ export function parseRoutineText(text, library) {
     const line = raw.replace(/^#+\s*/, '').replace(/\*\*/g, '');
     const content = line.replace(LIST_MARKER, '');
     const dayMatch = content.match(DAY_PATTERN);
-    const hasPrescription = /\d\s*(x|×|sets?|reps?)\b|\d+\s*(s|sec|min)\b/i.test(content);
+    const hasPrescription = /\d\s*[x×*]\s*\d|\d+\s*(?:sets?|reps?)\b|\d+\s*(?:s|sec|secs|seconds|min|mins|minutes)\b/i.test(content);
     const looksLikeHeader = dayMatch || /^(day\s*\d+|day\s+[a-z]\b|week\s*\d+)/i.test(content) || (/:$/.test(content) && !hasPrescription) || (/^(push|pull|legs?|upper|lower|full body|arms|chest|back|shoulders|core|cardio)\b[^\d]*$/i.test(content) && content.split(/\s+/).length <= 6);
     if (looksLikeHeader && !(hasPrescription && !dayMatch)) {
       const days = [];

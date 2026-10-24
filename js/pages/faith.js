@@ -74,7 +74,7 @@ export function initFaith() {
       $('#reading-plan-progress').textContent = length ? `${plan.completedDays.length} of ${length} days completed.` : '';
       return;
     }
-    const done = plan.completedDays.includes(entry.day);
+    const done = length ? plan.completedDays.includes(entry.day) : Boolean(getState().devotionalRead[getDayKey()]);
     title.textContent = `Day ${length ? Math.min(entry.day, length) : entry.day}: ${entry.reference}`;
     $('#reading-verse').textContent = entry.text;
     $('#reading-reference').textContent = entry.reference;

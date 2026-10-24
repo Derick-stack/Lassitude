@@ -22,7 +22,7 @@ export function initProgress() {
     const text = input.value.trim();
     if (!text) return;
     update(state => {
-      state.journal.unshift({ date: getDayKey(), text });
+      state.journal.unshift({ id: `journal-${crypto.randomUUID()}`, date: getDayKey(), text });
       state.firstWeek.journalWritten = true;
     });
     input.value = '';
@@ -91,6 +91,8 @@ export function initProgress() {
   function renderPrayer() {
     let count = 0;
     const date = new Date();
+    // Today isn't over yet: keep yesterday's streak showing until today is logged.
+    if (!getState().prayer[getDayKey(date)]) date.setDate(date.getDate() - 1);
     while (getState().prayer[getDayKey(date)]) { count += 1; date.setDate(date.getDate() - 1); }
     $('#prayerNote').textContent = `Prayer streak: ${count} day${count === 1 ? '' : 's'}. Saved only on this device.`;
   }

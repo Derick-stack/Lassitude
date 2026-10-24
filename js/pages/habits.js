@@ -89,7 +89,7 @@ export function initHabits() {
       const entry = logs[today]?.[habit.id];
       const due = isScheduled(habit, new Date(), logs);
       const chain = habitChain(habit, logs);
-      const title = h('div', { class: 'habit-title-row' }, h('div', {}, h('h3', {}, habit.title), h('p', { class: 'field-note' }, `${scheduleLabel(habit.schedule)} · ${chain} day chain${due ? ' · due today' : ' · weekly target met'}`)));
+      const title = h('div', { class: 'habit-title-row' }, h('div', {}, h('h3', {}, habit.title), h('p', { class: 'field-note' }, `${scheduleLabel(habit.schedule)} · ${chain} day chain${due ? ' · due today' : habit.schedule.type === 'weekly' ? ' · weekly target met' : ' · not scheduled today'}`)));
       const statusButtons = h('div', { class: 'habit-status-controls', role: 'group', 'aria-label': `Log ${habit.title} for today` });
       [['yes', 'Yes'], ['no', 'No'], ['skip', 'Skip']].forEach(([value, label]) => {
         const button = h('button', { type: 'button', class: 'ghost habit-status', 'aria-pressed': String(entry?.status === value) }, label);
@@ -104,7 +104,12 @@ export function initHabits() {
       noteForm.append(note, h('button', { type: 'submit', class: 'ghost' }, 'Save note'));
       noteForm.addEventListener('submit', event => {
         event.preventDefault();
-        logHabit(habit.id, entry?.status || 'skip', note.value);
+        if (!entry?.status) {
+          toast('Choose Yes, No or Skip for today first, then save your note.');
+          statusButtons.querySelector('button')?.focus();
+          return;
+        }
+        logHabit(habit.id, entry.status, note.value);
         toast('Habit note saved.');
       });
       const actions = h('div', { class: 'habit-actions' });

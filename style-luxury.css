@@ -649,8 +649,8 @@ input.switch:focus-visible{outline:3px solid var(--gold2);outline-offset:3px}
 .focus-stat span{color:var(--muted);font-size:.8rem}
 .week-bars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem;height:130px;padding:0;margin:0;list-style:none;align-items:end}
 .week-bars li{display:grid;grid-template-rows:auto 1fr auto;align-items:end;justify-items:center;height:100%;gap:.2rem}
-.week-bars .bar{width:70%;max-width:26px;height:var(--h);border-radius:6px 6px 3px 3px;background:color-mix(in srgb,var(--gold) 45%,transparent);align-self:end}
-.week-bars .is-today .bar{background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.week-bars .week-bar{width:70%;max-width:26px;height:var(--h);border-radius:6px 6px 3px 3px;background:color-mix(in srgb,var(--gold) 45%,transparent);align-self:end}
+.week-bars .is-today .week-bar{background:linear-gradient(180deg,var(--gold2),var(--gold))}
 .bar-value{font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .bar-day{font-size:.75rem;color:var(--muted)}
 .week-bars .is-today .bar-day{color:var(--gold2);font-weight:700}

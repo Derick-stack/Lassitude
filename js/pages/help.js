@@ -4,9 +4,14 @@ const topics = [
   ['Home', 'Daily verse, routine, focus music, challenge, and NADIR coach.', 'index.html'],
   ['Start', 'Set up your first week and add a simple calendar event.', 'start.html'],
   ['Focus', 'Focus timer with a growing tree, quick notes with templates, and flashcards that come back right before you forget.', 'focus.html'],
+  ['Calendar', 'Month, week and day views of events, planned workouts, habits and goal deadlines. Tap a day to see its list.', 'calendar.html'],
+  ['Workouts', 'Your weekly plan, the workout coach, programs, routine builder, guided sessions, and the exercise library by muscle group.', 'workouts.html'],
+  ['Habits', 'Daily, weekday and weekly habits with chains, notes, a weekly freeze and a 12-week heatmap.', 'habits.html'],
+  ['Faith', 'Reading plans, prayer journal and requests, scripture memory cards, and a gratitude log.', 'faith.html'],
   ['Progress', 'Track habits, water, reflections, prayer time, and streaks.', 'progress.html'],
-  ['Future', 'Save goals, milestones, and vision items on this device.', 'future.html'],
-  ['Settings', 'Set your display name, theme, export, or delete local data.', 'settings.html']
+  ['Future', 'Save goals with due dates, milestones, and vision items.', 'future.html'],
+  ['Settings', 'Profile, appearance, notifications, training, NADIR chat, data backup, account and legal.', 'settings.html'],
+  ['Account', 'Sign in, sync across devices, change email or password, or delete your account.', 'account.html']
 ];
 
 export function initHelp() {

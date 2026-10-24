@@ -1,4 +1,4 @@
-import { getState, update } from '../store.js';
+import { getDayKey, getState, update } from '../store.js';
 import { $, h, toast } from '../ui.js';
 
 export function initFuture() {
@@ -40,7 +40,7 @@ function bindList(collection, formSelector, listSelector, options = {}) {
     const title = input.value.trim();
     if (!title) return;
     const dueDate = options.dueDate ? form.querySelector('input[type="date"]')?.value || '' : '';
-    update(state => state[collection].push({ title, done: false, date: new Date().toISOString().slice(0, 10), dueDate }));
+    update(state => state[collection].push({ id: `${collection}-${crypto.randomUUID()}`, title, done: false, date: getDayKey(), dueDate }));
     input.value = '';
     toast('Saved on this device.');
     render();

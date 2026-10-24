@@ -3,7 +3,7 @@ import { $, h, toast } from '../ui.js';
 
 export function initStart() {
   const checklist = [
-    ['habitAdded', 'Add a habit', 'progress.html'],
+    ['habitAdded', 'Add a habit', 'habits.html'],
     ['focusSession', 'Finish a focus session', 'focus.html'],
     ['workoutLogged', 'Log a workout', 'index.html#workout'],
     ['journalWritten', 'Write a reflection', 'progress.html'],
@@ -21,8 +21,11 @@ export function initStart() {
     $('#steps').replaceChildren(...checklist.map(([key, label, href]) => h('li', {},
       h('span', { class: completed[key] ? 'step-done' : 'step-pending' }, completed[key] ? 'Complete' : 'Next'),
       h('a', { href }, label))));
-    const events = getState().calendarEvents;
-    $('#start-events').replaceChildren(...(events.length ? events.map(item => h('li', {}, `${item.date} · ${item.type} · ${item.title}`)) : [h('li', { class: 'empty' }, 'No events yet.')]));
+    const today = getDayKey();
+    const labels = { workout: 'Workout', faith: 'Faith', focus: 'Focus', deadline: 'Deadline', custom: 'Event' };
+    const upcoming = getState().calendarEvents.filter(item => item.date >= today || item.recurrence?.frequency !== 'none').sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
+    const when = key => { const [year, month, day] = key.split('-').map(Number); return new Date(year, month - 1, day).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }); };
+    $('#start-events').replaceChildren(...(upcoming.length ? upcoming.map(item => h('li', {}, h('strong', {}, item.title), ` · ${labels[item.type] || 'Event'} · ${item.recurrence?.frequency && item.recurrence.frequency !== 'none' ? `repeats from ${when(item.date)}` : when(item.date)}`)) : [h('li', { class: 'empty' }, 'No upcoming events yet.')]));
   };
   $('#calendarEventForm').addEventListener('submit', event => {
     event.preventDefault();

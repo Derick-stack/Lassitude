@@ -363,7 +363,7 @@ export function initFocus() {
     const max = Math.max(25, ...days.map(day => day.minutes));
     $('#focus-chart').replaceChildren(...days.map(day => h('li', { class: day.key === today ? 'is-today' : '' },
       h('span', { class: 'bar-value' }, day.minutes ? `${day.minutes}` : ''),
-      h('span', { class: 'bar', style: `--h:${Math.max(4, day.minutes / max * 100)}%`, role: 'img', 'aria-label': `${day.date.toLocaleDateString(undefined, { weekday: 'long' })}: ${day.minutes} minutes` }),
+      h('span', { class: 'week-bar', style: `--h:${Math.max(4, day.minutes / max * 100)}%`, role: 'img', 'aria-label': `${day.date.toLocaleDateString(undefined, { weekday: 'long' })}: ${day.minutes} minutes` }),
       h('span', { class: 'bar-day', 'aria-hidden': 'true' }, day.date.toLocaleDateString(undefined, { weekday: 'narrow' })))));
   }
 

@@ -397,7 +397,17 @@ export function finishOnboarding(preferences = {}, skipped = false) {
   return update(draft => {
     if (typeof preferences.name === 'string') draft.name = preferences.name.trim().slice(0, 40);
     if (Array.isArray(preferences.goals)) draft.profileGoals = preferences.goals;
-    if (Array.isArray(preferences.starterHabits)) draft.starterHabits = preferences.starterHabits;
+    if (Array.isArray(preferences.starterHabits)) {
+      draft.starterHabits = preferences.starterHabits;
+      if (preferences.starterHabits.length) {
+        // The default habits are created before setup runs; swap in the ones the person chose,
+        // but keep any habit that already has logged days.
+        const logged = new Set(Object.values(draft.habitLogs).flatMap(day => Object.keys(day)));
+        const kept = draft.habitDefinitions.filter(habit => logged.has(habit.id) && !preferences.starterHabits.some(item => item.id === habit.id));
+        draft.habitDefinitions = [...preferences.starterHabits.map(item => ({ id: item.id, title: item.title, schedule: { type: 'daily', days: [], target: 3 }, archived: false })), ...kept]
+          .map((habit, order) => ({ ...habit, order }));
+      }
+    }
     if (preferences.workoutExperience) draft.workoutExperience = preferences.workoutExperience;
     if (preferences.workoutDays) draft.workoutDays = preferences.workoutDays;
     if (preferences.reminders) draft.reminders = { ...draft.reminders, ...preferences.reminders };

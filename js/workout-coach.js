@@ -201,7 +201,7 @@ export function initWorkoutCoach({ getLibrary, programs, startRoutine, showGroup
   function respond(text) {
     const lower = text.toLowerCase();
     const lines = text.split('\n').filter(line => line.trim());
-    if (lines.length >= 2 && (/\d\s*(x|×|sets?)\b/i.test(text) || lines.length >= 4)) return importCard(text);
+    if (lines.length >= 2 && (/\d\s*[x×*]\s*\d|\d+\s*sets?\b|\d+\s*reps?\b/i.test(text) || lines.length >= 4)) return importCard(text);
     if (/dumbbell/.test(lower)) return swapCard('dumbbells');
     if (/no (gym|equipment|weights)|bodyweight|body weight|at home|home workout/.test(lower)) return swapCard('bodyweight');
     if (/full gym|gym access/.test(lower)) { update(state => { state.workoutPrefs.equipment = 'gym'; }); syncEquipmentSelect(); return { text: 'Full gym it is. I’ll suggest any equipment from now on.' }; }

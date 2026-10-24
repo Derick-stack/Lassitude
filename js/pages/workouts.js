@@ -397,7 +397,7 @@ export function initWorkouts() {
     const summary = $('#session-summary');
     summary.hidden = false;
     summary.className = 'workout-section session-summary';
-    summary.replaceChildren(h('h2', {}, 'Workout complete'), h('p', {}, `${Math.round(session.durationSeconds / 60)} minutes · ${session.exercises.length} exercises · ${formatNumber(session.volume)} kg total volume`), h('p', {}, session.prs.length ? `New best set volume: ${session.prs.join(', ')}` : 'No new best set today. Consistency counts.'), h('button', { type: 'button', class: 'ghost' }, 'Dismiss'));
+    summary.replaceChildren(h('h2', {}, 'Workout complete'), h('p', {}, `${Math.max(1, Math.round(session.durationSeconds / 60))} min · ${session.exercises.length} exercise${session.exercises.length === 1 ? '' : 's'} · ${session.volume ? `${formatNumber(session.volume)} kg total volume` : 'bodyweight session'}`), h('p', {}, session.prs.length ? `New best set volume: ${session.prs.join(', ')}` : 'No new best set today. Consistency counts.'), h('button', { type: 'button', class: 'ghost' }, 'Dismiss'));
     summary.querySelector('button').addEventListener('click', () => { summary.hidden = true; });
     summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -412,7 +412,7 @@ export function initWorkouts() {
     const list = $('#session-history');
     list.replaceChildren();
     if (!sessions.length) list.append(h('li', { class: 'empty' }, 'No finished workouts yet. Start a routine above to build your history.'));
-    sessions.slice(0, 20).forEach(session => list.append(h('li', {}, h('div', {}, h('strong', {}, session.title), h('span', {}, `${session.date} · ${Math.round(session.durationSeconds / 60)} min · ${session.exercises.length} exercises`)), h('span', {}, `${formatNumber(session.volume)} kg`))));
+    sessions.slice(0, 20).forEach(session => list.append(h('li', {}, h('div', {}, h('strong', {}, session.title), h('span', {}, `${session.date} · ${Math.max(1, Math.round(session.durationSeconds / 60))} min · ${session.exercises.length} exercise${session.exercises.length === 1 ? '' : 's'}`)), h('span', {}, session.volume ? `${formatNumber(session.volume)} kg` : 'Bodyweight'))));
     const groups = new Map();
     sessions.forEach(session => (session.exercises || []).forEach(exercise => {
       const volume = exercise.sets.reduce((sum, set) => sum + set.reps * set.weight, 0);
