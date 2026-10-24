@@ -1,5 +1,6 @@
 import { completeChallenge, getDayKey, getState, markDevotionalRead, recordWorkout, subscribe } from '../store.js';
 import { $, $$, h, toast } from '../ui.js';
+import { mountNadir } from '../nadir.js';
 
 const verses = [
   ['Trust in the LORD with all thine heart; and lean not unto thine own understanding.', 'Proverbs 3:5'],
@@ -83,21 +84,7 @@ export function initHome() {
     }));
   }));
 
-  const chat = $('#chat');
-  const say = (text, isUser = false) => {
-    chat.append(h('p', { class: isUser ? 'me' : '' }, text));
-    chat.scrollTop = chat.scrollHeight;
-  };
-  say('Hi, I’m NADIR, an offline coach with ready-made guidance, not a real AI or medical professional. Ask about workouts, focus, faith or habits.');
-  $('#chatForm').addEventListener('submit', event => {
-    event.preventDefault();
-    const input = $('#chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    say(text, true);
-    say(coach(text));
-  });
+  mountNadir($('#nadir'));
   renderRing();
   subscribe(renderRing);
 }
@@ -116,13 +103,3 @@ function renderRing() {
   $('[data-ring-percent]').textContent = `${percent}%`;
 }
 
-function coach(query) {
-  const text = query.toLowerCase();
-  if (/suicid|kill myself|end my life|self.?harm|want to die|hurt myself/.test(text)) return 'I’m glad you said something. You deserve support from a real person right now. In the U.S. call or text 988, or call 911 if you’re in immediate danger. If you can, tell someone near you how you’re feeling.';
-  if (/workout|exercise|train|gym/.test(text)) return 'Start small: warm up for 5 minutes, then squats, push-ups and a plank. Stop if anything hurts. This is not medical advice.';
-  if (/focus|study|distract/.test(text)) return 'Try a 25-minute session on the Focus page: one task, phone away, then a 5-minute break.';
-  if (/faith|pray|scripture|god/.test(text)) return 'Take five quiet minutes today to read one verse and pray about one thing. Small and steady beats long and rare.';
-  if (/tired|sleep|rest|sore/.test(text)) return 'Rest counts as training. Aim for 7–9 hours of sleep and swap today’s hard session for a walk or stretching.';
-  if (/habit|streak|motivat/.test(text)) return 'Pick one habit you can finish in under two minutes and check it off today. The streak follows.';
-  return 'I can help with workouts, focus, faith and habits. What would you like to work on?';
-}
