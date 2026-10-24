@@ -1,5 +1,6 @@
 import { getDayKey, getState, setHabit, update } from '../store.js';
 import { $, $$, confirmDialog, h, toast } from '../ui.js';
+import { initWorship } from '../worship.js';
 
 const weekdays = [['Sun', 0], ['Mon', 1], ['Tue', 2], ['Wed', 3], ['Thu', 4], ['Fri', 5], ['Sat', 6]];
 const programs = [
@@ -19,6 +20,7 @@ export function initWorkouts() {
   const routineSelect = $('#routine-select');
   const libraryList = $('#exercise-library');
 
+  void initWorship();
   loadLibrary();
   renderPrograms();
   renderRoutineSelect();

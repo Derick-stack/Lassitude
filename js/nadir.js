@@ -39,10 +39,12 @@ export function buildContext(state = getState(), now = new Date()) {
   const dueToday = habits.filter(habit => isScheduled(habit, parseHabitDate(today), state.habitLogs) || state.habitLogs[today]?.[habit.id]);
   const isDone = habit => state.habitLogs[today]?.[habit.id]?.status === 'yes' || Boolean(state.habits[today]?.[habit.id]);
   const streaks = habits.map(habit => ({ title: habit.title, days: habitChain(habit, state.habitLogs, now) })).sort((a, b) => b.days - a.days);
+  // Guided sessions are also written to workoutLogs with the same id, so count each id once.
+  const loggedIds = new Set(state.workoutLogs.map(log => log.id));
   const workouts = [
-    ...state.workoutLogs.map(log => ({ date: log.date, minutes: Number(log.minutes) || 0, title: log.title })),
-    ...state.workoutSessions.map(session => ({ date: session.date, minutes: Math.round((session.durationSeconds || 0) / 60), title: session.title }))
-  ].sort((a, b) => b.date.localeCompare(a.date));
+    ...state.workoutLogs.map(log => ({ date: log.date || log.d, minutes: Number(log.minutes) || 0, title: log.title })),
+    ...state.workoutSessions.filter(session => !loggedIds.has(session.id)).map(session => ({ date: session.date, minutes: Math.round((session.durationSeconds || 0) / 60), title: session.title }))
+  ].filter(workout => workout.date).sort((a, b) => b.date.localeCompare(a.date));
   const weekWorkouts = workouts.filter(workout => weekKeys.has(workout.date));
   const focus = state.focusSessions.filter(session => session.type === 'focus' && !session.withered);
   const focusToday = focus.filter(session => session.date === today);
@@ -92,6 +94,7 @@ const act = (label, run) => ({ label, run });
 const actions = {
   focus: link('Start a focus session', 'focus.html'),
   workouts: link('Open workouts', 'workouts.html'),
+  worship: link('Start a worship workout', 'workouts.html#worship'),
   habits: link('Open habits', 'habits.html'),
   faith: link('Open faith page', 'faith.html'),
   progress: link('See progress', 'progress.html'),
@@ -142,13 +145,13 @@ const reply = {
     const open = context.habitsLeft.length ? `\nStill open: ${context.habitsLeft.slice(0, 4).join(', ')}.` : '';
     if (!steps.length) return { text: `${hello}You’ve covered faith, movement, focus and water today. Well done. Finish with a short gratitude prayer and get to bed on time.${open}`, actions: [actions.habits] };
     const list = steps.slice(0, 3).map((step, index) => `${index + 1}. ${step[0].toUpperCase()}${step.slice(1)}`).join('\n');
-    const next = !context.devotionalToday ? actions.devotional : !context.workedOutToday ? actions.workouts : actions.focus;
+    const next = !context.devotionalToday && !context.workedOutToday ? actions.worship : !context.devotionalToday ? actions.devotional : !context.workedOutToday ? actions.workouts : actions.focus;
     return { text: `${hello}Here’s your next best three:\n${list}${open}`, actions: [next, actions.habits] };
   },
   workout(context) {
     const moves = workoutsByLevel[context.level] || workoutsByLevel.beginner;
     const note = context.workedOutToday ? 'You already trained today, so keep this light or swap it for a walk. ' : context.daysSinceWorkout !== null && context.daysSinceWorkout >= 3 ? `It’s been ${plural(context.daysSinceWorkout, 'day')} since your last workout, so ease back in. ` : '';
-    return { text: `${note}A 15-minute ${context.level} circuit, 3 rounds with 60 seconds rest:\n• ${moves.join('\n• ')}\nWarm up for 3 minutes first. Pray or play worship between rounds. Stop if anything hurts. This is general guidance, not medical advice.`, actions: [actions.workouts] };
+    return { text: `${note}A 15-minute ${context.level} circuit, 3 rounds with 60 seconds rest:\n• ${moves.join('\n• ')}\nWarm up for 3 minutes first. Pray or play worship between rounds. Stop if anything hurts. This is general guidance, not medical advice.\nWant scripture and a timer with it? Try today’s worship workout.`, actions: [actions.worship, actions.workouts] };
   },
   tired(context) {
     const trained = context.workoutsThisWeek >= context.plannedWorkoutDays ? ` You’ve already hit ${plural(context.workoutsThisWeek, 'workout')} this week, so a rest day is earned.` : '';

@@ -38,6 +38,7 @@ const defaults = () => ({
   devotionalRead: {},
   prayer: {},
   faithPlan: { planId: '', startDate: '', completedDays: [] },
+  worshipSeries: { active: '', level: 'standard', progress: {} },
   prayerEntries: [],
   prayerRequests: [],
   scriptureCards: [],
@@ -196,6 +197,12 @@ function migrate(value) {
   next.devotionalRead = objectOrEmpty(next.devotionalRead);
   next.prayer = objectOrEmpty(next.prayer);
   next.faithPlan = { ...defaults().faithPlan, ...objectOrEmpty(next.faithPlan), completedDays: arrayOrEmpty(next.faithPlan?.completedDays) };
+  const worship = objectOrEmpty(next.worshipSeries);
+  next.worshipSeries = {
+    active: typeof worship.active === 'string' ? worship.active : '',
+    level: ['gentle', 'standard', 'push'].includes(worship.level) ? worship.level : next.workoutExperience === 'advanced' ? 'push' : 'standard',
+    progress: Object.fromEntries(Object.entries(objectOrEmpty(worship.progress)).map(([id, days]) => [id, arrayOrEmpty(days).map(Number).filter(Number.isInteger)]))
+  };
   next.prayerEntries = arrayOrEmpty(next.prayerEntries);
   next.prayerRequests = arrayOrEmpty(next.prayerRequests);
   next.scriptureCards = arrayOrEmpty(next.scriptureCards);

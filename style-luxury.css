@@ -446,3 +446,44 @@ fieldset.wizard-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr
 .nadir-foot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
 .card .nadir-foot small{margin:0}
 [data-mode=light] .nadir-bot{background:#fff}
+.worship-intro{color:var(--muted);max-width:62ch;margin-bottom:1rem}
+.worship-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:.6rem;border:0;padding:0;margin:0 0 1.2rem}
+.worship-levels legend{color:var(--muted);font-size:.9rem;margin-bottom:.4rem}
+.worship-level{position:relative;display:grid;gap:.15rem;padding:.8rem 1rem .8rem 2.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;margin:0;color:var(--text)}
+.worship-level input{position:absolute;left:1rem;top:1rem;accent-color:var(--gold)}
+.worship-level strong{color:var(--text)}
+.worship-level span{color:var(--muted);font-size:.88rem;line-height:1.45}
+.worship-level:has(input:checked){border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
+.worship-level:has(input:focus-visible){outline:3px solid var(--gold2);outline-offset:3px}
+.worship-series-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:.8rem;margin-bottom:1.2rem}
+.worship-series{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;padding:1.1rem;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.worship-series.is-active{border-color:var(--gold)}
+.worship-series h3{color:var(--gold2);font-size:1.15rem}
+.worship-series p{color:var(--muted);flex:1}
+.worship-series .meter{width:100%;margin:.2rem 0 0}
+.worship-series small{color:var(--muted)}
+.worship-today:hover{transform:none}
+.worship-today h3{font-size:1.5rem;color:var(--gold);margin:.2rem 0 .6rem}
+.worship-days{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.worship-day{width:40px;height:40px;min-height:40px!important;padding:0;margin:0;border-radius:50%;background:transparent;color:var(--muted);border:1px solid var(--line);box-shadow:none;font-weight:600}
+.worship-day:hover{transform:none;box-shadow:none;border-color:var(--gold)}
+.worship-day.is-done{color:#62c99e;border-color:#62c99e}
+.worship-day.is-current{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);border-color:transparent}
+.worship-verse{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.12rem;line-height:1.6;color:var(--text);border-left:3px solid var(--gold);padding:.1rem 0 .1rem 1rem;margin:0 0 .9rem}
+.worship-verse cite{display:block;margin-top:.3rem;font:normal .85rem system-ui,sans-serif;color:var(--muted)}
+.card .worship-reflection{color:var(--text)}
+.worship-plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:1rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg1) 55%,transparent);margin-bottom:1rem}
+.worship-plan ul{margin:.4rem 0 0;padding-left:1.2rem;color:var(--muted)}
+.card .worship-plan p{margin:.4rem 0 0;color:var(--muted)}
+.worship-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+.worship-actions button{margin:0}
+.worship-player{width:min(560px,calc(100vw - 2rem));text-align:center}
+.worship-player .worship-verse{text-align:left}
+.worship-player h2{color:var(--gold);font-size:clamp(1.5rem,5vw,2rem);margin:.2rem 0 .6rem}
+.worship-player .worship-actions{justify-content:center;margin-top:1rem}
+.worship-player>button:not(.worship-close){margin-top:1rem}
+.worship-close{position:absolute;top:.8rem;right:.8rem;margin:0;min-height:36px!important;padding:.2rem .8rem}
+.worship-step-rest{color:#62c99e!important}
+.worship-cue{color:var(--muted)}
+.worship-breath{font-family:"Iowan Old Style",Georgia,serif;font-size:1.15rem;color:var(--text)}
+.worship-player .choice{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1rem;color:var(--text)}

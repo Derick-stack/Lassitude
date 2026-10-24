@@ -1,0 +1,51 @@
+{
+  "levels": {
+    "gentle": { "label": "Gentle", "description": "Low impact, chair-supported options. Good for beginners, returning after a break, or sore days.", "work": 30, "rest": 30, "rounds": 2 },
+    "standard": { "label": "Standard", "description": "Bodyweight strength and cardio at a steady pace.", "work": 40, "rest": 20, "rounds": 3 },
+    "push": { "label": "Push", "description": "Higher-intensity intervals for experienced movers.", "work": 45, "rest": 15, "rounds": 4 }
+  },
+  "moves": {
+    "squat": { "gentle": "Sit-to-stand from a chair", "standard": "Bodyweight squat", "push": "Jump squat", "cue": "Chest up, weight through your heels." },
+    "push": { "gentle": "Wall push-up", "standard": "Push-up (knees are fine)", "push": "Push-up", "cue": "Keep a straight line from head to hips." },
+    "lunge": { "gentle": "Split squat holding a chair", "standard": "Reverse lunge", "push": "Alternating jump lunge", "cue": "Front knee tracks over your toes." },
+    "core": { "gentle": "Dead bug", "standard": "Plank", "push": "Plank shoulder taps", "cue": "Breathe steadily; don’t hold your breath." },
+    "cardio": { "gentle": "March in place", "standard": "Jumping jacks", "push": "Burpee", "cue": "Find a rhythm you could keep talking through." },
+    "bridge": { "gentle": "Glute bridge", "standard": "Glute bridge with a 2-second hold", "push": "Single-leg glute bridge", "cue": "Squeeze at the top; keep ribs down." },
+    "back": { "gentle": "Bird dog", "standard": "Superman hold", "push": "Superman with arm sweeps", "cue": "Lift long, not high. Keep your neck neutral." },
+    "skater": { "gentle": "Side step touch", "standard": "Skater step", "push": "Skater hop", "cue": "Land softly and stay low." },
+    "catcow": { "gentle": "Cat-cow", "standard": "Cat-cow", "push": "Cat-cow", "cue": "Move slowly with your breath." },
+    "childpose": { "gentle": "Child’s pose breathing", "standard": "Child’s pose breathing", "push": "Child’s pose breathing", "cue": "Breathe into your back ribs." },
+    "hips": { "gentle": "Standing hip circles", "standard": "Standing hip circles", "push": "World’s greatest stretch", "cue": "Stay within a comfortable range." },
+    "hamstring": { "gentle": "Seated hamstring stretch", "standard": "Standing hamstring stretch", "push": "Inchworm walkout", "cue": "Ease in; no bouncing." }
+  },
+  "series": [
+    {
+      "id": "renewed-strength",
+      "title": "Renewed Strength",
+      "summary": "Seven days for anyone feeling worn out. Strength comes from God first; we just show up.",
+      "days": [
+        { "title": "Wait and renew", "reference": "Isaiah 40:31", "verse": "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.", "reflection": "Where are you running on your own strength? Offer that area to God before you move.", "breath": ["Lord, renew my strength", "I will not grow weary"], "moves": ["squat", "push", "cardio", "core"] },
+        { "title": "Strength in Christ", "reference": "Philippians 4:13", "verse": "I can do all things through Christ which strengtheneth me.", "reflection": "This verse was written about contentment in hard seasons. What would contentment look like in your body today?", "breath": ["Christ in me", "is my strength"], "moves": ["lunge", "back", "skater", "bridge"] },
+        { "title": "Grace in weakness", "reference": "2 Corinthians 12:9", "verse": "And he said unto me, My grace is sufficient for thee: for my strength is made perfect in weakness.", "reflection": "Pick the level that matches today, not the one that impresses anyone. Weakness is a place God meets you.", "breath": ["Your grace", "is enough for me"], "moves": ["squat", "core", "push", "cardio"] },
+        { "title": "Strength of my heart", "reference": "Psalm 73:26", "verse": "My flesh and my heart faileth: but God is the strength of my heart, and my portion for ever.", "reflection": "When your legs want to quit, what does it mean that God is your portion?", "breath": ["God, my portion", "strength of my heart"], "moves": ["bridge", "skater", "back", "lunge"] },
+        { "title": "Joy as strength", "reference": "Nehemiah 8:10", "verse": "Neither be ye sorry; for the joy of the LORD is your strength.", "reflection": "Play your favorite worship song today. Notice one thing you can thank God for in your body.", "breath": ["The joy of the Lord", "is my strength"], "moves": ["cardio", "squat", "push", "skater"] },
+        { "title": "Courage", "reference": "Joshua 1:9", "verse": "Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.", "reflection": "What is one thing you have been afraid to start? Name it in prayer during your rest breaks.", "breath": ["You are with me", "I will be strong"], "moves": ["lunge", "push", "core", "bridge"] },
+        { "title": "Rest", "reference": "Matthew 11:28", "verse": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.", "reflection": "Rest is obedience, not laziness. Move gently and give God the week behind you.", "breath": ["I come to you", "and find rest"], "moves": ["catcow", "childpose", "hips", "hamstring"], "recovery": true }
+      ]
+    },
+    {
+      "id": "temple-stewardship",
+      "title": "Temple Stewardship",
+      "summary": "Seven days on caring for your body as a gift you manage for God, not a project for the mirror.",
+      "days": [
+        { "title": "Not your own", "reference": "1 Corinthians 6:19–20", "verse": "What? know ye not that your body is the temple of the Holy Ghost which is in you, which ye have of God, and ye are not your own? For ye are bought with a price: therefore glorify God in your body, and in your spirit, which are God’s.", "reflection": "If your body is on loan from God, what is one way you’d care for it differently this week?", "breath": ["My body is yours", "I honor you with it"], "moves": ["squat", "push", "back", "core"] },
+        { "title": "A living sacrifice", "reference": "Romans 12:1", "verse": "I beseech you therefore, brethren, by the mercies of God, that ye present your bodies a living sacrifice, holy, acceptable unto God, which is your reasonable service.", "reflection": "Offer this workout to God at the start, the way you’d offer a prayer.", "breath": ["I offer myself", "as worship to you"], "moves": ["lunge", "cardio", "bridge", "skater"] },
+        { "title": "Eat and drink to his glory", "reference": "1 Corinthians 10:31", "verse": "Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God.", "reflection": "Plan one simple, nourishing meal for today. Give thanks before you eat it.", "breath": ["In all I do", "may you be glorified"], "moves": ["push", "squat", "core", "cardio"] },
+        { "title": "Godliness first", "reference": "1 Timothy 4:8", "verse": "For bodily exercise profiteth little: but godliness is profitable unto all things, having promise of the life that now is, and of that which is to come.", "reflection": "Training has value, and godliness has more. Keep today’s session short and spend the extra minutes in prayer.", "breath": ["Train my heart", "more than my body"], "moves": ["catcow", "hips", "bridge", "hamstring"], "recovery": true },
+        { "title": "Run with patience", "reference": "Hebrews 12:1", "verse": "Wherefore seeing we also are compassed about with so great a cloud of witnesses, let us lay aside every weight, and the sin which doth so easily beset us, and let us run with patience the race that is set before us.", "reflection": "What weight, habit or distraction do you need to set down this week?", "breath": ["I lay it down", "and run with patience"], "moves": ["cardio", "skater", "lunge", "core"] },
+        { "title": "Discipline", "reference": "1 Corinthians 9:27", "verse": "But I keep under my body, and bring it into subjection: lest that by any means, when I have preached to others, I myself should be a castaway.", "reflection": "Discipline is choosing what matters most over what you want right now. Where is that choice today?", "breath": ["Lead me, Lord", "I will follow"], "moves": ["push", "back", "squat", "bridge"] },
+        { "title": "As to the Lord", "reference": "Colossians 3:23", "verse": "And whatsoever ye do, do it heartily, as to the Lord, and not unto men.", "reflection": "Finish the week with your full heart. Who could you invite to join you next week?", "breath": ["All my heart", "for you, Lord"], "moves": ["squat", "push", "lunge", "cardio"] }
+      ]
+    }
+  ]
+}

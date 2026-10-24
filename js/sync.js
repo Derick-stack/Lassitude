@@ -102,7 +102,7 @@ function buildRows(userId, state) {
   const base = { user_id: userId };
   return {
     profiles: [{ ...base, display_name: state.name, avatar: state.avatar || '' }],
-    settings: [{ ...base, data: { name: state.name, xp: state.xp, theme: state.theme, light: state.light, reminders: state.reminders, focusPrefs: state.focusPrefs, workoutPrefs: state.workoutPrefs, workoutExperience: state.workoutExperience, workoutDays: state.workoutDays, profileGoals: state.profileGoals, starterHabits: state.starterHabits, onboarding: state.onboarding, firstWeek: state.firstWeek, habitXP: state.habitXP, focusXP: state.focusXP, habitFreezeWeeks: state.habitFreezeWeeks, habits: state.habits, custom: state.custom, devotionalRead: state.devotionalRead, chal: state.chal, plant: state.plant, workoutLogs: state.workoutLogs, miles: state.miles, vision: state.vision, faithPlan: state.faithPlan } }],
+    settings: [{ ...base, data: { name: state.name, xp: state.xp, theme: state.theme, light: state.light, reminders: state.reminders, focusPrefs: state.focusPrefs, workoutPrefs: state.workoutPrefs, workoutExperience: state.workoutExperience, workoutDays: state.workoutDays, profileGoals: state.profileGoals, starterHabits: state.starterHabits, onboarding: state.onboarding, firstWeek: state.firstWeek, habitXP: state.habitXP, focusXP: state.focusXP, habitFreezeWeeks: state.habitFreezeWeeks, habits: state.habits, custom: state.custom, devotionalRead: state.devotionalRead, chal: state.chal, plant: state.plant, workoutLogs: state.workoutLogs, miles: state.miles, vision: state.vision, faithPlan: state.faithPlan, worshipSeries: state.worshipSeries } }],
     habits: state.habitDefinitions.map(habit => ({ ...base, habit_id: habit.id, title: habit.title, schedule: habit.schedule, archived: habit.archived, sort_order: habit.order })),
     habit_logs: Object.entries(state.habitLogs).flatMap(([date, logs]) => Object.entries(logs).map(([habitId, log]) => ({ ...base, habit_id: habitId, log_date: date, status: log.status, note: log.note || '', frozen: Boolean(log.freeze), updated_at: log.updatedAt || Date.now() }))),
     workouts: state.workoutRoutines.map(routine => ({ ...base, routine_id: routine.id, title: routine.title, schedule_days: routine.days, data: routine })),
@@ -218,7 +218,8 @@ function mergeCloudState(cloud, userId) {
       workoutLogs: settings.workoutLogs ?? state.workoutLogs,
       miles: settings.miles ?? state.miles,
       vision: settings.vision ?? state.vision,
-      faithPlan: settings.faithPlan ?? state.faithPlan
+      faithPlan: settings.faithPlan ?? state.faithPlan,
+      worshipSeries: settings.worshipSeries ?? state.worshipSeries
     });
     state.workoutRoutines = cloud.workouts.map(row => row.data);
     state.workoutSessions = cloud.workout_sessions.map(row => row.data);
