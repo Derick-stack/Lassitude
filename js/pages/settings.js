@@ -213,6 +213,7 @@ function setupData() {
     const chosen = file.files?.[0];
     file.value = '';
     if (!chosen) return;
+    if (chosen.size > 20 * 1024 * 1024) { toast('That file is too large to be a Lassitude backup.'); return; }
     let data;
     try { data = JSON.parse(await chosen.text()); } catch { toast('That file isn’t a Lassitude backup.'); return; }
     if (!data || typeof data !== 'object' || !('habits' in data || 'habitLogs' in data || 'schemaVersion' in data)) { toast('That file isn’t a Lassitude backup.'); return; }

@@ -116,6 +116,8 @@ Deno.serve(async request => {
   if (!Deno.env.get('ANTHROPIC_API_KEY')) return Response.json({ error: 'Coach is not configured.' }, { status: 500, headers });
 
   let body;
+  // Refuse oversized bodies before parsing them.
+  if (Number(request.headers.get('content-length') || 0) > 64_000) return Response.json({ error: 'Request too large.' }, { status: 413, headers });
   try { body = await request.json(); } catch { return Response.json({ error: 'Invalid request body.' }, { status: 400, headers }); }
   if (body?.task === 'flashcards') {
     const text = typeof body.text === 'string' ? body.text.trim().slice(0, MAX_NOTE_CHARS) : '';

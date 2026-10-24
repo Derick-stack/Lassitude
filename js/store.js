@@ -202,7 +202,7 @@ function migrate(value) {
       mood: typeof item.mood === 'string' ? item.mood : 'steady',
       energy: Math.max(1, Math.min(10, Number.parseInt(item.energy, 10) || 7)),
       exercises: arrayOrEmpty(item.exercises),
-      photo: typeof item.photo === 'string' ? item.photo : '',
+      photo: typeof item.photo === 'string' && /^data:image\/(?:jpeg|png|webp);base64,/.test(item.photo) && item.photo.length < 1_000_000 ? item.photo : '',
       private: true
     };
   });

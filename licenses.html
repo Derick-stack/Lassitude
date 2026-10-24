@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; frame-src https://open.spotify.com; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Open-source software and public-domain texts used by Lassitude.">
 <title>Licenses · Lassitude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style-luxury.css">
 <script type="module" src="js/app.js"></script>
 </head>
@@ -19,6 +24,8 @@
 <p>@anthropic-ai/sdk, used only inside the optional nadir-coach server function, never in your browser. MIT License, © Anthropic, PBC.</p>
 <h2>Supabase Edge Runtime</h2>
 <p>The delete-account and nadir-coach server functions run on Supabase Edge Functions (Deno). Deno is MIT licensed, © the Deno authors.</p>
+<h2>Inter typeface</h2>
+<p>Headings use the system San Francisco font on Apple devices and Inter elsewhere, loaded from Google Fonts. Inter is licensed under the SIL Open Font License 1.1, © The Inter Project Authors.</p>
 <h2>Scripture</h2>
 <p>Bible verses are from the King James Version, which is in the public domain in the United States.</p>
 <h2>Exercise library, devotionals and series</h2>

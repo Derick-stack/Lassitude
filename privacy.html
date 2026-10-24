@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; frame-src https://open.spotify.com; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="What Lassitude stores in your browser and when external services are contacted.">
 <title>Privacy · Lassitude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style-luxury.css">
 <script type="module" src="js/app.js"></script>
 </head>
@@ -19,6 +24,7 @@
 <p>Use Export in Settings to download a JSON copy. Use Delete all data in Settings to clear Lassitude’s saved data from this browser. Clearing browser site data also removes it.</p>
 <h2>External services</h2>
 <p>Music playlists are embedded from Spotify only after you select a playlist. Spotify may receive your network and browser information under its own privacy policy. Lassitude does not include analytics, advertising or email subscriptions.</p>
+<p>The Inter font is loaded from Google Fonts, so Google receives your IP address and browser details when a page loads, under Google’s privacy policy. No cookies are set for this.</p>
 <h2>NADIR coach and AI</h2>
 <p>For guests, NADIR runs entirely in your browser and nothing you type is sent anywhere. Your conversation is saved in this browser so it is there when you return; clear or export it from Settings → NADIR &amp; chat.</p>
 <p>If the site owner has enabled AI replies and you are signed in, your recent NADIR messages (up to the last 12) and a short summary of today’s progress (habits, workouts, focus minutes, devotional and water) are sent through the site’s Supabase server function to Anthropic’s Claude API to generate a reply. Your display name may be included so NADIR can address you; your email is not. Anthropic processes this data under its commercial terms and does not use it to train models by default. Do not share sensitive health details in the chat.</p>
