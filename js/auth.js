@@ -19,7 +19,7 @@ export async function createAccount(email, password, displayName = '') {
   return supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName.trim().slice(0, 40) } }
+    options: { data: { display_name: displayName.trim().slice(0, 40) }, emailRedirectTo: new URL('index.html', location.href).href }
   });
 }
 
