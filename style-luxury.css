@@ -904,3 +904,79 @@ body.focus-mode-on .mesh-blob{opacity:.25}
 .paste-preview li span{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .paste-preview .more{color:var(--muted);text-align:center;border-style:dashed}
 @media(max-width:560px){.paste-fields{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- Workouts: weekly plan and coach ---- */
+.plan-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+.week-card:hover,.coach-card:hover{transform:none}
+.small-link{min-height:40px!important;padding:.4rem 1rem;margin:0;width:auto}
+.week-summary{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:baseline;margin-bottom:.8rem;color:var(--muted)}
+.week-summary strong{font:600 1.5rem/1 "Iowan Old Style",Georgia,serif;color:var(--gold2)}
+.week-schedule{flex-basis:100%;font-size:.88rem}
+.plan-table-wrap{overflow-x:auto}
+.plan-table{width:100%;border-collapse:separate;border-spacing:0 .35rem;font-size:.92rem}
+.plan-table thead th{text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 .75rem}
+.plan-table tbody th,.plan-table td{padding:.7rem .75rem;background:color-mix(in srgb,var(--bg1) 55%,transparent);vertical-align:middle;text-align:left}
+.plan-table tbody th{width:6.5rem;border-radius:12px 0 0 12px;font-weight:700}
+.plan-table td:last-child{border-radius:0 12px 12px 0}
+.plan-table .plan-time{width:1%;white-space:nowrap;text-align:right}
+.plan-table td.plan-time{color:var(--text)}
+.plan-table td.plan-time span{display:block;margin-bottom:.3rem}
+.plan-table tr.is-today>*{background:var(--glow)}
+.plan-table tr.is-today th{box-shadow:inset 3px 0 0 var(--gold)}
+.plan-rest td,.plan-recovery td{color:var(--muted)}
+.plan-rest strong,.plan-recovery strong{color:var(--muted)!important;font-weight:600}
+.plan-day{display:block}
+.today-tag{display:inline-block;margin-top:.25rem;padding:.05rem .45rem;border-radius:999px;background:var(--gold);color:var(--ink);font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.plan-table td strong{display:block;color:var(--text)}
+.plan-ex{display:block;color:var(--muted);font-size:.84rem;margin-top:.15rem;line-height:1.45}
+.plan-meta{display:block;margin-top:.3rem;font-size:.78rem;color:var(--gold2);font-variant-numeric:tabular-nums}
+.plan-table .small-btn{margin:0;min-height:36px!important;padding:.25rem .85rem}
+.plan-table.is-compact{font-size:.85rem}
+.plan-table.is-compact tbody th{width:3.5rem}
+.week-empty{display:grid;gap:.5rem;justify-items:start;padding:.5rem 0}
+.week-empty-title{font:600 1.3rem/1.2 "Iowan Old Style",Georgia,serif;color:var(--text)!important;margin:0!important}
+.coach-card{display:grid;gap:.4rem;position:sticky;top:6.5rem}
+.coach-equipment{width:auto;min-width:150px;flex:none}
+.coach-log{display:flex;flex-direction:column;gap:.6rem;height:min(460px,55vh);overflow-y:auto;padding:.8rem;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--bg1) 55%,transparent);margin-bottom:.4rem}
+.coach-msg{max-width:94%;padding:.65rem .85rem;border-radius:14px;line-height:1.5;overflow-wrap:anywhere;animation:msg-in .22s ease-out both}
+.coach-bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px;color:var(--text)}
+.coach-user{align-self:flex-end;max-width:85%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);border-bottom-right-radius:4px;font-weight:500}
+.coach-msg .plan-table-wrap{margin-top:.5rem}
+.coach-msg .plan-table tbody th,.coach-msg .plan-table td{padding:.5rem .55rem}
+.coach-exercises{margin:.5rem 0 0;padding-left:1.2rem;display:grid;gap:.3rem}
+.coach-exercises li span{display:block;color:var(--muted);font-size:.84rem}
+.coach-swaps{list-style:none;margin:.5rem 0 0;padding:0;display:grid;gap:.3rem}
+.coach-swaps li{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:.5rem;align-items:center;padding:.4rem .6rem;border-radius:10px;background:color-mix(in srgb,var(--bg1) 45%,transparent);font-size:.88rem}
+.coach-swaps li span:first-child{color:var(--muted);text-decoration:line-through}
+.coach-swaps strong{color:var(--gold2)}
+.coach-actions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.coach-actions .small-btn{margin:0;min-height:40px!important}
+.coach-note{margin:.5rem 0 0;color:var(--muted);font-size:.85rem}
+.coach-programs{display:grid;gap:.5rem;margin-top:.5rem}
+.coach-program{display:grid;gap:.15rem;padding:.7rem .8rem;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg1) 45%,transparent)}
+.coach-program span{color:var(--gold2);font-size:.82rem}
+.coach-program p{margin:.1rem 0 .3rem;color:var(--muted);font-size:.85rem}
+.coach-program .small-btn{justify-self:start;margin:0}
+.coach-form{display:flex;gap:.5rem;align-items:flex-end}
+.coach-form textarea{flex:1;min-width:0;min-height:48px;resize:none;line-height:1.45}
+.coach-form button{margin:0}
+.muscle-groups{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.6rem;margin-bottom:.6rem;scrollbar-width:thin}
+.muscle-chip{flex:none;display:inline-flex;align-items:center;gap:.4rem;margin:0;padding:.5rem 1rem;border-radius:999px;background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:600}
+.muscle-chip:hover{border-color:var(--gold);transform:none;box-shadow:none}
+.muscle-chip[aria-pressed=true]{border-color:var(--gold);background:var(--glow);color:var(--gold2)}
+.program-use{margin-top:auto}
+@media(max-width:980px){.plan-layout{grid-template-columns:minmax(0,1fr)}.coach-card{position:static}}
+@media(max-width:560px){
+	/* Each day becomes a card: day and time on top, the workout full width below */
+	.plan-table thead{display:none}
+	.plan-table,.plan-table tbody{display:block}
+	.plan-table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"day time" "work work";gap:.35rem .6rem;margin-bottom:.45rem;padding:.75rem .85rem;border-radius:12px;background:color-mix(in srgb,var(--bg1) 55%,transparent)}
+	.plan-table tr.is-today{background:var(--glow);box-shadow:inset 3px 0 0 var(--gold)}
+	.plan-table tbody th,.plan-table td,.plan-table tr.is-today>*{display:block;width:auto;padding:0;background:transparent;border-radius:0;box-shadow:none}
+	.plan-table tbody th{grid-area:day;display:flex;align-items:center;gap:.5rem}
+	.plan-table tbody th .today-tag{margin:0}
+	.plan-table td:not(.plan-time){grid-area:work}
+	.plan-table td.plan-time{grid-area:time;display:flex;align-items:center;gap:.5rem;text-align:right}
+	.plan-table td.plan-time span{margin:0}
+	.coach-log{height:min(420px,55vh)}
+}

@@ -1,9 +1,14 @@
 import { getDayKey, getState, setHabit, update } from '../store.js';
 import { $, $$, confirmDialog, h, toast } from '../ui.js';
 import { initWorship } from '../worship.js';
+import { initWorkoutCoach } from '../workout-coach.js';
+import { MUSCLE_GROUPS } from '../workout-plan.js';
 
 const weekdays = [['Sun', 0], ['Mon', 1], ['Tue', 2], ['Wed', 3], ['Thu', 4], ['Fri', 5], ['Sat', 6]];
+// Exercises: [id, sets, reps, unit, rest seconds]
 const programs = [
+  { id: 'ppl-3', title: 'Push / Pull / Legs', description: 'Three focused days: chest, shoulders and triceps; back and biceps; then legs.', parts: [{ title: 'Push', days: [1], exercises: [['barbell-bench-press', 4, 8, 'reps', 120], ['incline-db-press', 3, 10, 'reps', 90], ['seated-db-press', 3, 10, 'reps', 90], ['lateral-raise', 3, 15, 'reps', 60], ['triceps-pushdown', 3, 12, 'reps', 60]] }, { title: 'Pull', days: [3], exercises: [['lat-pulldown-wide', 4, 10, 'reps', 90], ['barbell-row', 4, 8, 'reps', 120], ['face-pull', 3, 15, 'reps', 60], ['hammer-curl', 3, 12, 'reps', 60]] }, { title: 'Legs', days: [5], exercises: [['back-squat', 4, 8, 'reps', 150], ['romanian-deadlift', 3, 10, 'reps', 120], ['bulgarian-split', 3, 10, 'reps', 90], ['hamstring-curl', 3, 12, 'reps', 60], ['standing-calf-raise', 3, 15, 'reps', 60]] }] },
+  { id: 'dumbbell-full-body', title: 'Dumbbells-only full body', description: 'Three full-body days with just a pair of dumbbells. Great for home.', parts: [{ title: 'Dumbbell full body', days: [1, 3, 5], exercises: [['goblet-squat', 3, 12, 'reps', 90], ['db-bench-press', 3, 10, 'reps', 90], ['one-arm-db-row', 3, 10, 'reps', 90], ['romanian-deadlift', 3, 10, 'reps', 90], ['seated-db-press', 3, 10, 'reps', 60], ['dead-bug', 3, 10, 'reps', 45]] }] },
   { id: 'full-body-3', title: '3-day full body', description: 'A balanced beginner routine on Monday, Wednesday, and Friday.', parts: [{ title: 'Full Body A', days: [1, 3, 5], exercises: [['goblet-squat', 3, 10], ['push-up', 3, 8], ['one-arm-db-row', 3, 10], ['glute-bridge', 3, 12], ['plank', 3, 30]] }] },
   { id: 'upper-lower-4', title: '4-day upper / lower', description: 'Two upper sessions and two lower sessions, each editable.', parts: [{ title: 'Upper Body', days: [1, 4], exercises: [['db-bench-press', 3, 8], ['lat-pulldown-neutral', 3, 10], ['seated-db-press', 3, 8], ['cable-curl', 2, 12], ['triceps-pushdown', 2, 12]] }, { title: 'Lower Body', days: [2, 5], exercises: [['goblet-squat', 3, 10], ['romanian-deadlift', 3, 8], ['reverse-lunge', 3, 8], ['hamstring-curl', 3, 10], ['standing-calf-raise', 2, 10]] }] },
   { id: 'home-hiit-20', title: '20-minute home intervals', description: 'Four simple bodyweight movements with 40-second work intervals and short recovery.', parts: [{ title: 'Home HIIT', days: [2, 4, 6], exercises: [['squat', 4, 40, 'seconds'], ['incline-push-up', 4, 40, 'seconds'], ['mountain-climber', 4, 40, 'seconds'], ['glute-bridge', 4, 40, 'seconds']] }] },
@@ -17,10 +22,13 @@ export function initWorkouts() {
   let restTimer = null;
   let restEndsAt = 0;
   let photoData = '';
+  let muscleGroup = '';
   const routineSelect = $('#routine-select');
   const libraryList = $('#exercise-library');
 
   void initWorship();
+  const coach = initWorkoutCoach({ getLibrary: () => library, programs, startRoutine, showGroup, onPlanChanged });
+  renderMuscleGroups();
   loadLibrary();
   renderPrograms();
   renderRoutineSelect();
@@ -54,6 +62,7 @@ export function initWorkouts() {
       library = await response.json();
       fillFilters();
       renderLibrary();
+      coach.renderWeek();
       renderPrograms();
       renderRoutineExercises();
     } catch {
@@ -86,7 +95,8 @@ export function initWorkouts() {
       const textMatch = `${exercise.name} ${exercise.instructions} ${exercise.muscle}`.toLowerCase().includes(query);
       const bodyweight = exercise.equipment === 'Bodyweight';
       const gymOnly = ['Machine', 'Cable', 'Barbell', 'EZ bar', 'Rower', 'Treadmill', 'Elliptical'].includes(exercise.equipment);
-      return textMatch && (!muscle || exercise.muscle === muscle) && (!equipment || exercise.equipment === equipment) && (!difficulty || exercise.difficulty === difficulty) && (!location || (location === 'bodyweight' ? bodyweight : location === 'home' ? !gymOnly : !bodyweight));
+      const groupMatch = !muscleGroup || MUSCLE_GROUPS.find(group => group.id === muscleGroup)?.muscles.includes(exercise.muscle);
+      return textMatch && groupMatch && (!muscle || exercise.muscle === muscle) && (!equipment || exercise.equipment === equipment) && (!difficulty || exercise.difficulty === difficulty) && (!location || (location === 'bodyweight' ? bodyweight : location === 'home' ? !gymOnly : !bodyweight));
     });
     $('#exercise-count').textContent = `${matches.length} of ${library.length} exercises`;
     libraryList.replaceChildren();
@@ -105,30 +115,45 @@ export function initWorkouts() {
     });
   }
 
-  function renderPrograms() {
-    const list = $('#program-list');
-    list.replaceChildren(...programs.map(program => {
-      const button = h('button', { type: 'button', class: 'ghost program-use' }, 'Add editable program');
-      button.addEventListener('click', () => addProgram(program));
-      return h('article', { class: 'program-item' }, h('h3', {}, program.title), h('p', {}, program.description), h('small', {}, `${program.parts.reduce((count, part) => count + part.exercises.length, 0)} movements`), button);
+  function renderMuscleGroups() {
+    const container = $('#muscle-groups');
+    container.replaceChildren(...[{ id: '', label: 'All', icon: '' }, ...MUSCLE_GROUPS].map(group => {
+      const button = h('button', { type: 'button', class: 'muscle-chip', 'aria-pressed': String(group.id === muscleGroup) }, group.icon ? h('span', { 'aria-hidden': 'true' }, group.icon) : null, group.label);
+      button.addEventListener('click', () => showGroup(group.id, false));
+      return button;
     }));
   }
 
-  function addProgram(program) {
-    const additions = program.parts.map(part => ({
-      id: `routine-${crypto.randomUUID()}`,
-      title: part.title,
-      days: [...part.days],
-      exercises: part.exercises.map(([id, sets, reps, unit = 'reps']) => ({ id, sets, reps, unit, weight: 0, rest: program.id === 'home-hiit-20' ? 20 : 60, notes: '' })),
-      active: true,
-      programId: program.id
-    }));
-    update(state => { state.workoutRoutines.push(...additions); });
+  function showGroup(id, scroll = true) {
+    muscleGroup = id;
+    $('#muscle-filter').value = '';
+    renderMuscleGroups();
+    renderLibrary();
+    if (scroll) $('#exercise-library-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function onPlanChanged() {
     renderRoutineSelect();
-    draft = getState().workoutRoutines.find(routine => routine.id === additions[0].id);
-    routineSelect.value = additions[0].id;
+    if (draft?.id) { draft = getState().workoutRoutines.find(routine => routine.id === draft.id) || draft; renderBuilder(); }
+    coach.renderWeek();
+  }
+
+  function startRoutine(id) {
+    const routine = getState().workoutRoutines.find(item => item.id === id);
+    if (!routine) return;
+    draft = routine;
+    routineSelect.value = id;
     renderBuilder();
-    toast(`${program.title} added. Edit and save your routine details.`);
+    startWorkout();
+  }
+
+  function renderPrograms() {
+    const list = $('#program-list');
+    list.replaceChildren(...programs.map(program => {
+      const button = h('button', { type: 'button', class: 'program-use' }, 'Equip');
+      button.addEventListener('click', () => coach.equipProgram(program));
+      return h('article', { class: 'program-item' }, h('h3', {}, program.title), h('p', {}, program.description), h('small', {}, `${program.parts.reduce((count, part) => count + part.exercises.length, 0)} movements`), button);
+    }));
   }
 
   function renderRoutineSelect() {
@@ -153,6 +178,7 @@ export function initWorkouts() {
       return h('label', { class: 'choice' }, checkbox, h('span', {}, label));
     }));
     $('#routine-summary').textContent = `${draft.days.length ? draft.days.map(day => weekdays.find(item => item[1] === day)?.[0]).join(', ') : 'No scheduled days'} · ${draft.exercises.length} exercises`;
+    $('#routine-active').checked = draft.active !== false;
     $('#routine-status').textContent = '';
     $('#duplicate-routine').disabled = !draft.id;
     $('#delete-routine').disabled = !draft.id;
@@ -165,22 +191,22 @@ export function initWorkouts() {
     draft.exercises.forEach((item, index) => {
       const exercise = library.find(entry => entry.id === item.id);
       const row = h('li', { class: 'routine-exercise', draggable: true });
-      const title = h('div', { class: 'routine-exercise-title' }, h('strong', {}, exercise?.name || item.id), h('small', {}, exercise ? `${exercise.muscle} · ${exercise.equipment}` : 'Exercise unavailable in catalog'));
+      const title = h('div', { class: 'routine-exercise-title' }, h('strong', {}, exercise?.name || item.name || item.id), h('small', {}, exercise ? `${exercise.muscle} · ${exercise.equipment}` : 'Your own exercise'));
       const controls = h('div', { class: 'routine-exercise-controls' });
       for (const [key, label, type, min, max] of [['sets', 'Sets', 'number', 1, 20], ['reps', 'Target', 'number', 1, 300], ['weight', 'Weight', 'number', 0, 999], ['rest', 'Rest seconds', 'number', 0, 900]]) {
-        const input = h('input', { type, min, max, step: key === 'weight' ? '0.5' : '1', value: item[key], 'aria-label': `${label} for ${exercise?.name || item.id}` });
+        const input = h('input', { type, min, max, step: key === 'weight' ? '0.5' : '1', value: item[key], 'aria-label': `${label} for ${exercise?.name || item.name || item.id}` });
         input.addEventListener('change', () => { item[key] = Math.max(Number(min), Number(input.value) || 0); input.value = String(item[key]); $('#routine-status').textContent = 'Unsaved changes.'; });
         controls.append(h('label', {}, h('span', {}, label), input));
       }
-      const unit = h('select', { 'aria-label': `Target unit for ${exercise?.name || item.id}` }, [h('option', { value: 'reps', selected: (item.unit || 'reps') === 'reps' }, 'Reps'), h('option', { value: 'seconds', selected: item.unit === 'seconds' }, 'Seconds')]);
+      const unit = h('select', { 'aria-label': `Target unit for ${exercise?.name || item.name || item.id}` }, [h('option', { value: 'reps', selected: (item.unit || 'reps') === 'reps' }, 'Reps'), h('option', { value: 'seconds', selected: item.unit === 'seconds' }, 'Seconds')]);
       unit.addEventListener('change', () => { item.unit = unit.value; $('#routine-status').textContent = 'Unsaved changes.'; });
       controls.append(h('label', {}, h('span', {}, 'Target unit'), unit));
-      const note = h('input', { type: 'text', maxlength: '120', value: item.notes, placeholder: 'Optional notes', 'aria-label': `Notes for ${exercise?.name || item.id}` });
+      const note = h('input', { type: 'text', maxlength: '120', value: item.notes, placeholder: 'Optional notes', 'aria-label': `Notes for ${exercise?.name || item.name || item.id}` });
       note.addEventListener('input', () => { item.notes = note.value; $('#routine-status').textContent = 'Unsaved changes.'; });
       controls.append(h('label', { class: 'exercise-note' }, h('span', {}, 'Notes'), note));
-      const moveUp = h('button', { type: 'button', class: 'ghost', disabled: index === 0, 'aria-label': `Move ${exercise?.name || item.id} up` }, 'Move up');
-      const moveDown = h('button', { type: 'button', class: 'ghost', disabled: index === draft.exercises.length - 1, 'aria-label': `Move ${exercise?.name || item.id} down` }, 'Move down');
-      const remove = h('button', { type: 'button', class: 'x', 'aria-label': `Remove ${exercise?.name || item.id}` }, '×');
+      const moveUp = h('button', { type: 'button', class: 'ghost', disabled: index === 0, 'aria-label': `Move ${exercise?.name || item.name || item.id} up` }, 'Move up');
+      const moveDown = h('button', { type: 'button', class: 'ghost', disabled: index === draft.exercises.length - 1, 'aria-label': `Move ${exercise?.name || item.name || item.id} down` }, 'Move down');
+      const remove = h('button', { type: 'button', class: 'x', 'aria-label': `Remove ${exercise?.name || item.name || item.id}` }, '×');
       moveUp.addEventListener('click', () => moveExercise(index, index - 1));
       moveDown.addEventListener('click', () => moveExercise(index, index + 1));
       remove.addEventListener('click', () => { draft.exercises.splice(index, 1); renderRoutineExercises(); });
@@ -206,14 +232,16 @@ export function initWorkouts() {
     if (!title) return;
     draft.title = title;
     draft.days = $$('input[name="routine-day"]:checked', $('#routine-days')).map(input => Number(input.value));
+    draft.active = $('#routine-active').checked;
     if (draft.id) update(state => { const index = state.workoutRoutines.findIndex(item => item.id === draft.id); if (index >= 0) state.workoutRoutines[index] = { ...draft }; });
     else {
       draft.id = `routine-${crypto.randomUUID()}`;
       update(state => state.workoutRoutines.push({ ...draft, exercises: draft.exercises.map(item => ({ ...item })) }));
     }
     renderRoutineSelect();
-    $('#routine-status').textContent = 'Routine saved on this device.';
-    toast('Routine saved.');
+    coach.renderWeek();
+    $('#routine-status').textContent = draft.active ? 'Saved to your workout section and weekly plan.' : 'Routine saved (not in your weekly plan).';
+    toast('Saved to your workout section!');
   }
 
   function duplicateRoutine() {
@@ -235,6 +263,7 @@ export function initWorkouts() {
     toast('Routine deleted.', { actionLabel: 'Undo', duration: 5000, onAction: () => { update(state => state.workoutRoutines.push(removed)); renderRoutineSelect(); draft = removed; renderBuilder(); } });
     draft = null;
     renderRoutineSelect();
+    coach.renderWeek();
     newRoutine();
   }
 
@@ -260,7 +289,7 @@ export function initWorkouts() {
     const prior = previous?.exercises?.find(item => item.id === entry.id);
     stage.replaceChildren();
     const previousText = prior?.sets?.length ? `Previous: ${prior.sets.map(set => `${set.reps} ${set.unit === 'seconds' ? 'sec' : 'reps'} × ${set.weight} kg`).join(', ')}` : 'No previous sets logged for this exercise.';
-    stage.append(h('p', { class: 'eyebrow' }, `Exercise ${activeRun.index + 1} of ${activeRun.exercises.length}`), h('h3', {}, exercise?.name || entry.id), h('p', {}, exercise?.instructions || ''), h('p', { class: 'previous-set' }, previousText), h('p', {}, `Set ${entry.sets.length + 1} of ${entry.plannedSets} · Target ${entry.reps} ${entry.unit === 'seconds' ? 'seconds' : 'reps'}`));
+    stage.append(h('p', { class: 'eyebrow' }, `Exercise ${activeRun.index + 1} of ${activeRun.exercises.length}`), h('h3', {}, exercise?.name || entry.name || entry.id), h('p', {}, exercise?.instructions || ''), h('p', { class: 'previous-set' }, previousText), h('p', {}, `Set ${entry.sets.length + 1} of ${entry.plannedSets} · Target ${entry.reps} ${entry.unit === 'seconds' ? 'seconds' : 'reps'}`));
     const sound = h('input', { type: 'checkbox', checked: getState().workoutPrefs.sound });
     const vibration = h('input', { type: 'checkbox', checked: getState().workoutPrefs.vibration });
     sound.addEventListener('change', () => update(state => { state.workoutPrefs.sound = sound.checked; }));
@@ -342,7 +371,7 @@ export function initWorkouts() {
     if (!activeRun) return;
     window.clearInterval(restTimer);
     const finishedAt = Date.now();
-    const exerciseEntries = activeRun.exercises.filter(item => item.sets.length).map(item => ({ id: item.id, name: library.find(exercise => exercise.id === item.id)?.name || item.id, muscle: library.find(exercise => exercise.id === item.id)?.muscle || 'Other', unit: item.unit || 'reps', sets: item.sets }));
+    const exerciseEntries = activeRun.exercises.filter(item => item.sets.length).map(item => ({ id: item.id, name: library.find(exercise => exercise.id === item.id)?.name || item.name || item.id, muscle: library.find(exercise => exercise.id === item.id)?.muscle || 'Other', unit: item.unit || 'reps', sets: item.sets }));
     const volume = exerciseEntries.reduce((sum, exercise) => sum + exercise.sets.reduce((subtotal, set) => subtotal + set.reps * set.weight, 0), 0);
     const prs = exerciseEntries.filter(exercise => {
       const previousBest = getState().workoutSessions.flatMap(session => session.exercises || []).filter(item => item.id === exercise.id).flatMap(item => item.sets || []).reduce((best, set) => Math.max(best, set.reps * set.weight), 0);

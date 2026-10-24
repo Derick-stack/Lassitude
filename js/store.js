@@ -36,7 +36,7 @@ const defaults = () => ({
   workoutRoutines: [],
   workoutSessions: [],
   workoutPosts: [],
-  workoutPrefs: { sound: false, vibration: false },
+  workoutPrefs: { sound: false, vibration: false, equipment: 'gym' },
   devotionalRead: {},
   prayer: {},
   faithPlan: { planId: '', startDate: '', completedDays: [] },
@@ -207,7 +207,7 @@ function migrate(value) {
     };
   });
   const workoutPrefs = { ...defaults().workoutPrefs, ...objectOrEmpty(next.workoutPrefs) };
-  next.workoutPrefs = { sound: Boolean(workoutPrefs.sound), vibration: Boolean(workoutPrefs.vibration) };
+  next.workoutPrefs = { sound: Boolean(workoutPrefs.sound), vibration: Boolean(workoutPrefs.vibration), equipment: ['gym', 'dumbbells', 'bodyweight'].includes(workoutPrefs.equipment) ? workoutPrefs.equipment : 'gym' };
   next.devotionalRead = objectOrEmpty(next.devotionalRead);
   next.prayer = objectOrEmpty(next.prayer);
   next.faithPlan = { ...defaults().faithPlan, ...objectOrEmpty(next.faithPlan), completedDays: arrayOrEmpty(next.faithPlan?.completedDays) };
